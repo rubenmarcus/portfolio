@@ -36,7 +36,9 @@ export default function ChainSection() {
                 className="object-contain"
               />
             </div>
-            <span className="font-mono text-green-400">{chain.name}</span>
+            <span className="font-mono text-green-400 hover:text-white transition-colors duration-200">
+              {chain.name}
+            </span>
           </motion.div>
         ))}
       </div>

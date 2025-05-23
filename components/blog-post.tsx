@@ -26,7 +26,6 @@ export default function BlogPost({ post }: BlogPostProps) {
 
   return (
     <div
-      className="border border-green-500/20 bg-green-500/5 hover:bg-green-500/10 transition-colors p-6 flex flex-col h-full cyberpunk-aura"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -36,10 +35,12 @@ export default function BlogPost({ post }: BlogPostProps) {
 
       <div className="flex items-center text-green-400/60 mb-4 font-mono text-xs">
         <Calendar className="mr-1 h-3 w-3" />
-        {formattedDate}
+        <span className="hover:text-white transition-colors duration-200">{formattedDate}</span>
       </div>
 
-      <p className="text-green-300/80 mb-4 font-mono text-sm flex-grow">{post.excerpt}</p>
+      <p className="text-green-300/80 mb-4 font-mono text-sm flex-grow hover:text-white transition-colors duration-200">
+        {post.excerpt}
+      </p>
 
       <Link
         href={post.link}

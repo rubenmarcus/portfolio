@@ -5,6 +5,7 @@ import ProjectCard from "@/components/project-card"
 import BlogPost from "@/components/blog-post"
 import TerminalText from "@/components/terminal-text"
 import CyberpunkButton from "@/components/cyberpunk-button"
+import HoverText from "@/components/hover-text"
 
 export default function Home() {
   const openSourceProjects = [
@@ -100,12 +101,11 @@ export default function Home() {
       <section className="relative h-[90vh] flex items-center justify-center overflow-hidden border-b border-green-500/20">
         <MatrixBackground />
         <div className="container relative z-10 px-4 text-center">
-          <h1 className="font-mono text-3xl md:text-6xl font-bold mb-4 text-green-400 tracking-tight">
-          Senior Fullstack Web3 Engineer
+          <h1 className="font-mono text-3xl md:text-6xl font-bold mb-4 text-green-400 tracking-tight hover:text-white transition-colors duration-200">
+            Senior Fullstack Web3 Engineer
           </h1>
-          <p className="font-mono text-lg md:text-xl text-green-300/80 max-w-2xl mx-auto mb-8">
-            Building the decentralized future with code. Specializing in blockchain, smart contracts, and AI
-            integration.
+          <p className="font-mono text-lg md:text-xl text-green-300/80 max-w-2xl mx-auto mb-8 hover:text-white transition-colors duration-200">
+            Building the decentralized future with code. Specializing in blockchain, smart contracts, and AI integration.
           </p>
           <CyberpunkButton
             href="/portfolio"
@@ -120,7 +120,7 @@ export default function Home() {
       {/* Chains Section */}
       <section className="py-16 border-b border-green-500/20">
         <div className="container px-4">
-          <h2 className="font-mono text-2xl md:text-3xl font-bold mb-8 text-green-400 after:content-[''] after:block after:w-24 after:h-px after:bg-green-500 after:mt-2">
+          <h2 className="font-mono text-2xl font-bold mb-8 text-green-400 after:content-[''] after:block after:w-24 after:h-px after:bg-green-500 after:mt-2">
             <TerminalText text="Blockchain Expertise" typingSpeed={30} />
           </h2>
           <ChainSection />
@@ -130,12 +130,12 @@ export default function Home() {
       {/* AI Agents Section */}
       <section className="py-16 border-b border-green-500/20">
         <div className="container px-4">
-          <h2 className="font-mono text-2xl md:text-3xl font-bold mb-8 text-green-400 after:content-[''] after:block after:w-24 after:h-px after:bg-green-500 after:mt-2">
+          <h2 className="font-mono text-2xl font-bold mb-8 text-green-400 after:content-[''] after:block after:w-24 after:h-px after:bg-green-500 after:mt-2">
             <TerminalText text="AI Agents" typingSpeed={30} />
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {aiAgents.map((project, index) => (
-              <ProjectCard key={index} project={project} />
+            {aiAgents.map((project) => (
+              <ProjectCard key={project.title} project={project} />
             ))}
           </div>
         </div>
@@ -144,12 +144,12 @@ export default function Home() {
       {/* Open Source Projects Section */}
       <section className="py-16 border-b border-green-500/20">
         <div className="container px-4">
-          <h2 className="font-mono text-2xl md:text-3xl font-bold mb-8 text-green-400 after:content-[''] after:block after:w-24 after:h-px after:bg-green-500 after:mt-2">
+          <h2 className="font-mono text-2xl font-bold mb-8 text-green-400 after:content-[''] after:block after:w-24 after:h-px after:bg-green-500 after:mt-2">
             <TerminalText text="Open Source Projects" typingSpeed={30} />
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {openSourceProjects.map((project, index) => (
-              <ProjectCard key={index} project={project} />
+            {openSourceProjects.map((project) => (
+              <ProjectCard key={project.title} project={project} />
             ))}
           </div>
         </div>
@@ -162,8 +162,8 @@ export default function Home() {
             <TerminalText text="Closed Source Projects" typingSpeed={30} />
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {closedSourceProjects.map((project, index) => (
-              <ProjectCard key={index} project={project} />
+            {closedSourceProjects.map((project) => (
+              <ProjectCard key={project.title} project={project} />
             ))}
           </div>
         </div>
@@ -176,8 +176,8 @@ export default function Home() {
             <TerminalText text="Blog & Articles" typingSpeed={30} />
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogPosts.map((post, index) => (
-              <BlogPost key={index} post={post} />
+            {blogPosts.map((post) => (
+              <BlogPost key={post.title} post={post} />
             ))}
           </div>
           <div className="mt-8 text-center">

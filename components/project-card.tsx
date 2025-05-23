@@ -27,11 +27,13 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       <h3 className="font-mono text-xl font-bold mb-2 text-green-400">
         {isHovering ? <TerminalText text={project.title} typingSpeed={20} glitchIntensity={3} /> : project.title}
       </h3>
-      <p className="text-green-300/80 mb-4 font-mono text-sm flex-grow">{project.description}</p>
+      <p className="text-green-300/80 mb-4 font-mono text-sm flex-grow hover:text-white transition-colors duration-200">
+        {project.description}
+      </p>
 
       <div className="flex flex-wrap gap-2 mb-4">
-        {project.tags.map((tag, index) => (
-          <span key={index} className="text-xs font-mono px-2 py-1 border border-green-500/30 text-green-400/80">
+        {project.tags.map((tag) => (
+          <span key={tag} className="text-xs font-mono px-2 py-1 border border-green-500/30 text-green-400/80 hover:text-white transition-colors duration-200">
             {tag}
           </span>
         ))}

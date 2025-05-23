@@ -92,10 +92,12 @@ export default function TerminalText({
 
   return (
     <span className={className}>
-      <span className="terminal-text">{text}</span>
-      {/* {!isTypingComplete || cursorBlink ? (
+      <span className="terminal-text hover:text-white transition-colors duration-200">
+        {text}
+      </span>
+      {!isTypingComplete || cursorBlink ? (
         <span className={`terminal-cursor ${showCursor ? "opacity-100" : "opacity-0"}`}>█</span>
-      ) : null} */}
+      ) : null}
     </span>
   )
 }

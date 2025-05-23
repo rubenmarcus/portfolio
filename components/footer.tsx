@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "@/components/ui/link"
 import { Github, Linkedin, Mail, Twitter } from "lucide-react"
 
 export default function Footer() {
@@ -36,46 +36,54 @@ export default function Footer() {
             <h3 className="font-mono text-lg font-bold mb-4 text-green-400">Connect</h3>
             <ul className="space-y-2 font-mono">
               <li>
-                <a
+                <Link
                   href="https://github.com/username"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center text-green-400/80 hover:text-green-300 transition-colors"
                 >
-                  <Github className="mr-2 h-4 w-4" />
-                  GitHub
-                </a>
+                  <span className="flex items-center">
+                    <Github className="mr-2 h-4 w-4 flex-shrink-0" />
+                    GitHub
+                  </span>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="https://twitter.com/username"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center text-green-400/80 hover:text-green-300 transition-colors"
                 >
-                  <Twitter className="mr-2 h-4 w-4" />
-                  Twitter
-                </a>
+                  <span className="flex items-center">
+                    <Twitter className="mr-2 h-4 w-4 flex-shrink-0" />
+                    Twitter
+                  </span>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="https://linkedin.com/in/username"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center text-green-400/80 hover:text-green-300 transition-colors"
                 >
-                  <Linkedin className="mr-2 h-4 w-4" />
-                  LinkedIn
-                </a>
+                  <span className="flex items-center">
+                    <Linkedin className="mr-2 h-4 w-4 flex-shrink-0" />
+                    LinkedIn
+                  </span>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="mailto:contact@example.com"
                   className="flex items-center text-green-400/80 hover:text-green-300 transition-colors"
                 >
-                  <Mail className="mr-2 h-4 w-4" />
-                  Email
-                </a>
+                  <span className="flex items-center">
+                    <Mail className="mr-2 h-4 w-4 flex-shrink-0" />
+                    Email
+                  </span>
+                </Link>
               </li>
             </ul>
           </div>
@@ -103,7 +111,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 pt-4 border-t border-green-500/20 text-center text-green-400/60 font-mono text-sm">
-          &copy; {new Date().getFullYear()} Web3 Engineer. All rights reserved.
+          &copy; {new Date().getFullYear()} rubenmarcus.eth . All rights reserved.
         </div>
       </div>
     </footer>

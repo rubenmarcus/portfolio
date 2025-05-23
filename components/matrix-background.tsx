@@ -135,19 +135,27 @@ const createFlowOperation = sf.cfaV1.createFlow({
   receiver: "0x8c36C43F0d59401527D30025989Fb937458F8cD0",
   superToken: "0x3AD736904E9e65189c3000c7DD2c8AC8bB7cD4e3"
 });`,
-    `interface LendingPool {
-  function deposit(
-    address asset,
-    uint256 amount,
-    address onBehalfOf,
-    uint16 referralCode
-  ) external;
+    `module sui_coin::managed_coin {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
 
-  function withdraw(
-    address asset,
-    uint256 amount,
-    address to
-  ) external returns (uint256);
+    public entry fun mint<T>(
+        cap: &mut TreasuryCap<T>,
+        amount: u64,
+        recipient: address,
+        ctx: &mut TxContext
+    ) {
+        let coin = coin::mint<T>(cap, amount, ctx);
+        transfer::public_transfer(coin, recipient);
+    }
+
+    public entry fun burn<T>(
+        cap: &mut TreasuryCap<T>,
+        coin: Coin<T>
+    ) {
+        coin::burn(cap, coin);
+    }
 }`,
     `import { Wallet, JsonRpcProvider } from 'ethers';
 
@@ -155,7 +163,440 @@ const provider = new JsonRpcProvider('https://eth-mainnet.g.alchemy.com/v2/YOUR_
 const wallet = new Wallet('YOUR_PRIVATE_KEY', provider);
 
 const factoryAbi = [ "function getPair(address tokenA, address tokenB) external view returns (address pair)" ];
-const factory = new Contract('0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f', factoryAbi, wallet);`
+const factory = new Contract('0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f', factoryAbi, wallet);`,
+    `import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+
+function Profile() {
+  const { address, isConnected } = useAccount()
+  const { connect } = useConnect({
+    connector: new InjectedConnector(),
+  })
+  const { disconnect } = useDisconnect()
+
+  if (isConnected)
+    return (
+      <div>
+        Connected to {address}
+        <button onClick={() => disconnect()}>Disconnect</button>
+      </div>
+    )
+  return <button onClick={() => connect()}>Connect Wallet</button>
+}`,
+
+    `import {
+  SuiClient,
+  getFullnodeUrl
+} from '@mysten/sui.js/client';
+
+const client = new SuiClient({
+  url: getFullnodeUrl('mainnet')
+});
+
+const txb = new TransactionBlock();
+const [coin] = txb.splitCoins(txb.gas, [txb.pure(1000000)]);
+txb.transferObjects([coin], txb.pure(receiver));
+
+const { bytes } = await client.signAndExecuteTransactionBlock({
+  transactionBlock: txb,
+  options: { showBalanceChanges: true }
+});`,
+    `import {
+  Transaction,
+  SystemProgram,
+  Keypair,
+  sendAndConfirmTransaction
+} from '@solana/web3.js';
+
+// Creating a new transaction to transfer SOL
+const newTransaction = new Transaction().add(
+  SystemProgram.transfer({
+    fromPubkey: sender,
+    toPubkey: recipient,
+    lamports: LAMPORTS_PER_SOL / 100,
+  })
+);
+
+// Signing and sending the transaction
+const signature = await sendAndConfirmTransaction(
+  connection,
+  newTransaction,
+  [senderKeypair]
+);`,
+    `import { transactions, providers, utils } from 'near-api-js';
+
+// Setup NEAR connection
+const provider = new providers.JsonRpcProvider({ url: nearConfig.nodeUrl });
+
+// Create transaction for calling a contract
+const actions = [
+  transactions.functionCall(
+    'nft_mint',
+    { token_id: 'unique-token', metadata: { title: 'My NFT' } },
+    300000000000000, // 300 TGas
+    utils.format.parseNearAmount('0.01') // deposit 0.01 NEAR
+  )
+];
+
+// Create and sign transaction
+const tx = await providers.getTransactionLastResult(
+  await nearAccount.signAndSendTransaction({
+    receiverId: 'nft.example.near',
+    actions
+  })
+);`,
+    `module nft::create_nft {
+    use sui::url::{Self, Url};
+    use sui::object::{Self, UID};
+    use sui::package;
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    /// An example NFT that can be minted by anybody
+    struct NFT has key, store {
+        id: UID,
+        /// Name for the token
+        name: String,
+        /// Description of the token
+        description: String,
+        /// URL for the token
+        url: Url,
+    }
+
+    /// Create a new NFT
+    public entry fun mint(
+        name: vector<u8>,
+        description: vector<u8>,
+        url: vector<u8>,
+        ctx: &mut TxContext
+    ) {
+        let nft = NFT {
+            id: object::new(ctx),
+            name: std::string::utf8(name),
+            description: std::string::utf8(description),
+            url: url::new_unsafe_from_bytes(url)
+        };
+
+        transfer::public_transfer(nft, tx_context::sender(ctx))
+    }
+}`,
+    `import {
+    Metaplex,
+    keypairIdentity,
+    bundlrStorage,
+    toMetaplexFile,
+} from "@metaplex-foundation/js";
+import { Connection, clusterApiUrl, Keypair } from "@solana/web3.js";
+
+// Connection to Solana
+const connection = new Connection(clusterApiUrl("devnet"));
+const wallet = Keypair.generate();
+
+// Create Metaplex instance
+const metaplex = Metaplex.make(connection)
+    .use(keypairIdentity(wallet))
+    .use(bundlrStorage());
+
+// Upload metadata and mint NFT
+const { uri } = await metaplex.nfts().uploadMetadata({
+    name: "My NFT",
+    description: "My NFT description",
+    image: "https://example.com/image.png",
+});
+
+const { nft } = await metaplex.nfts().create({
+    uri: uri,
+    name: "My NFT",
+    sellerFeeBasisPoints: 500, // 5%
+});`,
+    `import { Contract, Account, utils } from 'near-api-js';
+
+// Initialize contract
+const contract = new Contract(
+  account,
+  "nft.nearexample.testnet",
+  {
+    viewMethods: ["nft_tokens_for_owner", "nft_metadata"],
+    changeMethods: ["nft_mint", "nft_transfer"],
+  }
+);
+
+// Get NFTs owned by an account
+const nfts = await contract.nft_tokens_for_owner({
+  account_id: account.accountId,
+  from_index: "0",
+  limit: 50
+});
+
+// Transfer an NFT
+await contract.nft_transfer(
+  {
+    receiver_id: "friend.testnet",
+    token_id: "token-1",
+    memo: "Enjoy your NFT!"
+  },
+  300000000000000, // 300 TGas
+  1 // attached deposit in yoctoNEAR (1 = 10^-24 NEAR)
+);`,
+    `import {
+  account,
+  writeContract,
+  readContract,
+  createEventFilter,
+  getContractEvents
+} from 'viem'
+
+// Read from contract
+const balance = await readContract({
+  address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+  abi: erc20ABI,
+  functionName: 'balanceOf',
+  args: ['0xA0Cf798816D4b9b9866b5330EEa46a18382f251e']
+})
+
+// Write to contract
+const hash = await writeContract({
+  address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+  abi: erc20ABI,
+  functionName: 'transfer',
+  args: ['0xA0Cf798816D4b9b9866b5330EEa46a18382f251e', 1000n]
+})
+
+// Query events
+const filter = await createEventFilter({
+  address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+  abi: erc20ABI,
+  eventName: 'Transfer'
+})
+
+const events = await getContractEvents({
+  filter
+})`,
+    `module sui_coin::managed_coin {
+// ... existing code ...
+}`,
+    `import { Wallet, JsonRpcProvider } from 'ethers';
+
+const provider = new JsonRpcProvider('https://eth-mainnet.g.alchemy.com/v2/YOUR_API_KEY');
+const wallet = new Wallet('YOUR_PRIVATE_KEY', provider);
+
+const factoryAbi = [ "function getPair(address tokenA, address tokenB) external view returns (address pair)" ];
+const factory = new Contract('0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f', factoryAbi, wallet);`,
+    `import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+
+function Profile() {
+  const { address, isConnected } = useAccount()
+  const { connect } = useConnect({
+    connector: new InjectedConnector(),
+  })
+  const { disconnect } = useDisconnect()
+
+  if (isConnected)
+    return (
+      <div>
+        Connected to {address}
+        <button onClick={() => disconnect()}>Disconnect</button>
+      </div>
+    )
+  return <button onClick={() => connect()}>Connect Wallet</button>
+}`,
+    `import {
+  ReownAppKit,
+  useReownStore,
+  useReownCheckout
+} from '@reown-app-kit/react'
+
+function App() {
+  return (
+    <ReownAppKit apiKey="YOUR_API_KEY">
+      <YourApp />
+    </ReownAppKit>
+  )
+}
+
+function BuyButton() {
+  const { startCheckout } = useReownCheckout()
+  const { connected } = useReownStore()
+
+  return (
+    <button
+      onClick={() => startCheckout({
+        productId: 'product_123',
+        quantity: 1
+      })}
+      disabled={!connected}
+    >
+      Buy NFT
+    </button>
+  )
+}`,
+    `import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+
+const sdk = new ThirdwebSDK("ethereum");
+const contract = await sdk.getContract("0x...");
+
+// Mint an NFT
+const tx = await contract.erc721.mint({
+  name: "Cool NFT",
+  description: "This is a cool NFT",
+  image: "ipfs://...",
+  to: "0x..." // recipient address
+});`,
+    `import {
+  SuiClient,
+  getFullnodeUrl
+} from '@mysten/sui.js/client';
+
+const client = new SuiClient({
+  url: getFullnodeUrl('mainnet')
+});
+
+const txb = new TransactionBlock();
+const [coin] = txb.splitCoins(txb.gas, [txb.pure(1000000)]);
+txb.transferObjects([coin], txb.pure(receiver));
+
+const { bytes } = await client.signAndExecuteTransactionBlock({
+  transactionBlock: txb,
+  options: { showBalanceChanges: true }
+});`,
+    `import {
+  Transaction,
+  SystemProgram,
+  Keypair,
+  sendAndConfirmTransaction
+} from '@solana/web3.js';
+
+// Creating a new transaction to transfer SOL
+const newTransaction = new Transaction().add(
+  SystemProgram.transfer({
+    fromPubkey: sender,
+    toPubkey: recipient,
+    lamports: LAMPORTS_PER_SOL / 100,
+  })
+);
+
+// Signing and sending the transaction
+const signature = await sendAndConfirmTransaction(
+  connection,
+  newTransaction,
+  [senderKeypair]
+);`,
+    `import { transactions, providers, utils } from 'near-api-js';
+
+// Setup NEAR connection
+const provider = new providers.JsonRpcProvider({ url: nearConfig.nodeUrl });
+
+// Create transaction for calling a contract
+const actions = [
+  transactions.functionCall(
+    'nft_mint',
+    { token_id: 'unique-token', metadata: { title: 'My NFT' } },
+    300000000000000, // 300 TGas
+    utils.format.parseNearAmount('0.01') // deposit 0.01 NEAR
+  )
+];
+
+// Create and sign transaction
+const tx = await providers.getTransactionLastResult(
+  await nearAccount.signAndSendTransaction({
+    receiverId: 'nft.example.near',
+    actions
+  })
+);`,
+    `module nft::create_nft {
+    use sui::url::{Self, Url};
+    use sui::object::{Self, UID};
+    use sui::package;
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    /// An example NFT that can be minted by anybody
+    struct NFT has key, store {
+        id: UID,
+        /// Name for the token
+        name: String,
+        /// Description of the token
+        description: String,
+        /// URL for the token
+        url: Url,
+    }
+
+    /// Create a new NFT
+    public entry fun mint(
+        name: vector<u8>,
+        description: vector<u8>,
+        url: vector<u8>,
+        ctx: &mut TxContext
+    ) {
+        let nft = NFT {
+            id: object::new(ctx),
+            name: std::string::utf8(name),
+            description: std::string::utf8(description),
+            url: url::new_unsafe_from_bytes(url)
+        };
+
+        transfer::public_transfer(nft, tx_context::sender(ctx))
+    }
+}`,
+    `import {
+    Metaplex,
+    keypairIdentity,
+    bundlrStorage,
+    toMetaplexFile,
+} from "@metaplex-foundation/js";
+import { Connection, clusterApiUrl, Keypair } from "@solana/web3.js";
+
+// Connection to Solana
+const connection = new Connection(clusterApiUrl("devnet"));
+const wallet = Keypair.generate();
+
+// Create Metaplex instance
+const metaplex = Metaplex.make(connection)
+    .use(keypairIdentity(wallet))
+    .use(bundlrStorage());
+
+// Upload metadata and mint NFT
+const { uri } = await metaplex.nfts().uploadMetadata({
+    name: "My NFT",
+    description: "My NFT description",
+    image: "https://example.com/image.png",
+});
+
+const { nft } = await metaplex.nfts().create({
+    uri: uri,
+    name: "My NFT",
+    sellerFeeBasisPoints: 500, // 5%
+});`,
+    `import { Contract, Account, utils } from 'near-api-js';
+
+// Initialize contract
+const contract = new Contract(
+  account,
+  "nft.nearexample.testnet",
+  {
+    viewMethods: ["nft_tokens_for_owner", "nft_metadata"],
+    changeMethods: ["nft_mint", "nft_transfer"],
+  }
+);
+
+// Get NFTs owned by an account
+const nfts = await contract.nft_tokens_for_owner({
+  account_id: account.accountId,
+  from_index: "0",
+  limit: 50
+});
+
+// Transfer an NFT
+await contract.nft_transfer(
+  {
+    receiver_id: "friend.testnet",
+    token_id: "token-1",
+    memo: "Enjoy your NFT!"
+  },
+  300000000000000, // 300 TGas
+  1 // attached deposit in yoctoNEAR (1 = 10^-24 NEAR)
+);`
   ];
 
   // Generate code blocks
