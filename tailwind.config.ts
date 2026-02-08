@@ -161,6 +161,10 @@ const config: Config = {
           "50%": { transform: "translateX(20%) scaleX(0.6)" },
           "100%": { transform: "translateX(0) scaleX(1)" },
         },
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-25%)" },
+        },
       },
       animation: {
         flicker: "flicker 4s linear infinite",
@@ -174,6 +178,7 @@ const config: Config = {
         "bg-glitch-clip": "bg-glitch-clip 10s steps(1) infinite",
         "glitch-bar": "glitch-bar 6s ease infinite alternate",
         "glitch-bar-v": "glitch-bar-v 7s ease infinite alternate",
+        marquee: "marquee 20s linear infinite",
       },
       transformStyle: {
         "3d": "preserve-3d",
