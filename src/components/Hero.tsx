@@ -86,7 +86,7 @@ export default function Hero() {
     if (videoRef.current) videoRef.current.playbackRate = 1.2
   }, [])
 
-  // YouTube IFrame Player API
+  // YouTube IFrame Player API — start muted, unmute on first interaction
   useEffect(() => {
     const tag = document.createElement("script")
     tag.src = "https://www.youtube.com/iframe_api"
@@ -99,10 +99,8 @@ export default function Hero() {
         playerVars: { autoplay: 1, start: track.start, loop: 1, playlist: track.id },
         events: {
           onReady: (e: any) => {
-            e.target.setVolume(100)
-            e.target.unMute()
+            e.target.mute()
             e.target.playVideo()
-            setMusicPlaying(true)
           },
         },
       })
@@ -110,6 +108,28 @@ export default function Hero() {
 
     return () => {
       if (playerRef.current?.destroy) playerRef.current.destroy()
+    }
+  }, [])
+
+  // Unmute on first user interaction (hover/click/touch)
+  useEffect(() => {
+    const unmute = () => {
+      if (playerRef.current?.unMute) {
+        playerRef.current.unMute()
+        playerRef.current.setVolume(100)
+        setMusicPlaying(true)
+      }
+      window.removeEventListener("mousemove", unmute)
+      window.removeEventListener("click", unmute)
+      window.removeEventListener("touchstart", unmute)
+    }
+    window.addEventListener("mousemove", unmute, { once: true })
+    window.addEventListener("click", unmute, { once: true })
+    window.addEventListener("touchstart", unmute, { once: true })
+    return () => {
+      window.removeEventListener("mousemove", unmute)
+      window.removeEventListener("click", unmute)
+      window.removeEventListener("touchstart", unmute)
     }
   }, [])
 
