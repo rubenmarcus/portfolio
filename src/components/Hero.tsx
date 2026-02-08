@@ -14,12 +14,29 @@ const YT_TRACKS = [
   { id: "n9pjQfh0Zvg", start: 55, title: "DeepChord - Departure" },
   { id: "26j6tUQsxXg", start: 14, title: "Strut (Storm Mix)" },
   { id: "xp8HbdSLDgo", start: 132, title: "Aphex Twin - Zahl am1 live track 1c f760m1 unfinshd" },
+  { id: "0S43IwBF0uM", start: 0, title: "The Chemical Brothers - Star Guitar" },
+  { id: "6HVofwARgOs", start: 0, title: "Nürnberg - Valasy" },
+  { id: "IrC9lwfTC0Y", start: 0, title: "Boards of Canada - Rue The Whirl" },
+  { id: "QShW2JV2ne8", start: 266, title: "Aphex Twin - T08 dx1+5 [London 03.06.17]" },
+  { id: "doiEr3gGbJk", start: 0, title: "Infinity Frequencies - Still Life" },
+  { id: "siS-d1bwKxA", start: 31, title: "The Future Sound of London - Papua New Guinea" },
+  { id: "Qfh4i7JjOz4", start: 0, title: "The Tuss - Yellow Cellophane Day" },
+  { id: "a0LR7E1grnM", start: 0, title: "Vektroid & New Dreams Ltd. - FOREST.SYS" },
+  { id: "a0LR7E1grnM", start: 0, title: "Vektroid & New Dreams Ltd. - FOREST.SYS" },
+  { id: "a0LR7E1grnM", start: 0, title: "Vektroid & New Dreams Ltd. - FOREST.SYS" },
+  { id: "-eS_bWkshGM", start: 0, title: "ESIAFI 1 - ６０００ ｓａｔｅｌｌｉｔｅｓ" },
+  { id: "rT6RoxjxRQw", start: 0, title: "Ceephax Acid Crew - Amigo" },
+  { id: "ko8cJucsbBU", start: 0, title: "Roy of the Ravers - EMOTINIUM" },
+  { id: "4aeETEoNfOg", start: 11, title: "Smashing Pumpkins - 1979" },
+  { id: "_KztNIg4cvE", start: 0, title: "Crystal Waters - Gypsy Woman" },
+  { id: "DvQj8dT0Ctg", start: 0, title: "Oneohtrix Point Never - Stress Waves" },
 ]
 
 const PROFESSIONS = [
   "prompt engineer",
   "AI fullstack engineer",
   "web3 engineer",
+  "senior software engineer",
   "frontend engineer",
   "vibecoder",
 ]
@@ -71,12 +88,68 @@ function useScramble(text: string, { autoStart = false }: { autoStart?: boolean 
   return { display, start, stop }
 }
 
+const GH_USER = "rubenmarcus"
+
+type GitHubStats = {
+  today: number; month: number; year: number; total: number
+  lastCommit: { message: string; repo: string; url: string } | null
+}
+
+function useGitHubStats() {
+  const [stats, setStats] = useState<GitHubStats | null>(null)
+
+  useEffect(() => {
+    const now = new Date()
+    const todayStr = now.toISOString().slice(0, 10)
+    const currentMonth = now.getMonth()
+    const currentYear = now.getFullYear()
+
+    Promise.all([
+      fetch(`https://github-contributions-api.jogruber.de/v4/${GH_USER}?y=last`).then(r => r.json()),
+      fetch(`https://api.github.com/users/${GH_USER}/events/public?per_page=30`).then(r => r.json()),
+      fetch(`https://github-contributions-api.jogruber.de/v4/${GH_USER}`).then(r => r.json()),
+    ])
+      .then(([contribData, events, allData]) => {
+        const contributions: { date: string; count: number }[] = contribData.contributions || []
+        let today = 0, month = 0, year = 0
+        for (const c of contributions) {
+          const d = new Date(c.date)
+          if (c.date === todayStr) today = c.count
+          if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) month += c.count
+          if (d.getFullYear() === currentYear) year += c.count
+        }
+        const totalByYear: Record<string, number> = allData.total || {}
+        const total = Object.values(totalByYear).reduce((sum: number, n) => sum + (n as number), 0)
+
+        let lastCommit: GitHubStats["lastCommit"] = null
+        for (const event of events) {
+          if (event.type === "PushEvent" && event.payload?.commits?.length) {
+            const commit = event.payload.commits[event.payload.commits.length - 1]
+            const repo = event.repo?.name?.replace(`${GH_USER}/`, "") || ""
+            lastCommit = {
+              message: commit.message.split("\n")[0],
+              repo,
+              url: `https://github.com/${event.repo?.name}/commit/${commit.sha}`,
+            }
+            break
+          }
+        }
+
+        setStats({ today, month, year, total, lastCommit })
+      })
+      .catch(() => {})
+  }, [])
+
+  return stats
+}
+
 export default function Hero() {
   const desc = useScramble(DESC, { autoStart: true })
+  const ghStats = useGitHubStats()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [mouse, setMouse] = useState({ x: 0, y: 0 })
   const [isHovering, setIsHovering] = useState(false)
-  const [zoom, setZoom] = useState(1.1)
+  const [zoom, setZoom] = useState(1.15)
   const [musicPlaying, setMusicPlaying] = useState(false)
   const [trackIndex, setTrackIndex] = useState(() => Math.floor(Math.random() * YT_TRACKS.length))
   const playerRef = useRef<any>(null)
@@ -111,25 +184,20 @@ export default function Hero() {
     }
   }, [])
 
-  // Unmute on first user interaction (hover/click/touch)
+  // Unmute on first user interaction (click/tap/keypress)
   useEffect(() => {
+    const events = ["click", "touchstart", "keydown", "pointerdown"] as const
     const unmute = () => {
       if (playerRef.current?.unMute) {
         playerRef.current.unMute()
         playerRef.current.setVolume(100)
         setMusicPlaying(true)
       }
-      window.removeEventListener("mousemove", unmute)
-      window.removeEventListener("click", unmute)
-      window.removeEventListener("touchstart", unmute)
+      events.forEach(e => window.removeEventListener(e, unmute))
     }
-    window.addEventListener("mousemove", unmute, { once: true })
-    window.addEventListener("click", unmute, { once: true })
-    window.addEventListener("touchstart", unmute, { once: true })
+    events.forEach(e => window.addEventListener(e, unmute, { once: true }))
     return () => {
-      window.removeEventListener("mousemove", unmute)
-      window.removeEventListener("click", unmute)
-      window.removeEventListener("touchstart", unmute)
+      events.forEach(e => window.removeEventListener(e, unmute))
     }
   }, [])
 
@@ -180,26 +248,38 @@ export default function Hero() {
     }
   }, [])
 
+  const isInCenter = isHovering && Math.abs(mouse.x) < 0.3 && Math.abs(mouse.y) < 0.3
+  const activeZoom = isInCenter ? zoom + 0.15 : zoom
+
   return (
     <div
       className="relative h-screen overflow-hidden"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed inset-0 w-full h-full object-cover -z-10 scale-110"
+      <div
+        className="fixed inset-0 -z-10"
         style={{
-          transform: `scale(${isHovering ? zoom + 0.05 : zoom}) translate(${mouse.x * 10}px, ${mouse.y * 10}px)`,
+          transform: `translate(${mouse.x * 25}px, ${mouse.y * 25}px)`,
           transition: "transform 0.8s ease-out",
         }}
       >
-        <source src="/videobg.webm" type="video/webm" />
-      </video>
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+          style={{
+            transform: `scale(${activeZoom})`,
+            transformOrigin: "center center",
+            transition: "transform 0.8s ease-out",
+          }}
+        >
+          <source src="/videobg.webm" type="video/webm" />
+        </video>
+      </div>
       <div className="absolute inset-x-0 top-0 pt-6 md:pt-8">
         <InfiniteSlider gap={32} speed={50} speedOnHover={20}>
           <span className="font-mono text-xs md:text-base text-green-400 whitespace-nowrap">
@@ -207,25 +287,56 @@ export default function Hero() {
           </span>
           <span className="text-green-500/40 font-mono">·</span>
           <a href="https://multivmlabs.com" target="_blank" rel="noopener noreferrer" className="font-mono text-xs md:text-base text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 whitespace-nowrap">
-            deving @ multivm labs
+            deving @ MultiVM Labs
           </a>
           <span className="text-green-500/40 font-mono">·</span>
           <a href="https://ralphstarter.ai" target="_blank" rel="noopener noreferrer" className="font-mono text-xs md:text-base text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 whitespace-nowrap">
-            building ralph-starter
+            clauding ralph-starter
           </a>
           <span className="text-green-500/40 font-mono">·</span>
           <a href="https://rubenluz.com" target="_blank" rel="noopener noreferrer" className="font-mono text-xs md:text-base text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 whitespace-nowrap">
             I do photography also
           </a>
           <span className="text-green-500/40 font-mono">·</span>
-          <a href={`https://www.youtube.com/watch?v=${YT_TRACKS[trackIndex].id}`} target="_blank" rel="noopener noreferrer" className="font-mono text-xs md:text-base text-green-300/60 whitespace-nowrap transition-all duration-300 hover:text-green-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)]">
-            {musicPlaying ? `now playing: ${YT_TRACKS[trackIndex].title}` : "click to listen"}
-          </a>
-          <span className="text-green-500/40 font-mono">·</span>
+          {ghStats && (
+            <span className="font-mono text-xs md:text-base text-green-400/70 whitespace-nowrap">
+              {ghStats.today} commits today · {ghStats.month} this month · {ghStats.year} this year · {ghStats.total} total
+            </span>
+          )}
+          {ghStats && <span className="text-green-500/40 font-mono">·</span>}
+          {ghStats?.lastCommit && (
+            <a href={ghStats.lastCommit.url} target="_blank" rel="noopener noreferrer" className="font-mono text-xs md:text-base text-green-400/70 whitespace-nowrap transition-all duration-300 hover:text-green-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)]">
+              last commit: {ghStats.lastCommit.message} ({ghStats.lastCommit.repo})
+            </a>
+          )}
+          {ghStats?.lastCommit && <span className="text-green-500/40 font-mono">·</span>}
         </InfiniteSlider>
       </div>
+      <div className="absolute inset-x-0 md:inset-x-auto md:right-8 top-14 md:top-24 font-mono text-xs md:text-sm flex items-center justify-center md:justify-end gap-3 px-4 md:px-0">
+        {musicPlaying ? (
+          <a href={`https://www.youtube.com/watch?v=${YT_TRACKS[trackIndex].id}`} target="_blank" rel="noopener noreferrer" className="text-green-300 whitespace-nowrap transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] max-w-[60vw] md:max-w-none overflow-hidden text-ellipsis" style={{ animation: "glow-pulse 2s ease-in-out infinite" }}>
+            <span className="sound-bars"><span /><span /><span /><span /></span>
+            now playing: {YT_TRACKS[trackIndex].title}
+          </a>
+        ) : (
+          <button onClick={toggleMusic} className="text-green-300/60 whitespace-nowrap transition-all duration-300 hover:text-green-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] cursor-pointer" style={{ animation: "glow-pulse 2s ease-in-out infinite" }}>
+            click to listen <span className="sound-bars"><span /><span /><span /><span /></span>
+          </button>
+        )}
+        <div className="flex items-center gap-2 md:gap-3">
+          <button onClick={prevTrack} className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125" aria-label="Previous track">
+            <SkipBack size={16} className="md:w-5 md:h-5" />
+          </button>
+          <button onClick={toggleMusic} className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125" aria-label={musicPlaying ? "Mute music" : "Play music"}>
+            {musicPlaying ? <Volume2 size={18} className="md:w-[22px] md:h-[22px]" /> : <VolumeX size={18} className="md:w-[22px] md:h-[22px]" />}
+          </button>
+          <button onClick={nextTrack} className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125" aria-label="Next track">
+            <SkipForward size={16} className="md:w-5 md:h-5" />
+          </button>
+        </div>
+      </div>
       <div className="absolute inset-x-0 bottom-0 flex flex-col md:flex-row md:items-end md:justify-between px-4 md:px-16 pb-8 md:pb-12 gap-4 md:gap-0">
-        <div className="font-mono text-sm md:text-2xl font-normal text-green-400 tracking-tight text-left cursor-default transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 md:w-[30%]">
+        <div className="font-mono text-2xl md:text-3xl font-normal text-green-400 tracking-tight text-left cursor-default transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 md:w-[30%]">
           <TextLoop interval={2.5} transition={{ duration: 0.4 }}>
             {PROFESSIONS.map((p) => (
               <span key={p}>{p}</span>
@@ -243,44 +354,21 @@ export default function Hero() {
       <div className="absolute w-0 h-0 overflow-hidden">
         <div id="yt-player" ref={playerContainerRef} />
       </div>
-      <div className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 flex flex-col gap-5">
-        <button
-          onClick={prevTrack}
-          className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125"
-          aria-label="Previous track"
-        >
-          <SkipBack size={18} />
-        </button>
-        <button
-          onClick={toggleMusic}
-          className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125"
-          aria-label={musicPlaying ? "Mute music" : "Play music"}
-        >
-          {musicPlaying ? <Volume2 size={22} /> : <VolumeX size={22} />}
-        </button>
-        <button
-          onClick={nextTrack}
-          className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125"
-          aria-label="Next track"
-        >
-          <SkipForward size={18} />
-        </button>
-      </div>
-      <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 flex flex-col gap-5">
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 md:left-8 md:right-auto md:top-24 md:translate-y-0 md:flex-row md:gap-5">
         <a href="https://github.com/rubenmarcus" target="_blank" rel="noopener noreferrer" className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125">
-          <Github size={22} />
+          <Github size={24} className="md:w-[26px] md:h-[26px]" />
         </a>
         <a href="https://x.com/rubenmarcus_dev" target="_blank" rel="noopener noreferrer" className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125">
-          <Twitter size={22} />
+          <Twitter size={24} className="md:w-[26px] md:h-[26px]" />
         </a>
         <a href="https://linkedin.com/in/rubenmarcus" target="_blank" rel="noopener noreferrer" className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125">
-          <Linkedin size={22} />
+          <Linkedin size={24} className="md:w-[26px] md:h-[26px]" />
         </a>
         <a href="mailto:ruben@rubenmarcus.dev" className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125">
-          <Mail size={22} />
+          <Mail size={24} className="md:w-[26px] md:h-[26px]" />
         </a>
         <a href="https://t.me/rubenmarcus" target="_blank" rel="noopener noreferrer" className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125">
-          <Send size={22} />
+          <Send size={24} className="md:w-[26px] md:h-[26px]" />
         </a>
       </div>
     </div>
