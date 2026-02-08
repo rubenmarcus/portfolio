@@ -28,3 +28,37 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #22c55e66;
 }
+
+/* Sound bars animation */
+.sound-bars {
+  display: inline-flex;
+  align-items: end;
+  gap: 3px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.sound-bars span {
+  display: inline-block;
+  width: 3px;
+  background: currentColor;
+  border-radius: 1px;
+  animation: sound-bar 1.2s ease-in-out infinite;
+}
+
+.sound-bars span:nth-child(1) { animation-delay: 0s; height: 40%; }
+.sound-bars span:nth-child(2) { animation-delay: 0.2s; height: 70%; }
+.sound-bars span:nth-child(3) { animation-delay: 0.4s; height: 50%; }
+.sound-bars span:nth-child(4) { animation-delay: 0.6s; height: 80%; }
+
+@keyframes sound-bar {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+/* Glow pulse */
+@keyframes glow-pulse {
+  0%, 100% { text-shadow: 0 0 4px rgba(74, 222, 128, 0.4); }
+  50% { text-shadow: 0 0 16px rgba(74, 222, 128, 0.8), 0 0 32px rgba(74, 222, 128, 0.4); }
+}
