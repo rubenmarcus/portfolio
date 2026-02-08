@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react"
-import { Github, Linkedin, Twitter, Mail, Send, Volume2, VolumeX, SkipBack, SkipForward } from "lucide-react"
+import { Github, Linkedin, Twitter, Mail, Send, Volume2, VolumeX, SkipBack, SkipForward, Shuffle } from "lucide-react"
 import { TextLoop } from "./TextLoop"
 import { InfiniteSlider } from "./InfiniteSlider"
 
@@ -22,13 +22,9 @@ const YT_TRACKS = [
   { id: "siS-d1bwKxA", start: 31, title: "The Future Sound of London - Papua New Guinea" },
   { id: "Qfh4i7JjOz4", start: 0, title: "The Tuss - Yellow Cellophane Day" },
   { id: "a0LR7E1grnM", start: 0, title: "Vektroid & New Dreams Ltd. - FOREST.SYS" },
-  { id: "a0LR7E1grnM", start: 0, title: "Vektroid & New Dreams Ltd. - FOREST.SYS" },
-  { id: "a0LR7E1grnM", start: 0, title: "Vektroid & New Dreams Ltd. - FOREST.SYS" },
-  { id: "-eS_bWkshGM", start: 0, title: "ESIAFI 1 - ６０００ ｓａｔｅｌｌｉｔｅｓ" },
   { id: "rT6RoxjxRQw", start: 0, title: "Ceephax Acid Crew - Amigo" },
   { id: "ko8cJucsbBU", start: 0, title: "Roy of the Ravers - EMOTINIUM" },
   { id: "4aeETEoNfOg", start: 11, title: "Smashing Pumpkins - 1979" },
-  { id: "_KztNIg4cvE", start: 0, title: "Crystal Waters - Gypsy Woman" },
   { id: "DvQj8dT0Ctg", start: 0, title: "Oneohtrix Point Never - Stress Waves" },
 ]
 
@@ -219,6 +215,12 @@ export default function Hero() {
     loadTrack((trackIndex - 1 + YT_TRACKS.length) % YT_TRACKS.length)
   }, [trackIndex, loadTrack])
 
+  const randomTrack = useCallback(() => {
+    let next: number
+    do { next = Math.floor(Math.random() * YT_TRACKS.length) } while (next === trackIndex && YT_TRACKS.length > 1)
+    loadTrack(next)
+  }, [trackIndex, loadTrack])
+
   const toggleMusic = useCallback(() => {
     if (!playerRef.current) return
     if (musicPlaying) {
@@ -332,6 +334,9 @@ export default function Hero() {
           </button>
           <button onClick={nextTrack} className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125" aria-label="Next track">
             <SkipForward size={16} className="md:w-5 md:h-5" />
+          </button>
+          <button onClick={randomTrack} className="text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(74,222,128,0.6)] hover:text-green-300 hover:scale-125" aria-label="Random track">
+            <Shuffle size={16} className="md:w-5 md:h-5" />
           </button>
         </div>
       </div>
