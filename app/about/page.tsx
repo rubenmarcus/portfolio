@@ -2,7 +2,7 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import Timeline from "@/components/timeline"
-import MatrixBackground from "@/components/matrix-background"
+
 
 export default function About() {
   const timelineEvents = [
