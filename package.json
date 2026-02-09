@@ -11,6 +11,7 @@
     "@astrojs/react": "^4",
     "@astrojs/sitemap": "^3",
     "@astrojs/tailwind": "^6",
+    "@vercel/analytics": "^1.6.1",
     "astro": "^5",
     "lucide-react": "^0.454.0",
     "motion": "^12.33.0",
