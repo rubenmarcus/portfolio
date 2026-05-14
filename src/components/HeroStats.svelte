@@ -234,32 +234,36 @@
 </section>
 
 <style>
+  /* Container-aligned wrapper, no longer full-width */
   .stats {
     position: relative;
     z-index: 2;
     width: 100%;
-    padding-inline: clamp(1rem, 2.5vw, 2rem);
-    padding-block: 2.5rem;
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--gutter-x);
+    padding-block: 3rem;
     border-bottom: 1px solid var(--line);
   }
 
   .stats__grid {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
-    gap: 0.75rem;
+    gap: 0.85rem;
   }
   @media (min-width: 640px) { .stats__grid { grid-template-columns: repeat(2, 1fr); } }
   @media (min-width: 900px) { .stats__grid { grid-template-columns: repeat(4, 1fr); } }
 
+  /* Default card: icon left, text right */
   .stats__card {
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
-    gap: 0.8rem;
-    padding: 0.95rem 1.1rem;
+    gap: 0.9rem;
+    padding: 1rem 1.15rem;
     border: 1px solid var(--line);
     border-radius: 14px;
-    background: rgba(6, 8, 15, 0.55);
+    background: rgba(13, 2, 33, 0.55);
     backdrop-filter: blur(var(--blur-sm));
     -webkit-backdrop-filter: blur(var(--blur-sm));
     color: var(--text);
@@ -270,25 +274,34 @@
   }
   .stats__card:hover {
     border-color: var(--line-bright);
-    background: rgba(6, 8, 15, 0.72);
+    background: rgba(13, 2, 33, 0.75);
     transform: translateY(-2px);
+  }
+
+  /* Video card variant: video sits on its own row on top, text below */
+  .stats__card--video {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    align-items: stretch;
+    gap: 0.85rem;
+    padding: 0;
+    overflow: hidden;
   }
 
   .stats__icon { color: var(--accent-soft); flex-shrink: 0; }
 
-  /* Card variant that uses a looping video as its icon */
-  .stats__card--video {
-    overflow: hidden;
-  }
+  /* Video sits full-width on its own row at the top of the card */
   .stats__video {
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
+    display: block;
+    width: 100%;
+    height: 140px;
     object-fit: cover;
-    flex-shrink: 0;
-    filter: brightness(0.95) saturate(0.85);
-    /* Soft frosted ring around the video so it sits cleanly in the card */
-    box-shadow: inset 0 0 0 1px rgba(94, 200, 255, 0.18);
+    border-bottom: 1px solid var(--line);
+    filter: brightness(0.92) saturate(0.85);
+  }
+  /* Text block inside the video card needs its own padding now */
+  .stats__card--video .stats__body {
+    padding: 0 1.15rem 1rem 1.15rem;
   }
 
   .stats__body {

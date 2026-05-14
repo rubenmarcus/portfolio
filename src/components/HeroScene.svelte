@@ -240,9 +240,13 @@
     line-height: 1.3;
     letter-spacing: 0.005em;
   }
-  .hero__introName,
-  .hero__introVerb {
+  .hero__introName {
     color: var(--accent-soft);
+    font-style: italic;
+  }
+  /* "Build" gets the secondary hot-pink accent to set up the colour story */
+  .hero__introVerb {
+    color: var(--accent-pink);
     font-style: italic;
   }
 

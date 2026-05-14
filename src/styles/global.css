@@ -3,25 +3,29 @@
 @tailwind utilities;
 
 :root {
-  /* Nillion-deep blue palette */
-  --bg-0: #06080f;
-  --bg-1: rgba(160, 195, 255, 0.035);
-  --bg-2: rgba(160, 195, 255, 0.055);
-  --line: rgba(160, 195, 255, 0.09);
-  --line-strong: rgba(160, 195, 255, 0.16);
-  --line-bright: rgba(160, 195, 255, 0.28);
+  /* Partial cyberpunk: deep purple-black bg, cyan primary accent,
+     hot pink as a secondary accent used sparingly. */
+  --bg-0: #0d0221;
+  --bg-1: rgba(180, 200, 255, 0.035);
+  --bg-2: rgba(180, 200, 255, 0.055);
+  --line: rgba(180, 200, 255, 0.09);
+  --line-strong: rgba(180, 200, 255, 0.16);
+  --line-bright: rgba(180, 200, 255, 0.3);
 
   --text: #f5f1ea;
   --cream: #f5f1ea;
   --muted: rgba(245, 241, 234, 0.82);
   --muted-soft: rgba(245, 241, 234, 0.55);
 
-  /* Sky / glacial cyan-blue — sits in the same family as the hero ice tint
-     so the accent reads as part of the same world. */
-  --accent: #5ec8ff;
-  --accent-soft: #a4dfff;
+  /* Primary accent — cyan (kept close to the prior glacial blue) */
+  --accent: #4cc9f0;
+  --accent-soft: #a8e1fa;
   --accent-deep: #1e6a9e;
-  --focus: rgba(94, 200, 255, 0.72);
+  --focus: rgba(76, 201, 240, 0.72);
+
+  /* Secondary accent — hot pink. Use sparingly on highlights / CTAs. */
+  --accent-pink: #f72585;
+  --accent-pink-soft: #ff5fa4;
 
   --section-y-mobile: 96px;
   --section-y-desktop: 176px;
@@ -69,9 +73,12 @@
     color: var(--text);
     line-height: 1.65;
     background:
-      radial-gradient(circle at 12% -8%, rgba(94, 200, 255, 0.09), transparent 34%),
-      radial-gradient(circle at 88% 6%, rgba(164, 223, 255, 0.05), transparent 36%),
-      radial-gradient(circle at 50% 110%, rgba(30, 106, 158, 0.12), transparent 42%),
+      /* Cyan glow top-left */
+      radial-gradient(circle at 10% -10%, rgba(76, 201, 240, 0.10), transparent 36%),
+      /* Hot pink glow top-right — the cyberpunk hint */
+      radial-gradient(circle at 92% 4%, rgba(247, 37, 133, 0.07), transparent 36%),
+      /* Deep magenta wash bottom */
+      radial-gradient(circle at 50% 110%, rgba(107, 45, 92, 0.14), transparent 42%),
       var(--bg-0);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -145,7 +152,7 @@
   }
 
   ::selection {
-    background: rgba(94, 200, 255, 0.36);
+    background: rgba(247, 37, 133, 0.4);
     color: #ffffff;
   }
 
@@ -246,10 +253,16 @@
     color: #0c0d10;
     background: var(--cream);
     border-color: var(--cream);
+    transition:
+      transform var(--duration-hover) var(--ease-default),
+      box-shadow var(--duration-hover) var(--ease-default),
+      background-color var(--duration-hover) var(--ease-default),
+      border-color var(--duration-hover) var(--ease-default);
   }
   .btn-primary:hover {
     background: #ffffff;
-    border-color: #ffffff;
+    border-color: var(--accent-pink);
+    box-shadow: 0 0 0 1px var(--accent-pink), 0 0 24px rgba(247, 37, 133, 0.35);
     transform: translateY(-1px);
   }
 
