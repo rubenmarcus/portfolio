@@ -25,6 +25,13 @@ const total = projects.length;
   title="Portfolio — Ruben Marcus"
   description="A 14-year archive of projects. AI tooling, NFT infrastructure, banking portals, e-commerce, agency work, and the early WordPress / .NET years."
 >
+  <!-- Blue atmospheric filter — fixed wash that gives the portfolio page its own identity -->
+  <div class="portfolio-atmos" aria-hidden="true">
+    <div class="portfolio-atmos__a"></div>
+    <div class="portfolio-atmos__b"></div>
+    <div class="portfolio-atmos__c"></div>
+  </div>
+
   <Section id="intro">
     <SectionHeader
       index="01"
@@ -101,6 +108,63 @@ const total = projects.length;
 </BaseLayout>
 
 <style>
+  /* Blue atmospheric wash — three layered radial gradients fixed to the viewport.
+     Gives the portfolio its own visual identity vs the rest of the site. */
+  .portfolio-atmos {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .portfolio-atmos > div {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    mix-blend-mode: screen;
+  }
+  .portfolio-atmos__a {
+    top: -22%;
+    left: -10%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(42, 92, 255, 0.22), transparent 60%);
+    animation: atmos-drift-a 22s ease-in-out infinite alternate;
+  }
+  .portfolio-atmos__b {
+    top: 30%;
+    right: -18%;
+    width: 55vw;
+    height: 55vw;
+    background: radial-gradient(circle, rgba(96, 140, 255, 0.16), transparent 60%);
+    animation: atmos-drift-b 28s ease-in-out infinite alternate;
+  }
+  .portfolio-atmos__c {
+    bottom: -20%;
+    left: 20%;
+    width: 70vw;
+    height: 70vw;
+    background: radial-gradient(circle, rgba(20, 50, 160, 0.22), transparent 60%);
+    animation: atmos-drift-c 34s ease-in-out infinite alternate;
+  }
+
+  @keyframes atmos-drift-a {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(8vw, 6vh); }
+  }
+  @keyframes atmos-drift-b {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(-6vw, 4vh); }
+  }
+  @keyframes atmos-drift-c {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(4vw, -5vh); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .portfolio-atmos > div { animation: none; }
+  }
+
   .filters {
     display: grid;
     gap: 0.5rem;
@@ -119,19 +183,29 @@ const total = projects.length;
     align-items: flex-start;
     gap: 0.25rem;
     padding: 0.85rem 1rem;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(42, 92, 255, 0.22);
     border-radius: var(--radius-card);
-    background: var(--bg-1);
+    background: linear-gradient(180deg, rgba(42, 92, 255, 0.06), rgba(42, 92, 255, 0.02));
     color: var(--text);
-    transition: border-color var(--duration-hover) var(--ease-default), background-color var(--duration-hover) var(--ease-default);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      background-color var(--duration-hover) var(--ease-default),
+      box-shadow var(--duration-hover) var(--ease-default),
+      transform var(--duration-hover) var(--ease-default);
   }
-  .filter:hover { border-color: var(--line-bright); background: var(--bg-2); }
+  .filter:hover {
+    border-color: rgba(42, 92, 255, 0.55);
+    background: linear-gradient(180deg, rgba(42, 92, 255, 0.12), rgba(42, 92, 255, 0.04));
+    box-shadow: 0 0 0 1px rgba(42, 92, 255, 0.25), 0 8px 28px rgba(42, 92, 255, 0.12);
+    transform: translateY(-2px);
+  }
 
   .filter__count {
     font-family: var(--font-display);
     font-size: 1.6rem;
     line-height: 1;
     color: var(--accent-soft);
+    text-shadow: 0 0 18px rgba(42, 92, 255, 0.4);
   }
 
   .filter__label {
@@ -172,12 +246,18 @@ const total = projects.length;
     display: grid;
     grid-template-columns: 38px 1fr auto;
     gap: 1rem;
-    padding: 1.2rem 0;
+    padding: 1.2rem 1rem 1.2rem 0.75rem;
     color: var(--text);
-    transition: background-color var(--duration-hover) var(--ease-default);
+    transition:
+      background-color var(--duration-hover) var(--ease-default),
+      box-shadow var(--duration-hover) var(--ease-default);
+    border-left: 2px solid transparent;
+    margin-left: -0.75rem;
   }
   .proj-link:hover {
-    background: rgba(245, 241, 234, 0.02);
+    background: linear-gradient(90deg, rgba(42, 92, 255, 0.06), transparent 70%);
+    border-left-color: var(--accent);
+    box-shadow: inset 0 0 32px rgba(42, 92, 255, 0.04);
   }
   .proj-link--static { cursor: default; }
 

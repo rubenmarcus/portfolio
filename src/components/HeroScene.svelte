@@ -103,6 +103,9 @@
   const activeZoom = $derived(inCenter ? zoom + 0.08 : zoom);
   const parallaxX = $derived(mouse.x * 22);
   const parallaxY = $derived(mouse.y * 22);
+  // Mouse coords mapped to 0–100% for the halo CSS vars
+  const haloX = $derived(((mouse.x + 1) * 50).toFixed(1) + "%");
+  const haloY = $derived(((mouse.y + 1) * 50).toFixed(1) + "%");
 </script>
 
 <section
@@ -129,6 +132,18 @@
     >
       <source src="/videobg.webm" type="video/webm" />
     </video>
+
+    <!-- Blue tint over the video — applies hue/saturation, preserves luminance -->
+    <div class="hero__blueTint" aria-hidden="true"></div>
+
+    <!-- Mouse-tracked halo, like the flashlight effect in the quantum-website ASCII shader -->
+    <div
+      class="hero__halo"
+      aria-hidden="true"
+      style:--mx={haloX}
+      style:--my={haloY}
+    ></div>
+
     <div class="hero__vignette" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
   </div>
@@ -238,7 +253,42 @@
     object-fit: cover;
     transform-origin: center center;
     transition: transform 0.8s var(--ease-default);
-    filter: contrast(1.02) brightness(0.78) saturate(0.85) hue-rotate(-6deg);
+    /* Slight desaturation + lift so the blue tint reads cleanly */
+    filter: brightness(0.78) contrast(1.05) saturate(0.4);
+  }
+
+  /* Blue color wash — sits on top of the video. `mix-blend-mode: color` applies
+     the hue and saturation of this gradient while preserving the video's
+     luminance, so the ASCII head reads as a deep electric-blue rendering. */
+  .hero__blueTint {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      rgba(42, 92, 255, 0.62) 0%,
+      rgba(20, 50, 160, 0.55) 50%,
+      rgba(10, 25, 70, 0.7) 100%
+    );
+    mix-blend-mode: color;
+  }
+
+  /* Mouse-tracked halo — additive light wash that follows the cursor.
+     Mimics the flashlight effect from the quantum-website ASCII shader. */
+  .hero__halo {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        circle 360px at var(--mx, 50%) var(--my, 50%),
+        rgba(120, 170, 255, 0.32) 0%,
+        rgba(60, 110, 230, 0.18) 28%,
+        transparent 65%
+      );
+    mix-blend-mode: screen;
+    transition: background 90ms linear;
+    opacity: 0.85;
   }
 
   .hero__vignette {

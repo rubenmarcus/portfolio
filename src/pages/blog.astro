@@ -1,47 +1,49 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
-import { articles } from "../lib/data/articles";
 
-const sorted = [...articles].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
 ---
 
 <BaseLayout
   title="Blog — Ruben Marcus"
-  description="Articles on AI tooling, autonomous agents, post-quantum infrastructure, and the modern frontend stack. Published on dev.to."
+  description="Articles on AI tooling, autonomous agents, post-quantum infrastructure, and the modern frontend stack."
 >
   <Section id="intro">
     <SectionHeader
       index="03"
       overline="Writing"
       title="Notes from the loop."
-      description="Articles on dev.to about the tools I ship and the patterns underneath them. More long-form pieces coming as the AI tooling matures — for now, my output here is sparse and deliberate."
+      description="Posts about the tools I ship and the patterns underneath them. Output here is sparse and deliberate — I'd rather write one good piece than ten throwaway ones."
     />
 
     <ul class="article-list" data-reveal>
-      {sorted.map((a, i) => (
+      {posts.map((post, i) => (
         <li class="article-row" data-reveal-item>
-          <a class="article-link" href={a.url} target="_blank" rel="noopener noreferrer">
+          <a class="article-link" href={`/blog/${post.id}`}>
             <span class="article-index">[{String(i + 1).padStart(2, "0")}]</span>
             <div class="article-body">
-              <span class="article-title">{a.title}</span>
-              <p class="article-desc">{a.description}</p>
+              <span class="article-title">{post.data.title}</span>
+              <p class="article-desc">{post.data.description}</p>
               <div class="article-meta">
-                <span>{new Date(a.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</span>
+                <span>{post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</span>
                 <span class="sep">·</span>
-                <span>{a.readTime}</span>
+                <span>{post.data.readTime}</span>
                 <span class="sep">·</span>
-                <span>{a.tags.map((t) => `#${t}`).join(" ")}</span>
-                {a.reactions ? (
+                <span>{post.data.tags.map((t: string) => `#${t}`).join(" ")}</span>
+                {post.data.reactions ? (
                   <>
                     <span class="sep">·</span>
-                    <span>{a.reactions} reactions</span>
+                    <span>{post.data.reactions} reactions</span>
                   </>
                 ) : null}
               </div>
             </div>
-            <span class="article-arrow" aria-hidden="true">↗</span>
+            <span class="article-arrow" aria-hidden="true">→</span>
           </a>
         </li>
       ))}
@@ -54,10 +56,10 @@ const sorted = [...articles].sort((a, b) => new Date(b.date).getTime() - new Dat
         accept/reject loop, and an essay on what AEO actually moves once you ship it.
       </p>
       <div class="more__actions" data-reveal-item>
-        <a href="https://dev.to/rubenmarcus" target="_blank" rel="noopener" class="btn btn-secondary">
-          dev.to/rubenmarcus ↗
+        <a href="/contact" class="btn btn-secondary">Suggest a topic →</a>
+        <a href="https://dev.to/rubenmarcus" target="_blank" rel="noopener" class="btn btn-ghost">
+          Also on dev.to ↗
         </a>
-        <a href="/contact" class="btn btn-ghost">Suggest a topic →</a>
       </div>
     </div>
   </Section>
@@ -92,11 +94,7 @@ const sorted = [...articles].sort((a, b) => new Date(b.date).getTime() - new Dat
     padding-top: 0.35rem;
   }
 
-  .article-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
+  .article-body { display: flex; flex-direction: column; gap: 0.4rem; }
 
   .article-title {
     font-family: var(--font-display);
@@ -122,7 +120,7 @@ const sorted = [...articles].sort((a, b) => new Date(b.date).getTime() - new Dat
     transition: transform var(--duration-hover) var(--ease-default), color var(--duration-hover) var(--ease-default);
   }
   .article-link:hover .article-arrow {
-    transform: translate(2px, -2px);
+    transform: translateX(3px);
     color: var(--accent-soft);
   }
 

@@ -1,0 +1,376 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/Section.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const allPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+
+const currentIndex = allPosts.findIndex((p) => p.id === post.id);
+const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+const nextPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+
+const formattedDate = post.data.date.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<BaseLayout
+  title={`${post.data.title} — Ruben Marcus`}
+  description={post.data.description}
+  image={post.data.cover}
+>
+  <article class="post">
+    <Section id="post-head">
+      <header class="post-head">
+        <a class="post-back" href="/blog">← All writing</a>
+
+        <div class="post-meta">
+          <span class="bracket">[ {post.data.tags[0] ?? "Writing"} ]</span>
+          <span class="post-meta__sep">·</span>
+          <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
+          <span class="post-meta__sep">·</span>
+          <span>{post.data.readTime}</span>
+          {post.data.reactions ? (
+            <>
+              <span class="post-meta__sep">·</span>
+              <span>{post.data.reactions} reactions</span>
+            </>
+          ) : null}
+        </div>
+
+        <h1 class="post-title">{post.data.title}</h1>
+
+        <p class="post-description">{post.data.description}</p>
+
+        <div class="post-tags">
+          {post.data.tags.map((t: string) => <span class="post-tag">#{t}</span>)}
+        </div>
+
+        {post.data.canonical && (
+          <p class="post-canonical">
+            Originally published on
+            <a href={post.data.canonical} target="_blank" rel="noopener noreferrer canonical" class="link-inline">
+              dev.to ↗
+            </a>
+          </p>
+        )}
+      </header>
+    </Section>
+
+    {post.data.cover && (
+      <div class="container-x">
+        <img class="post-cover" src={post.data.cover} alt={`Cover image for ${post.data.title}`} loading="eager" />
+      </div>
+    )}
+
+    <Section id="post-body" tight>
+      <div class="prose">
+        <Content />
+      </div>
+    </Section>
+
+    <Section id="post-nav" tight>
+      <nav class="post-nav" aria-label="Other posts">
+        {prevPost ? (
+          <a href={`/blog/${prevPost.id}`} class="post-nav__card">
+            <span class="overline">Older</span>
+            <span class="post-nav__title">{prevPost.data.title}</span>
+          </a>
+        ) : <span></span>}
+
+        {nextPost ? (
+          <a href={`/blog/${nextPost.id}`} class="post-nav__card post-nav__card--right">
+            <span class="overline">Newer</span>
+            <span class="post-nav__title">{nextPost.data.title}</span>
+          </a>
+        ) : <span></span>}
+      </nav>
+
+      <div class="post-foot">
+        <a href="/blog" class="btn btn-secondary">← All writing</a>
+        <a href="/contact" class="btn btn-ghost">Reach out about this →</a>
+      </div>
+    </Section>
+  </article>
+</BaseLayout>
+
+<style>
+  .post {
+    padding-top: 5rem;
+  }
+
+  .post-head {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    max-width: 760px;
+  }
+
+  .post-back {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    width: max-content;
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .post-back:hover { color: var(--accent-soft); }
+
+  .post-meta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .post-meta__sep { color: var(--muted-soft); opacity: 0.6; }
+
+  .post-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.012em;
+    color: var(--text);
+    text-wrap: balance;
+  }
+
+  .post-description {
+    color: var(--muted);
+    font-size: 1.1rem;
+    line-height: 1.55;
+    max-width: 60ch;
+  }
+
+  .post-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .post-tag {
+    padding: 0.22rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .post-canonical {
+    margin-top: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted-soft);
+  }
+
+  .post-cover {
+    display: block;
+    width: 100%;
+    max-width: 1080px;
+    height: auto;
+    margin: 2.5rem auto 0;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--line);
+  }
+
+  /* Footer nav */
+  .post-nav {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    margin-bottom: 2.5rem;
+  }
+  @media (min-width: 720px) {
+    .post-nav { grid-template-columns: 1fr 1fr; }
+  }
+
+  .post-nav__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.2rem 1.3rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-1);
+    color: var(--text);
+    transition: border-color var(--duration-hover) var(--ease-default), background-color var(--duration-hover) var(--ease-default);
+  }
+  .post-nav__card:hover { border-color: var(--line-bright); background: var(--bg-2); }
+  .post-nav__card--right { text-align: right; align-items: flex-end; }
+
+  .post-nav__title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  .post-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    justify-content: space-between;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+</style>
+
+<!-- Prose / markdown body styling — global so :global() isn't needed -->
+<style is:global>
+  .prose {
+    max-width: 720px;
+    margin: 0 auto;
+    color: var(--text);
+    font-size: 1.05rem;
+    line-height: 1.75;
+  }
+
+  .prose > * + * {
+    margin-top: 1.5em;
+  }
+
+  .prose h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin-top: 3rem !important;
+    margin-bottom: 0.4em;
+    text-wrap: balance;
+  }
+
+  .prose h3 {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    line-height: 1.25;
+    color: var(--text);
+    margin-top: 2.2rem !important;
+    margin-bottom: 0.3em;
+  }
+
+  .prose h2 + p,
+  .prose h3 + p {
+    margin-top: 0.4em;
+  }
+
+  .prose p {
+    color: var(--muted);
+    line-height: 1.78;
+    text-wrap: pretty;
+  }
+
+  .prose strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .prose em {
+    color: var(--accent-soft);
+    font-style: italic;
+  }
+
+  .prose a {
+    color: var(--text);
+    border-bottom: 1px solid rgba(245, 241, 234, 0.22);
+    transition: color var(--duration-hover) var(--ease-default), border-color var(--duration-hover) var(--ease-default);
+  }
+  .prose a:hover {
+    color: var(--accent-soft);
+    border-bottom-color: var(--accent-soft);
+  }
+
+  .prose ul,
+  .prose ol {
+    color: var(--muted);
+    padding-left: 1.3rem;
+    line-height: 1.75;
+  }
+  .prose ul { list-style: none; }
+  .prose ul li { position: relative; padding-left: 0.4rem; }
+  .prose ul li::before {
+    content: "→";
+    position: absolute;
+    left: -1rem;
+    color: var(--accent-soft);
+  }
+  .prose ol { list-style: decimal; }
+  .prose li + li { margin-top: 0.5em; }
+
+  .prose blockquote {
+    margin: 0;
+    padding: 0.6rem 1.2rem;
+    border-left: 2px solid var(--accent);
+    background: rgba(42, 92, 255, 0.04);
+    border-radius: 4px;
+    color: var(--text);
+    font-style: italic;
+  }
+  .prose blockquote p {
+    color: var(--text);
+  }
+  .prose blockquote + blockquote {
+    margin-top: 0.5em;
+  }
+
+  .prose code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    padding: 0.12em 0.42em;
+    border-radius: 4px;
+    background: rgba(245, 241, 234, 0.06);
+    border: 1px solid var(--line);
+    color: var(--text);
+  }
+
+  .prose pre {
+    overflow-x: auto;
+    padding: 1.1rem 1.2rem;
+    border-radius: 10px;
+    background: #06080c;
+    border: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: #cfd6e2;
+  }
+  .prose pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .prose img {
+    display: block;
+    margin: 1.5rem auto;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  .prose hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 2.5rem 0;
+  }
+</style>

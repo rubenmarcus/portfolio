@@ -1,4 +1,5 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HeroScene from "../components/HeroScene.svelte";
 import Section from "../components/Section.astro";
@@ -6,10 +7,12 @@ import SectionHeader from "../components/SectionHeader.astro";
 import Divider from "../components/Divider.astro";
 import { projects } from "../lib/data/projects";
 import { aiTools } from "../lib/data/aiTools";
-import { articles } from "../lib/data/articles";
 
 const featured = projects.filter((p) => p.highlight).slice(0, 5);
-const featuredArticles = articles.slice(0, 3);
+const allPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const featuredArticles = allPosts.slice(0, 3);
 ---
 
 <BaseLayout
@@ -101,22 +104,22 @@ const featuredArticles = articles.slice(0, 3);
     />
 
     <ul class="article-list">
-      {featuredArticles.map((a, i) => (
+      {featuredArticles.map((post, i) => (
         <li class="article-row" data-reveal>
-          <a class="article-link" href={a.url} target="_blank" rel="noopener noreferrer">
+          <a class="article-link" href={`/blog/${post.id}`}>
             <span class="article-index">[{String(i + 1).padStart(2, "0")}]</span>
             <div class="article-body">
-              <span class="article-title">{a.title}</span>
-              <p class="article-desc">{a.description}</p>
+              <span class="article-title">{post.data.title}</span>
+              <p class="article-desc">{post.data.description}</p>
               <div class="article-meta">
-                <span>{new Date(a.date).toLocaleDateString("en-US", { year: "numeric", month: "short" })}</span>
+                <span>{post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short" })}</span>
                 <span class="hero__sep">·</span>
-                <span>{a.readTime}</span>
+                <span>{post.data.readTime}</span>
                 <span class="hero__sep">·</span>
-                <span>{a.tags.map((t) => `#${t}`).join(" ")}</span>
+                <span>{post.data.tags.map((t: string) => `#${t}`).join(" ")}</span>
               </div>
             </div>
-            <span class="work-arrow" aria-hidden="true">↗</span>
+            <span class="work-arrow" aria-hidden="true">→</span>
           </a>
         </li>
       ))}
