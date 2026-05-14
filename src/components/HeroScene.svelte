@@ -3,6 +3,7 @@
   import CodeStream from "./CodeStream.svelte";
   import CloudField from "./CloudField.svelte";
   import AsciiField from "./AsciiField.svelte";
+  import { scramble } from "../lib/motion/scramble";
 
   const verbs = [
     "autonomous agents",
@@ -15,6 +16,17 @@
 
   const GH_USER = "rubenmarcus";
 
+  // Orgs to aggregate stars + repo counts from
+  const GH_ORGS = ["multivmlabs", "BitteProtocol", "Mintbase"];
+
+  // Platforms without a public follower API — estimates the user can update.
+  // Live count from GitHub gets added on top of these.
+  const ESTIMATED_FOLLOWERS = {
+    twitter: 480,
+    linkedin: 2100,
+    devto: 45,
+  };
+
   interface GitHubStats {
     today: number;
     month: number;
@@ -24,6 +36,13 @@
   }
 
   let stats = $state<GitHubStats | null>(null);
+  let stars = $state<number | null>(null);
+  let followers = $state<number | null>(null);
+
+  function formatCount(n: number): string {
+    if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, "") + "k";
+    return String(n);
+  }
   let mouse = $state({ x: 0, y: 0 });
   let zoom = $state(1.15);
   let video: HTMLVideoElement | null = $state(null);
@@ -97,6 +116,54 @@
       .catch(() => {});
   });
 
+  // GitHub followers + total stars across user repos and key orgs
+  $effect(() => {
+    async function paginate(url: string): Promise<any[]> {
+      const out: any[] = [];
+      let page = 1;
+      // GitHub API caps per_page at 100; 3 pages is plenty for our orgs
+      while (page < 4) {
+        const res = await fetch(`${url}?per_page=100&page=${page}`);
+        if (!res.ok) break;
+        const arr = await res.json();
+        if (!Array.isArray(arr) || arr.length === 0) break;
+        out.push(...arr);
+        if (arr.length < 100) break;
+        page += 1;
+      }
+      return out;
+    }
+
+    (async () => {
+      try {
+        // 1) Followers
+        const user = await fetch(`https://api.github.com/users/${GH_USER}`).then((r) => r.json());
+        const ghFollowers = typeof user?.followers === "number" ? user.followers : 0;
+        followers =
+          ghFollowers +
+          ESTIMATED_FOLLOWERS.twitter +
+          ESTIMATED_FOLLOWERS.linkedin +
+          ESTIMATED_FOLLOWERS.devto;
+
+        // 2) Stars across rubenmarcus + key orgs
+        const sources = [
+          `https://api.github.com/users/${GH_USER}/repos`,
+          ...GH_ORGS.map((o) => `https://api.github.com/orgs/${o}/repos`),
+        ];
+        const results = await Promise.allSettled(sources.map(paginate));
+        let total = 0;
+        for (const r of results) {
+          if (r.status === "fulfilled") {
+            for (const repo of r.value) total += repo?.stargazers_count ?? 0;
+          }
+        }
+        stars = total;
+      } catch {
+        // Soft fail — badges just hide
+      }
+    })();
+  });
+
   const inCenter = $derived(hovering && Math.abs(mouse.x) < 0.3 && Math.abs(mouse.y) < 0.3);
   const activeZoom = $derived(inCenter ? zoom + 0.08 : zoom);
   const parallaxX = $derived(mouse.x * 22);
@@ -165,40 +232,67 @@
     <div class="hero__grid" aria-hidden="true"></div>
   </div>
 
-  <!-- Top-right: live GitHub commits badge with the green pulse dot -->
-  {#if stats}
-    <a
-      class="hero__commitsBadge"
-      href={stats.lastCommit?.url ?? `https://github.com/${GH_USER}`}
-      target="_blank"
-      rel="noopener"
-    >
-      <span class="hero__dot" aria-hidden="true"></span>
-      <span class="hero__commitsBig">{stats.today} commits today</span>
-      <span class="hero__commitsSub">
-        {stats.month} this month · {stats.year} this year
-      </span>
-      {#if stats.lastCommit}
-        <span class="hero__commitsLast">
-          last: <em>{stats.lastCommit.message}</em>
-          <span class="hero__commitsRepo">({stats.lastCommit.repo})</span>
-        </span>
-      {/if}
-    </a>
-  {/if}
+  <!-- Top-right stat stack: commits / stars / followers -->
+  <div class="hero__stats">
+    {#if stats}
+      <a
+        class="hero__stat hero__stat--primary"
+        href={stats.lastCommit?.url ?? `https://github.com/${GH_USER}`}
+        target="_blank"
+        rel="noopener"
+      >
+        <span class="hero__dot" aria-hidden="true"></span>
+        <div class="hero__statBody">
+          <span class="hero__statBig">{stats.today} commits today</span>
+          <span class="hero__statSub">{stats.month} this month · {stats.year} this year</span>
+          {#if stats.lastCommit}
+            <span class="hero__statLast">
+              last: <em>{stats.lastCommit.message}</em>
+              <span class="hero__statRepo">({stats.lastCommit.repo})</span>
+            </span>
+          {/if}
+        </div>
+      </a>
+    {/if}
+
+    {#if stars !== null}
+      <a class="hero__stat" href={`https://github.com/${GH_USER}?tab=repositories`} target="_blank" rel="noopener">
+        <svg class="hero__statIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+        <div class="hero__statBody">
+          <span class="hero__statBig">{formatCount(stars)} stars</span>
+          <span class="hero__statSub">across multivmlabs · Bitte · Mintbase · personal</span>
+        </div>
+      </a>
+    {/if}
+
+    {#if followers !== null}
+      <a class="hero__stat" href="https://github.com/rubenmarcus" target="_blank" rel="noopener">
+        <svg class="hero__statIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <div class="hero__statBody">
+          <span class="hero__statBig">{formatCount(followers)} followers</span>
+          <span class="hero__statSub">GitHub · X · LinkedIn · dev.to</span>
+        </div>
+      </a>
+    {/if}
+  </div>
 
   <!-- Bottom-right: heavy dark card carrying the main text (Defined VC style).
        Intentionally OUT of the page container — hugs the right edge of the
        viewport with a small inset gap. -->
   <div class="hero__cardWrap">
     <div class="hero__card">
-      <div class="hero__cardHead">
-        <span class="hero__indexLabel">00 / Index</span>
-        <span class="hero__cardName">Ruben Marcus</span>
-      </div>
+      <p class="hero__intro">
+        Hello, I'm <span class="hero__introName" use:scramble>Ruben Marcus</span> and I
+      </p>
 
       <h1 class="hero__title">
-        Building
+        <span class="hero__titleWord" use:scramble>Build</span>
         <RotatingVerb words={verbs} interval={2800} fadeMs={340} italic={false} class="hero__verb" />
         <span class="hero__cursor" aria-hidden="true">_</span>
       </h1>
@@ -217,6 +311,27 @@
       <div class="hero__stack">
         <span class="hero__stackLabel">Stack</span>
 
+        <span class="hero__stackItem" title="TypeScript">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.1 5.1 0 0 0-.717-.26 5.5 5.5 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.87.87 0 0 0-.14.484c0 .197.05.375.151.532.1.158.244.31.43.453s.41.286.673.427c.263.14.56.286.892.437.46.221.879.482 1.255.785s.71.673.978 1.058c.27.385.483.84.643 1.358.16.518.241 1.135.241 1.847 0 .814-.158 1.51-.473 2.087a4 4 0 0 1-1.302 1.432 5.7 5.7 0 0 1-1.953.823 12 12 0 0 1-2.382.243c-.781 0-1.5-.057-2.184-.173-.685-.117-1.276-.291-1.775-.524v-2.621a5 5 0 0 0 1.083.621 7 7 0 0 0 1.226.36 6.4 6.4 0 0 0 1.255.13c.471 0 .863-.038 1.184-.124.32-.085.57-.213.755-.385.184-.171.31-.376.385-.617a2 2 0 0 0 .102-.624 1.4 1.4 0 0 0-.198-.741 2.2 2.2 0 0 0-.51-.617 5.5 5.5 0 0 0-.793-.51c-.305-.16-.682-.327-1.083-.494a8.9 8.9 0 0 1-1.165-.585 4.6 4.6 0 0 1-.94-.726c-.27-.27-.482-.575-.642-.927a2.95 2.95 0 0 1-.234-1.222c0-.69.155-1.275.466-1.755.31-.48.72-.886 1.226-1.222.51-.336 1.083-.575 1.74-.726a8.4 8.4 0 0 1 1.997-.226zM3.31 9.945h11.13v2.082h-4.244v12.001H7.625V12.027H3.31z"/>
+          </svg>
+          TypeScript
+        </span>
+
+        <span class="hero__stackItem" title="Node.js">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M11.998 24c-.321 0-.641-.084-.922-.247l-2.936-1.737c-.438-.245-.224-.332-.08-.383.585-.203.703-.25 1.328-.604.065-.037.151-.023.218.017l2.256 1.339a.29.29 0 0 0 .272 0l8.795-5.076a.276.276 0 0 0 .134-.238V6.921a.283.283 0 0 0-.137-.242l-8.791-5.072a.278.278 0 0 0-.271 0L3.075 6.68a.284.284 0 0 0-.139.241v10.15c0 .093.054.183.137.229l2.409 1.392c1.307.654 2.108-.117 2.108-.89V7.787c0-.142.114-.253.256-.253h1.115c.139 0 .255.112.255.253v10.021c0 1.745-.95 2.745-2.604 2.745-.508 0-.909 0-2.026-.551L2.28 18.675a1.856 1.856 0 0 1-.922-1.604V6.921a1.85 1.85 0 0 1 .922-1.603L11.075.236a1.92 1.92 0 0 1 1.85 0l8.794 5.082a1.86 1.86 0 0 1 .923 1.603v10.15a1.86 1.86 0 0 1-.923 1.604l-8.794 5.078A1.93 1.93 0 0 1 11.998 24zm2.715-6.99c-3.844 0-4.65-1.766-4.65-3.244 0-.14.114-.253.255-.253h1.137c.127 0 .234.092.254.218.171 1.16.683 1.747 3.004 1.747 1.844 0 2.633-.418 2.633-1.398 0-.563-.224-.984-3.094-1.265-2.398-.237-3.881-.764-3.881-2.682 0-1.766 1.49-2.82 3.987-2.82 2.804 0 4.192.972 4.367 3.06a.255.255 0 0 1-.254.278h-1.141a.254.254 0 0 1-.247-.198c-.273-1.221-.94-1.611-2.726-1.611-2.001 0-2.235.696-2.235 1.219 0 .631.276.815 2.998 1.176 2.694.359 3.974.866 3.974 2.755 0 1.906-1.587 2.998-4.357 2.998z"/>
+          </svg>
+          Node.js
+        </span>
+
+        <span class="hero__stackItem" title="Python">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z"/>
+          </svg>
+          Python
+        </span>
+
         <span class="hero__stackItem" title="React">
           <svg width="14" height="14" viewBox="-11.5 -10.232 23 20.463" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">
             <circle r="2.05" fill="currentColor"/>
@@ -234,13 +349,6 @@
             <path d="M11.572 0c-.176.01-.722.054-1.235.106C6.394.473 2.831 2.622 1.057 5.949A12.39 12.39 0 0 0 .15 8.366c-.25.844-.36 1.518-.394 2.451-.025.728-.012 1.072.039 1.747.166 2.213.95 4.346 2.231 6.066.273.368.929 1.124 1.298 1.497.732.74 1.451 1.297 2.39 1.81.99.541 1.857.892 2.873 1.16.516.137 1.123.241 1.602.273.276.018 1.21.018 1.473 0 .728-.05 1.218-.144 1.937-.371.85-.268 1.69-.673 2.39-1.16 1.61-1.12 2.95-2.71 3.853-4.553a12.06 12.06 0 0 0 .77-2.215c.298-1.32.42-2.685.353-3.973-.103-1.991-.62-3.86-1.553-5.535-.745-1.34-1.762-2.486-2.998-3.38C16.927.957 14.99.275 13.084.106 12.864.087 11.91.011 11.572 0zm4.665 7.51c.27.034.49.137.626.292.06.067.21.36.21.413 0 .015-.073.013-.123 0l-.117-.04c-.31-.073-.66-.044-.96.08-.31.13-.51.34-.624.65-.146.4-.043.81.27 1.084.083.077.18.13.516.291l.18.087c.45.215.752.523.86.876.029.097.043.224.043.355 0 .447-.221.83-.628 1.087-.452.286-1.114.354-1.7.176-.484-.147-.95-.491-1.158-.86l-.123-.21c.024-.013.06-.034.07-.044l.085-.05.16-.094.07.107a.99.99 0 0 0 .268.282c.337.218.83.193 1.18-.063.197-.142.293-.31.293-.51 0-.179-.063-.31-.234-.485-.124-.127-.205-.176-.59-.36-.5-.243-.795-.467-1.027-.79a1.34 1.34 0 0 1-.23-.748c-.018-.422.117-.776.4-1.058.343-.34.84-.51 1.452-.484zm-7.42 1.045v6.05c0 .117-.005.227-.013.245-.026.058-.087.118-.16.157-.058.029-.108.034-.376.034H7.992v-.166c0-.092.005-.166.012-.166.007 0 .078-.007.158-.015.236-.025.388-.16.45-.395.016-.06.025-.225.025-1.66V8.555zm-.026.184l1.572 2.07.788 1.034c.013-.013.044-.234.073-.49.013-.117.026-.252.026-.295V8.738z"/>
           </svg>
           Next.js
-        </span>
-
-        <span class="hero__stackItem" title="TypeScript">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.1 5.1 0 0 0-.717-.26 5.5 5.5 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.87.87 0 0 0-.14.484c0 .197.05.375.151.532.1.158.244.31.43.453s.41.286.673.427c.263.14.56.286.892.437.46.221.879.482 1.255.785s.71.673.978 1.058c.27.385.483.84.643 1.358.16.518.241 1.135.241 1.847 0 .814-.158 1.51-.473 2.087a4 4 0 0 1-1.302 1.432 5.7 5.7 0 0 1-1.953.823 12 12 0 0 1-2.382.243c-.781 0-1.5-.057-2.184-.173-.685-.117-1.276-.291-1.775-.524v-2.621a5 5 0 0 0 1.083.621 7 7 0 0 0 1.226.36 6.4 6.4 0 0 0 1.255.13c.471 0 .863-.038 1.184-.124.32-.085.57-.213.755-.385.184-.171.31-.376.385-.617a2 2 0 0 0 .102-.624 1.4 1.4 0 0 0-.198-.741 2.2 2.2 0 0 0-.51-.617 5.5 5.5 0 0 0-.793-.51c-.305-.16-.682-.327-1.083-.494a8.9 8.9 0 0 1-1.165-.585 4.6 4.6 0 0 1-.94-.726c-.27-.27-.482-.575-.642-.927a2.95 2.95 0 0 1-.234-1.222c0-.69.155-1.275.466-1.755.31-.48.72-.886 1.226-1.222.51-.336 1.083-.575 1.74-.726a8.4 8.4 0 0 1 1.997-.226zM3.31 9.945h11.13v2.082h-4.244v12.001H7.625V12.027H3.31z"/>
-          </svg>
-          TypeScript
         </span>
 
         <span class="hero__stackItem" title="Svelte">
@@ -399,16 +507,21 @@
     opacity: 1;
   }
 
-  /* Vignette — pushed darker so the text card and any overlaid text always
-     reads cleanly. Three layers: top fade, bottom fade, edge ellipse. */
+  /* Vignette — pushed harder so the sides go nearly black while the centre
+     where the ASCII head rotates stays mostly clean. */
   .hero__vignette {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
-      linear-gradient(180deg, rgba(6, 8, 15, 0.55) 0%, transparent 22%, transparent 60%, rgba(6, 8, 15, 0.65) 100%),
-      radial-gradient(ellipse 110% 95% at 50% 45%, rgba(6, 8, 15, 0.25) 0%, rgba(6, 8, 15, 0.75) 72%, rgba(6, 8, 15, 0.98) 100%),
-      radial-gradient(circle at 90% 90%, rgba(6, 8, 15, 0.78) 0%, transparent 55%);
+      /* Side bars — pure black columns fading inward */
+      linear-gradient(90deg, rgba(6, 8, 15, 0.95) 0%, rgba(6, 8, 15, 0.7) 6%, transparent 18%, transparent 82%, rgba(6, 8, 15, 0.7) 94%, rgba(6, 8, 15, 0.95) 100%),
+      /* Top and bottom darkening */
+      linear-gradient(180deg, rgba(6, 8, 15, 0.7) 0%, transparent 18%, transparent 62%, rgba(6, 8, 15, 0.78) 100%),
+      /* Soft center ellipse — keeps the rotating head visible */
+      radial-gradient(ellipse 65% 75% at 50% 48%, transparent 0%, rgba(6, 8, 15, 0.18) 60%, rgba(6, 8, 15, 0.55) 100%),
+      /* Bottom-right corner pad under the card */
+      radial-gradient(circle at 88% 92%, rgba(6, 8, 15, 0.82) 0%, transparent 50%);
   }
 
   .hero__grid {
@@ -423,35 +536,81 @@
     mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
   }
 
-  /* ── Top-right commits badge ── */
-  .hero__commitsBadge {
+  /* ── Top-right stat stack: commits / stars / followers ── */
+  .hero__stats {
     position: absolute;
     top: 6.5rem;
     right: clamp(1rem, 3vw, 2rem);
     z-index: 3;
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 0.25rem;
-    padding: 0.85rem 1.1rem;
-    border-radius: 14px;
+    align-items: stretch;
+    gap: 0.5rem;
+    max-width: 340px;
+  }
+
+  .hero__stat {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.7rem 0.95rem;
+    border-radius: 12px;
     background: rgba(6, 8, 15, 0.78);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
     color: var(--text);
-    text-align: right;
-    max-width: 320px;
-    transition: background-color var(--duration-hover) var(--ease-default), transform var(--duration-hover) var(--ease-default);
+    text-align: left;
+    transition:
+      background-color var(--duration-hover) var(--ease-default),
+      transform var(--duration-hover) var(--ease-default);
   }
-  .hero__commitsBadge:hover {
-    background: rgba(6, 8, 15, 0.88);
-    transform: translateY(-1px);
+  .hero__stat:hover {
+    background: rgba(6, 8, 15, 0.9);
+    transform: translateX(-2px);
   }
 
-  .hero__dot {
-    position: absolute;
-    top: 1.05rem;
-    left: 0.95rem;
+  .hero__statIcon {
+    color: var(--accent-soft);
+    flex-shrink: 0;
+  }
+
+  .hero__statBody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .hero__statBig {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.15;
+    color: var(--text);
+  }
+  .hero__statSub {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  .hero__statLast {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    color: var(--muted-soft);
+    margin-top: 0.15rem;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .hero__statLast em { color: var(--accent-soft); font-style: normal; }
+  .hero__statRepo { color: var(--muted-soft); }
+
+  /* Primary (commits) stat — green pulsing dot replaces the icon */
+  .hero__stat--primary .hero__dot {
     width: 9px;
     height: 9px;
     border-radius: 999px;
@@ -464,37 +623,6 @@
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.6; transform: scale(0.9); }
   }
-
-  .hero__commitsBig {
-    font-family: var(--font-display);
-    font-size: clamp(1rem, 1.4vw, 1.25rem);
-    font-weight: 500;
-    line-height: 1;
-    color: var(--text);
-    padding-left: 1.1rem;
-  }
-
-  .hero__commitsSub {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--muted);
-    letter-spacing: 0.02em;
-  }
-
-  .hero__commitsLast {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    color: var(--muted-soft);
-    max-width: 280px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .hero__commitsLast em {
-    color: var(--accent-soft);
-    font-style: normal;
-  }
-  .hero__commitsRepo { color: var(--muted-soft); }
 
   /* ── Bottom-right text card (Defined VC inspired) ──
      Sits OUT of the content container — pinned to the right viewport edge with
@@ -533,41 +661,39 @@
     .hero__card { max-width: 720px; }
   }
 
-  .hero__cardHead {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.8rem;
+  .hero__intro {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+    color: var(--muted);
+    line-height: 1.4;
   }
-
-  .hero__indexLabel {
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    color: var(--muted-soft);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+  .hero__introName {
+    color: var(--accent-soft);
+    font-weight: 500;
+    cursor: default;
+    transition: color var(--duration-hover) var(--ease-default);
   }
-
-  .hero__cardName {
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    color: var(--muted-soft);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
+  .hero__introName:hover { color: #c8def0; }
 
   .hero__title {
     margin: 0;
     font-family: var(--font-display);
     font-size: clamp(2rem, 4.5vw, 3.4rem);
     line-height: 0.98;
-    letter-spacing: -0.012em;
+    letter-spacing: -0.022em;
+    font-weight: 500;
     color: var(--text);
     display: inline-flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.35rem 0.55rem;
     text-wrap: balance;
+  }
+
+  .hero__titleWord {
+    color: var(--text);
+    cursor: default;
   }
 
   :global(.hero__verb) {
