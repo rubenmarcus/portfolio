@@ -301,8 +301,8 @@
     </div>
   </div>
 
-  <!-- Bottom band: stack pills row spanning the hero footer -->
-  <div class="hero__stackBar container-x">
+  <!-- Bottom band: stack pills row spanning the full screen width -->
+  <div class="hero__stackBar">
     <div class="hero__stack">
       <span class="hero__stackLabel">Stack</span>
 
@@ -623,7 +623,7 @@
      hero, out of the normal flow. Wide max-width so the big H1 can stretch. */
   .hero__lede {
     position: absolute;
-    left: 20%;
+    left: 10%;
     bottom: 10%;
     right: clamp(1rem, 4vw, 3rem);
     z-index: 3;
@@ -692,43 +692,45 @@
     margin-top: 0.4rem;
   }
 
-  /* Bottom band hosting the stack pills */
+  /* Bottom band hosting the stack pills — full screen width */
   .hero__stackBar {
     position: relative;
     z-index: 3;
     margin-top: auto;
+    width: 100%;
+    padding-inline: clamp(1rem, 2vw, 1.75rem);
   }
 
-  /* Stack row with inline tech icons (2x sized) */
+  /* Stack row with inline tech icons */
   .hero__stack {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.7rem;
-    padding-top: 1.5rem;
+    gap: 0.55rem;
+    padding-top: 1.25rem;
     border-top: 1px solid rgba(245, 241, 234, 0.08);
   }
 
   .hero__stackLabel {
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: 0.72rem;
     color: var(--muted-soft);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-right: 0.5rem;
+    margin-right: 0.45rem;
   }
 
   .hero__stackItem {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.55rem 1.05rem;
+    gap: 0.5rem;
+    padding: 0.45rem 0.85rem;
     border-radius: var(--radius-pill);
     border: 1px solid rgba(245, 241, 234, 0.1);
     background: rgba(160, 195, 255, 0.05);
     color: var(--muted);
     font-family: var(--font-mono);
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     letter-spacing: 0.01em;
     transition:
       color var(--duration-hover) var(--ease-default),
@@ -740,18 +742,31 @@
     border-color: rgba(94, 200, 255, 0.45);
     background: rgba(94, 200, 255, 0.09);
   }
-  /* All inline SVG icons inside the stack — scale uniformly to ~2x */
+
+  /* All stack icons share the same 18px footprint for visual rhythm,
+     but each gets its real brand color for clarity ("more definition"). */
   .hero__stackItem svg {
     flex-shrink: 0;
-    width: 22px !important;
-    height: 22px !important;
-    color: var(--accent-soft);
-  }
-  /* EVM icon is intentionally narrower than tall — keep its aspect */
-  .hero__stackItem[title^="EVM"] svg {
     width: 18px !important;
-    height: 22px !important;
+    height: 18px !important;
   }
+  .hero__stackItem[title^="EVM"] svg {
+    width: 15px !important;
+    height: 18px !important;
+  }
+
+  /* Brand colors per tech — gives icons crisp identity instead of a flat
+     accent tint. Stays subtle because the surrounding pill is dark. */
+  .hero__stackItem[title="TypeScript"] svg { color: #3178c6; }
+  .hero__stackItem[title="Node.js"]    svg { color: #5fa04e; }
+  .hero__stackItem[title="Python"]     svg { color: #3776ab; }
+  .hero__stackItem[title="React"]      svg { color: #61dafb; }
+  .hero__stackItem[title="Next.js"]    svg { color: #f5f1ea; }
+  .hero__stackItem[title="Svelte"]     svg { color: #ff3e00; }
+  .hero__stackItem[title="Rust"]       svg { color: #dea584; }
+  .hero__stackItem[title^="EVM"]       svg { color: #c4cbf5; }
+  .hero__stackItem[title="NEAR"]       svg { color: #f5f1ea; }
+  .hero__stackItem[title="SUI"]        svg { color: #4ca2ff; }
 
   /* ── Side icon column ── */
   .hero__sideIcons {
