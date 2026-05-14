@@ -44,6 +44,7 @@
   --duration-reveal: 640ms;
 
   --font-display: "Inter Tight", "Geist", system-ui, -apple-system, sans-serif;
+  --font-serif: "Instrument Serif", Georgia, serif;
   --font-sans: "Geist", "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
 

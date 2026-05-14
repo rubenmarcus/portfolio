@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { navItems } from "../lib/navigation";
 
   interface Props {
@@ -8,6 +9,22 @@
   let { currentPath = "/" }: Props = $props();
 
   let menuOpen = $state(false);
+  let scrolled = $state(false);
+
+  // Use a vanilla scroll listener with a generous threshold + hysteresis so
+  // tiny scroll deltas around the boundary don't toggle the state.
+  onMount(() => {
+    const ENTER = 60;
+    const EXIT = 20;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (!scrolled && y > ENTER) scrolled = true;
+      else if (scrolled && y < EXIT) scrolled = false;
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  });
 
   // Lock body scroll while mobile menu is open
   $effect(() => {
@@ -24,7 +41,7 @@
   }
 </script>
 
-<header class="header">
+<header class="header" class:header--scrolled={scrolled}>
   <div class="header__inner">
     <a href="/" class="header__brand" aria-label="rubenmarcus.dev — home">
       <span class="header__name">rubenmarcus.dev</span>
@@ -114,8 +131,17 @@
     right: 0;
     z-index: var(--z-nav);
     padding-block: 1rem;
-    background: rgba(12, 13, 16, 0.72);
-    border-bottom: 1px solid var(--line);
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 220ms var(--ease-default),
+      border-color 220ms var(--ease-default),
+      backdrop-filter 220ms var(--ease-default);
+  }
+
+  .header--scrolled {
+    background: rgba(6, 8, 15, 0.72);
+    border-bottom-color: var(--line);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
   }

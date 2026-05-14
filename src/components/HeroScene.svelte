@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import RotatingVerb from "./RotatingVerb.svelte";
+  import AsciiField from "./AsciiField.svelte";
+  import CodeStream from "./CodeStream.svelte";
 
   const verbs = [
     "autonomous AI agents",
@@ -18,15 +21,42 @@
   ];
 
   let video: HTMLVideoElement | null = $state(null);
+  let hero: HTMLElement | null = $state(null);
 
   $effect(() => {
     if (video) {
       try { video.playbackRate = 1.15; } catch {}
     }
   });
+
+  // Scroll-driven zoom. Updates a single CSS variable on the hero element via
+  // a passive listener — no Svelte reactive state involved, so no re-renders.
+  onMount(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+
+    let ticking = false;
+    const update = () => {
+      if (!hero) return;
+      const y = window.scrollY;
+      // 1.15 base, up to ~1.55 after 600px of scroll
+      const zoom = 1.15 + Math.min(y * 0.00065, 0.4);
+      hero.style.setProperty("--scroll-zoom", zoom.toFixed(3));
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  });
 </script>
 
-<section class="hero" aria-label="Intro">
+<section bind:this={hero} class="hero" aria-label="Intro">
   <div class="hero__bg">
     <video
       bind:this={video}
@@ -40,7 +70,24 @@
       <source src="/videobg.webm" type="video/webm" />
     </video>
 
+    <!-- Blue tint masked to the head only -->
     <div class="hero__iceTint" aria-hidden="true"></div>
+
+    <!-- Static-feeling ASCII overlay: sparse, slow, no cursor reactivity -->
+    <AsciiField
+      client:load
+      cell={16}
+      density={0.07}
+      morphRate={0.35}
+      opacity={0.16}
+      reactive={false}
+      color="rgba(200, 230, 255, 1)"
+      class="hero__asciiOverlay"
+    />
+
+    <!-- Calm code snippet drift — 3 at a time, long lifespans -->
+    <CodeStream client:load count={3} class="hero__code" />
+
     <div class="hero__vignette" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
   </div>
@@ -52,7 +99,7 @@
     </p>
 
     <h1 class="hero__title">
-      <RotatingVerb words={verbs} interval={3600} morphMs={750} class="hero__verb" />
+      <RotatingVerb words={verbs} interval={5200} morphMs={1100} class="hero__verb" />
     </h1>
 
     <div class="hero__ctas">
@@ -68,9 +115,9 @@
     min-height: 100vh;
     overflow: hidden;
     isolation: isolate;
+    --scroll-zoom: 1.15;
   }
 
-  /* Static background — no parallax, no zoom transitions, no mouse tracking */
   .hero__bg {
     position: absolute;
     inset: 0;
@@ -81,14 +128,13 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scale(1.15);
+    transform: scale(var(--scroll-zoom, 1.15));
     transform-origin: center center;
+    transition: transform 250ms ease-out;
     filter: brightness(0.86) contrast(1.04) saturate(0.18);
   }
 
-  /* Ice tint — applied ONLY where the ASCII head sits (centered ellipse
-     in the video). The rest of the bg keeps the original grayscale ASCII
-     so the colour is localised to the character, not the whole viewport. */
+  /* Ice tint masked to the head only */
   .hero__iceTint {
     position: absolute;
     inset: 0;
@@ -101,7 +147,6 @@
       rgba(60, 140, 200, 0.6) 100%
     );
     mix-blend-mode: color;
-    /* Mask: only paint colour inside the ellipse where the head appears */
     mask-image: radial-gradient(
       ellipse 22% 42% at 50% 50%,
       #000 55%,
@@ -114,6 +159,25 @@
       rgba(0, 0, 0, 0.6) 75%,
       transparent 100%
     );
+  }
+
+  /* ASCII glyph overlay — same scale as the video so it zooms with it */
+  :global(.hero__asciiOverlay) {
+    position: absolute !important;
+    inset: 0;
+    z-index: 0;
+    mix-blend-mode: screen;
+    transform: scale(var(--scroll-zoom, 1.15));
+    transform-origin: center center;
+    transition: transform 250ms ease-out;
+  }
+
+  /* Code snippets float over everything else in the bg */
+  :global(.hero__code) {
+    position: absolute !important;
+    inset: 0;
+    z-index: 0;
+    color: rgba(190, 230, 255, 0.5) !important;
   }
 
   .hero__vignette {
@@ -159,17 +223,19 @@
     }
   }
 
+  /* Intro — serif, italic-ready */
   .hero__intro {
     margin: 0;
-    font-family: var(--font-sans);
-    font-size: clamp(1.15rem, 1.7vw, 1.55rem);
+    font-family: var(--font-serif);
+    font-size: clamp(1.4rem, 2.1vw, 2rem);
     color: var(--muted);
-    line-height: 1.35;
+    line-height: 1.3;
+    letter-spacing: 0.005em;
   }
   .hero__introName,
   .hero__introVerb {
     color: var(--accent-soft);
-    font-weight: 500;
+    font-style: italic;
   }
 
   .hero__title {
@@ -184,8 +250,7 @@
     text-wrap: balance;
   }
 
-  /* The blue glow lives on the rotating word ONLY — no cursor halo, no
-     viewport-wide filter. The rotating text is itself the blue accent. */
+  /* Blue glow lives on the rotating verb */
   :global(.hero__verb) {
     color: var(--accent-soft);
     text-shadow:
