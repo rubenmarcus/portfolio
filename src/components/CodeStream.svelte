@@ -233,10 +233,10 @@ return wrapKey(ss, payload);`,
     inset: 0;
     pointer-events: none;
     overflow: hidden;
-    /* Mask out the center-left zone where the lede sits — title + intro
+    /* Mask out the bottom-left zone where the lede sits — title + intro
        need a clean field. Code is free to roam everywhere else. */
-    mask-image: radial-gradient(ellipse 45% 60% at 22% 52%, transparent 38%, #000 80%);
-    -webkit-mask-image: radial-gradient(ellipse 45% 60% at 22% 52%, transparent 38%, #000 80%);
+    mask-image: radial-gradient(ellipse 55% 55% at 28% 82%, transparent 40%, #000 82%);
+    -webkit-mask-image: radial-gradient(ellipse 55% 55% at 28% 82%, transparent 40%, #000 82%);
   }
 
   .code-stream__item {

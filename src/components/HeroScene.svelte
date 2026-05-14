@@ -282,9 +282,10 @@
     {/if}
   </div>
 
-  <!-- Center-left lede: intro line + Build title + CTAs. No backdrop card —
-       relies on the vignette + text-shadow for separation. -->
-  <div class="hero__lede container-x">
+  <!-- Bottom-left lede: intro line + Build title + CTAs. No backdrop card —
+       relies on the vignette + text-shadow for separation. Out of container
+       so it can hug the left viewport edge. -->
+  <div class="hero__lede">
     <p class="hero__intro">
       Hello, I'm <span class="hero__introName" use:scramble>Ruben Marcus</span> and I
     </p>
@@ -502,20 +503,19 @@
     opacity: 1;
   }
 
-  /* Vignette — sides nearly black, soft center clean, plus a gentle darken
-     behind the lede zone so the H1 reads against any background motion. */
+  /* Vignette — sides nearly black, soft center clean, plus a strong darken
+     in the bottom-left where the lede now sits so the big H1 always reads. */
   .hero__vignette {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
-      /* Soft darken behind the lede zone (center-left) — purely additive,
-         shouldn't blot out the rotating ASCII head */
-      radial-gradient(ellipse 42% 55% at 22% 52%, rgba(6, 8, 15, 0.5) 0%, rgba(6, 8, 15, 0.18) 55%, transparent 80%),
+      /* Strong darken under the bottom-left lede zone */
+      radial-gradient(ellipse 55% 50% at 28% 82%, rgba(6, 8, 15, 0.65) 0%, rgba(6, 8, 15, 0.28) 55%, transparent 82%),
       /* Side bars — pure black columns fading inward */
       linear-gradient(90deg, rgba(6, 8, 15, 0.95) 0%, rgba(6, 8, 15, 0.7) 6%, transparent 22%, transparent 82%, rgba(6, 8, 15, 0.7) 94%, rgba(6, 8, 15, 0.95) 100%),
       /* Top and bottom darkening */
-      linear-gradient(180deg, rgba(6, 8, 15, 0.78) 0%, transparent 18%, transparent 62%, rgba(6, 8, 15, 0.82) 100%);
+      linear-gradient(180deg, rgba(6, 8, 15, 0.78) 0%, transparent 18%, transparent 55%, rgba(6, 8, 15, 0.88) 100%);
   }
 
   .hero__grid {
@@ -618,17 +618,24 @@
     50% { opacity: 0.6; transform: scale(0.9); }
   }
 
-  /* ── Center-left lede ──
-     No backdrop card — text floats over the bg, relies on vignette + text-shadow. */
+  /* ── Bottom-left lede ──
+     No backdrop card — text floats over the bg, relies on vignette + text-shadow.
+     Sits OUT of the page container — hugs the left viewport edge with a
+     small inset gap so the title can really breathe. */
   .hero__lede {
     position: relative;
     z-index: 3;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.4rem;
-    max-width: 820px;
-    margin-block: auto;
+    gap: 1.55rem;
+    max-width: 1100px;
+    /* Hug the left edge — less gutter than the container */
+    padding-left: clamp(1.25rem, 2.5vw, 2rem);
+    padding-right: clamp(1.25rem, 2.5vw, 2rem);
+    /* Push to the bottom of the hero (above the stack bar) */
+    margin-top: auto;
+    margin-bottom: 1.5rem;
     /* Subtle drop-shadow for separation against the bg */
     filter: drop-shadow(0 4px 24px rgba(0, 0, 0, 0.55));
   }
@@ -652,17 +659,17 @@
   .hero__title {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(2.8rem, 7vw, 5.6rem);
-    line-height: 0.98;
-    letter-spacing: -0.025em;
+    font-size: clamp(3rem, 8.5vw, 7rem);
+    line-height: 0.96;
+    letter-spacing: -0.028em;
     font-weight: 500;
     color: var(--text);
     display: inline-flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 0.4rem 0.7rem;
+    gap: 0.4rem 0.8rem;
     text-wrap: balance;
-    text-shadow: 0 2px 28px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 2px 32px rgba(0, 0, 0, 0.7);
   }
 
   .hero__titleWord {
