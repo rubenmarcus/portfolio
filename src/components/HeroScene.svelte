@@ -282,28 +282,28 @@
     {/if}
   </div>
 
-  <!-- Bottom-right: heavy dark card carrying the main text (Defined VC style).
-       Intentionally OUT of the page container — hugs the right edge of the
-       viewport with a small inset gap. -->
-  <div class="hero__cardWrap">
-    <div class="hero__card">
-      <p class="hero__intro">
-        Hello, I'm <span class="hero__introName" use:scramble>Ruben Marcus</span> and I
-      </p>
+  <!-- Center-left lede: intro line + Build title + CTAs. No backdrop card —
+       relies on the vignette + text-shadow for separation. -->
+  <div class="hero__lede container-x">
+    <p class="hero__intro">
+      Hello, I'm <span class="hero__introName" use:scramble>Ruben Marcus</span> and I
+    </p>
 
-      <h1 class="hero__title">
-        <span class="hero__titleWord" use:scramble>Build</span>
-        <RotatingVerb words={verbs} interval={2800} fadeMs={340} italic={false} class="hero__verb" />
-      </h1>
+    <h1 class="hero__title">
+      <span class="hero__titleWord" use:scramble>Build</span>
+      <RotatingVerb words={verbs} interval={2800} fadeMs={340} italic={false} class="hero__verb" />
+    </h1>
 
-      <div class="hero__ctas">
-        <a href="/portfolio" class="btn btn-primary">See the work</a>
-        <a href="/ai" class="btn btn-secondary">AI tools I ship</a>
-      </div>
+    <div class="hero__ctas">
+      <a href="/portfolio" class="btn btn-primary">See the work</a>
+      <a href="/ai" class="btn btn-secondary">AI tools I ship</a>
+    </div>
+  </div>
 
-      <!-- Stack row with inline brand icons -->
-      <div class="hero__stack">
-        <span class="hero__stackLabel">Stack</span>
+  <!-- Bottom band: stack pills row spanning the hero footer -->
+  <div class="hero__stackBar container-x">
+    <div class="hero__stack">
+      <span class="hero__stackLabel">Stack</span>
 
         <span class="hero__stackItem" title="TypeScript">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -385,7 +385,6 @@
           </svg>
           SUI
         </span>
-      </div>
     </div>
   </div>
 
@@ -422,7 +421,9 @@
     overflow: hidden;
     isolation: isolate;
     padding-top: 6rem;
-    padding-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
   }
 
   .hero__bg {
@@ -501,21 +502,20 @@
     opacity: 1;
   }
 
-  /* Vignette — pushed harder so the sides go nearly black while the centre
-     where the ASCII head rotates stays mostly clean. */
+  /* Vignette — sides nearly black, soft center clean, plus a gentle darken
+     behind the lede zone so the H1 reads against any background motion. */
   .hero__vignette {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
+      /* Soft darken behind the lede zone (center-left) — purely additive,
+         shouldn't blot out the rotating ASCII head */
+      radial-gradient(ellipse 42% 55% at 22% 52%, rgba(6, 8, 15, 0.5) 0%, rgba(6, 8, 15, 0.18) 55%, transparent 80%),
       /* Side bars — pure black columns fading inward */
-      linear-gradient(90deg, rgba(6, 8, 15, 0.95) 0%, rgba(6, 8, 15, 0.7) 6%, transparent 18%, transparent 82%, rgba(6, 8, 15, 0.7) 94%, rgba(6, 8, 15, 0.95) 100%),
+      linear-gradient(90deg, rgba(6, 8, 15, 0.95) 0%, rgba(6, 8, 15, 0.7) 6%, transparent 22%, transparent 82%, rgba(6, 8, 15, 0.7) 94%, rgba(6, 8, 15, 0.95) 100%),
       /* Top and bottom darkening */
-      linear-gradient(180deg, rgba(6, 8, 15, 0.7) 0%, transparent 18%, transparent 62%, rgba(6, 8, 15, 0.78) 100%),
-      /* Soft center ellipse — keeps the rotating head visible */
-      radial-gradient(ellipse 65% 75% at 50% 48%, transparent 0%, rgba(6, 8, 15, 0.18) 60%, rgba(6, 8, 15, 0.55) 100%),
-      /* Bottom-right corner pad under the card */
-      radial-gradient(circle at 88% 92%, rgba(6, 8, 15, 0.82) 0%, transparent 50%);
+      linear-gradient(180deg, rgba(6, 8, 15, 0.78) 0%, transparent 18%, transparent 62%, rgba(6, 8, 15, 0.82) 100%);
   }
 
   .hero__grid {
@@ -618,47 +618,28 @@
     50% { opacity: 0.6; transform: scale(0.9); }
   }
 
-  /* ── Bottom-right text card (Defined VC inspired) ──
-     Sits OUT of the content container — pinned to the right viewport edge with
-     a small gap, so it extends visually further right than the page grid. */
-  .hero__cardWrap {
-    position: absolute;
-    right: clamp(0.75rem, 2vw, 1.5rem);
-    left: 1rem;
-    bottom: 2.25rem;
+  /* ── Center-left lede ──
+     No backdrop card — text floats over the bg, relies on vignette + text-shadow. */
+  .hero__lede {
+    position: relative;
     z-index: 3;
     display: flex;
-    justify-content: flex-end;
-  }
-
-  .hero__card {
-    width: 100%;
-    max-width: 680px;
-    padding: 2rem 2rem 1.75rem;
-    border: none;
-    border-radius: 20px;
-    background: rgba(6, 8, 15, 0.94);
-    backdrop-filter: blur(var(--blur-md));
-    -webkit-backdrop-filter: blur(var(--blur-md));
-    box-shadow: none;
-    display: flex;
     flex-direction: column;
-    gap: 1.1rem;
-  }
-
-  @media (min-width: 720px) {
-    .hero__card { padding: 2.4rem 2.4rem 2.1rem; }
-  }
-  @media (min-width: 1100px) {
-    .hero__card { max-width: 720px; }
+    align-items: flex-start;
+    gap: 1.4rem;
+    max-width: 820px;
+    margin-block: auto;
+    /* Subtle drop-shadow for separation against the bg */
+    filter: drop-shadow(0 4px 24px rgba(0, 0, 0, 0.55));
   }
 
   .hero__intro {
     margin: 0;
     font-family: var(--font-sans);
-    font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+    font-size: clamp(1.05rem, 1.4vw, 1.35rem);
     color: var(--muted);
     line-height: 1.4;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
   }
   .hero__introName {
     color: var(--accent-soft);
@@ -671,16 +652,17 @@
   .hero__title {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(2rem, 4.5vw, 3.4rem);
+    font-size: clamp(2.8rem, 7vw, 5.6rem);
     line-height: 0.98;
-    letter-spacing: -0.022em;
+    letter-spacing: -0.025em;
     font-weight: 500;
     color: var(--text);
     display: inline-flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 0.35rem 0.55rem;
+    gap: 0.4rem 0.7rem;
     text-wrap: balance;
+    text-shadow: 0 2px 28px rgba(0, 0, 0, 0.6);
   }
 
   .hero__titleWord {
@@ -699,15 +681,21 @@
     margin-top: 0.4rem;
   }
 
+  /* Bottom band hosting the stack pills */
+  .hero__stackBar {
+    position: relative;
+    z-index: 3;
+    margin-top: auto;
+  }
+
   /* Stack row with inline tech icons */
   .hero__stack {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.45rem;
-    margin-top: 0.55rem;
-    padding-top: 1.05rem;
-    border-top: 1px solid rgba(245, 241, 234, 0.07);
+    gap: 0.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(245, 241, 234, 0.08);
   }
 
   .hero__stackLabel {

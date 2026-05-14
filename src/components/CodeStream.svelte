@@ -144,13 +144,11 @@ return wrapKey(ss, payload);`,
   }
 
   function pickPosition(): { x: number; y: number } {
-    // Spawn anywhere on screen. The CSS mask handles the card-area cutout
-    // so we don't need a hard "no go" zone here — code can show on the right
-    // top half no problem, and the mask softly fades it under the bottom-right
-    // card.
+    // Spawn anywhere on screen. CSS mask softly fades code out of the
+    // center-left zone where the hero title sits, so we don't need a hard
+    // "no go" region here.
     const x = 2 + Math.random() * 88; // 2–90%
-    // Bias toward the upper two-thirds so reading still feels balanced
-    const y = 6 + Math.random() * 64; // 6–70%
+    const y = 4 + Math.random() * 78; // 4–82% — more vertical spread now
     return { x, y };
   }
 
@@ -235,10 +233,10 @@ return wrapKey(ss, payload);`,
     inset: 0;
     pointer-events: none;
     overflow: hidden;
-    /* Mask out only the bottom-right card region as a soft ellipse, so the
-       code stream is free to appear on the right top half + everywhere else. */
-    mask-image: radial-gradient(ellipse 55% 50% at 85% 88%, transparent 40%, #000 80%);
-    -webkit-mask-image: radial-gradient(ellipse 55% 50% at 85% 88%, transparent 40%, #000 80%);
+    /* Mask out the center-left zone where the lede sits — title + intro
+       need a clean field. Code is free to roam everywhere else. */
+    mask-image: radial-gradient(ellipse 45% 60% at 22% 52%, transparent 38%, #000 80%);
+    -webkit-mask-image: radial-gradient(ellipse 45% 60% at 22% 52%, transparent 38%, #000 80%);
   }
 
   .code-stream__item {
