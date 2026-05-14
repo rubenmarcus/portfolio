@@ -1,6 +1,7 @@
 <script lang="ts">
   import RotatingVerb from "./RotatingVerb.svelte";
   import HeroParticles from "./HeroParticles.svelte";
+  import AsciiField from "./AsciiField.svelte";
 
   const verbs = [
     "autonomous agents",
@@ -137,7 +138,23 @@
     <!-- Ice-blue tint over the video — applies hue/saturation, preserves luminance -->
     <div class="hero__iceTint" aria-hidden="true"></div>
 
-    <!-- Mouse-tracked halo, like the flashlight effect in the quantum-website ASCII shader -->
+    <!-- Reactive ASCII overlay — sparse by default, glyphs brighten/condense
+         in a halo around the cursor. Mimics the flashlight density boost from
+         quantum-website's ASCII shader. -->
+    <AsciiField
+      client:load
+      cell={14}
+      density={0.1}
+      morphRate={1.6}
+      opacity={0.18}
+      reactive={true}
+      color="rgba(200, 230, 255, 1)"
+      class="hero__asciiOverlay"
+    />
+
+    <!-- Mouse-tracked halo: brighter, tighter, more flashlight-like.
+         Sharper core (near-white) + cyan-frost edges so it reads as a focused
+         beam rather than a soft blob. -->
     <div
       class="hero__halo"
       aria-hidden="true"
@@ -305,23 +322,34 @@
     mix-blend-mode: color;
   }
 
-  /* Mouse-tracked halo — additive frosted-light wash that follows the cursor.
-     Brighter inner core to read against the pale ice tint underneath. */
+  /* Mouse-tracked halo — quantum-style flashlight beam:
+     small bright near-white core with steep cyan-frost falloff. */
   .hero__halo {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
       radial-gradient(
-        circle 380px at var(--mx, 50%) var(--my, 50%),
-        rgba(220, 240, 255, 0.42) 0%,
-        rgba(170, 215, 250, 0.28) 22%,
-        rgba(120, 185, 235, 0.14) 45%,
-        transparent 68%
+        circle 80px at var(--mx, 50%) var(--my, 50%),
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(220, 240, 255, 0.32) 60%,
+        transparent 100%
+      ),
+      radial-gradient(
+        circle 280px at var(--mx, 50%) var(--my, 50%),
+        rgba(190, 230, 255, 0.22) 0%,
+        rgba(120, 185, 235, 0.1) 40%,
+        transparent 72%
       );
     mix-blend-mode: screen;
-    transition: background 80ms linear;
-    opacity: 0.95;
+    transition: background 70ms linear;
+    opacity: 1;
+  }
+
+  /* Reactive ASCII overlay sits above the video + tint, below the halo */
+  :global(.hero__asciiOverlay) {
+    z-index: 0;
+    mix-blend-mode: screen;
   }
 
   /* Particle layer — z above the halo, screen-blended */

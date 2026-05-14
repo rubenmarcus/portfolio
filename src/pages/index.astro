@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HeroScene from "../components/HeroScene.svelte";
 import AsciiField from "../components/AsciiField.svelte";
+import CardAscii from "../components/CardAscii.svelte";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import Divider from "../components/Divider.astro";
@@ -72,8 +73,9 @@ const featuredArticles = allPosts.slice(0, 3);
     />
 
     <div class="ai-strip">
-      {aiTools.map((t) => (
+      {aiTools.map((t, i) => (
         <a class="ai-card" href={t.url} target="_blank" rel="noopener noreferrer" data-reveal>
+          <CardAscii client:visible seed={`home-${t.slug}`} variant={(["wave","noise","block"] as const)[i % 3]} cols={11} rows={4} />
           <div class="ai-card__top">
             <span class="ai-card__name">{t.name}</span>
             <span class="bracket">[ {t.year} ]</span>
@@ -268,6 +270,8 @@ const featuredArticles = allPosts.slice(0, 3);
   @media (min-width: 1080px) { .ai-strip { grid-template-columns: 1fr 1fr 1fr; } }
 
   .ai-card {
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: 0.7rem;

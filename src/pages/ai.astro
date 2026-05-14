@@ -4,6 +4,7 @@ import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import Divider from "../components/Divider.astro";
 import AsciiField from "../components/AsciiField.svelte";
+import CardAscii from "../components/CardAscii.svelte";
 import { aiTools, supportingTools } from "../lib/data/aiTools";
 ---
 
@@ -55,6 +56,7 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
           </div>
 
           <ul class="tool__features" data-reveal-item>
+            <CardAscii client:visible seed={`feat-${t.slug}`} variant="block" cols={14} rows={5} />
             <span class="bracket tool__featuresLabel">[ Features ]</span>
             {t.features.map((f) => (
               <li>{f}</li>
@@ -76,8 +78,9 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
     />
 
     <div class="support-grid">
-      {supportingTools.map((s) => (
+      {supportingTools.map((s, i) => (
         <a class="support-card" href={s.repo} target="_blank" rel="noopener noreferrer" data-reveal>
+          <CardAscii client:visible seed={`sup-${s.name}`} variant={(["noise","wave","block","noise"] as const)[i % 4]} cols={10} rows={4} />
           <div class="support-card__top">
             <span class="support-card__name">{s.name}</span>
             <span class="support-card__arrow" aria-hidden="true">↗</span>
@@ -193,13 +196,14 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
   }
 
   .tool__features {
+    position: relative;
+    overflow: hidden;
     list-style: none;
-    padding: 0;
+    padding: 1.4rem;
     margin: 0;
     display: flex;
     flex-direction: column;
     gap: 0.7rem;
-    padding: 1.4rem;
     border: 1px solid var(--line);
     border-radius: var(--radius-card);
     background: var(--bg-1);
@@ -234,6 +238,8 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
   @media (min-width: 720px) { .support-grid { grid-template-columns: 1fr 1fr; } }
 
   .support-card {
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: 0.55rem;

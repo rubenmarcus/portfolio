@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import Divider from "../components/Divider.astro";
+import CardAscii from "../components/CardAscii.svelte";
 
 const timeline = [
   { year: "2026", role: "Senior AI Fullstack Engineer", org: "MultiVM Labs", note: "Shipping Ralph Starter, Autoresearcher, AEO.js. Also: post-quantum tooling for the Quantum L1." },
@@ -95,8 +96,9 @@ const skills = [
 
   <Section id="skills" tight>
     <div class="skills-grid" data-reveal>
-      {skills.map((s) => (
+      {skills.map((s, i) => (
         <div class="skills-col" data-reveal-item>
+          <CardAscii client:visible seed={`skill-${s.group}`} variant={(["noise","wave","block"] as const)[i % 3]} cols={9} rows={4} />
           <span class="bracket skills-label">[ {s.group} ]</span>
           <ul>
             {s.items.map((it) => <li>{it}</li>)}
@@ -208,6 +210,8 @@ const skills = [
   @media (min-width: 720px) { .skills-grid { grid-template-columns: repeat(3, 1fr); } }
 
   .skills-col {
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: 0.55rem;

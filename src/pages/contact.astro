@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import AsciiField from "../components/AsciiField.svelte";
+import CardAscii from "../components/CardAscii.svelte";
 import Icon from "../components/Icon.astro";
 import { socialLinks } from "../lib/navigation";
 
@@ -35,6 +36,7 @@ const iconMap: Record<string, "github" | "x-twitter" | "linkedin" | "mail" | "te
 
     <div class="contact-grid">
       <a href="mailto:ruben@rubenmarcus.dev" class="contact-card contact-card--primary" data-reveal>
+        <CardAscii client:visible seed="contact-primary" variant="wave" cols={12} rows={5} />
         <div class="contact-card__head">
           <span class="bracket">[ Primary ]</span>
           <Icon name="arrow-up-right" size={18} class="contact-card__arrow" />
@@ -47,6 +49,7 @@ const iconMap: Record<string, "github" | "x-twitter" | "linkedin" | "mail" | "te
       </a>
 
       <div class="contact-card" data-reveal>
+        <CardAscii client:visible seed="contact-public" variant="block" cols={12} rows={5} />
         <div class="contact-card__head">
           <span class="bracket">[ Public channels ]</span>
         </div>
@@ -99,6 +102,8 @@ const iconMap: Record<string, "github" | "x-twitter" | "linkedin" | "mail" | "te
   @media (min-width: 720px) { .contact-grid { grid-template-columns: 1fr 1fr; } }
 
   .contact-card {
+    position: relative;
+    overflow: hidden;
     border: 1px solid var(--line);
     border-radius: var(--radius-card);
     padding: 1.6rem;
