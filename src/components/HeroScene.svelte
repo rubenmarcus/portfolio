@@ -6,12 +6,19 @@
   import { scramble } from "../lib/motion/scramble";
 
   const verbs = [
-    "autonomous agents",
+    "autonomous AI agents",
     "post-quantum tools",
     "DeFi trading bots",
-    "spec-driven loops",
-    "AI search infra",
+    "AI frameworks",
+    "landing pages",
+    "NFT marketplaces",
+    "e-commerce platforms",
+    "developer portals",
+    "spec-driven coding loops",
     "wallet UX",
+    "banking portals",
+    "AI search infra",
+    "open-source libraries",
   ];
 
   const GH_USER = "rubenmarcus";
@@ -203,14 +210,14 @@
     <!-- Drifting cloud blobs, like the quantum-website FBM cloud field -->
     <CloudField client:load blobs={6} class="hero__clouds" />
 
-    <!-- Sparse reactive ASCII field — glyphs brighten + condense in a halo
-         around the cursor (quantum-website density-boost flashlight) -->
+    <!-- Reactive ASCII field — denser + brighter than before so the cursor
+         flashlight reads as a real quantum-style density boost. -->
     <AsciiField
       client:load
-      cell={14}
-      density={0.08}
-      morphRate={1.4}
-      opacity={0.16}
+      cell={12}
+      density={0.16}
+      morphRate={2.2}
+      opacity={0.22}
       reactive={true}
       color="rgba(200, 230, 255, 1)"
       class="hero__asciiHalo"
@@ -282,16 +289,15 @@
     {/if}
   </div>
 
-  <!-- Bottom-left lede: intro line + Build title + CTAs. No backdrop card —
-       relies on the vignette + text-shadow for separation. Out of container
-       so it can hug the left viewport edge. -->
+  <!-- Bottom-left lede: intro line ("Hello, I'm Ruben Marcus and I Build") on
+       one line, then a huge H1 that's just the rotating noun. -->
   <div class="hero__lede">
     <p class="hero__intro">
-      Hello, I'm <span class="hero__introName" use:scramble>Ruben Marcus</span> and I
+      Hello, I'm <span class="hero__introName" use:scramble>Ruben Marcus</span>
+      and I <span class="hero__introVerb" use:scramble>Build</span>
     </p>
 
     <h1 class="hero__title">
-      <span class="hero__titleWord" use:scramble>Build</span>
       <RotatingVerb words={verbs} interval={2800} fadeMs={340} italic={false} class="hero__verb" />
     </h1>
 
@@ -340,15 +346,17 @@
         </span>
 
         <span class="hero__stackItem" title="Next.js">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M11.572 0c-.176.01-.722.054-1.235.106C6.394.473 2.831 2.622 1.057 5.949A12.39 12.39 0 0 0 .15 8.366c-.25.844-.36 1.518-.394 2.451-.025.728-.012 1.072.039 1.747.166 2.213.95 4.346 2.231 6.066.273.368.929 1.124 1.298 1.497.732.74 1.451 1.297 2.39 1.81.99.541 1.857.892 2.873 1.16.516.137 1.123.241 1.602.273.276.018 1.21.018 1.473 0 .728-.05 1.218-.144 1.937-.371.85-.268 1.69-.673 2.39-1.16 1.61-1.12 2.95-2.71 3.853-4.553a12.06 12.06 0 0 0 .77-2.215c.298-1.32.42-2.685.353-3.973-.103-1.991-.62-3.86-1.553-5.535-.745-1.34-1.762-2.486-2.998-3.38C16.927.957 14.99.275 13.084.106 12.864.087 11.91.011 11.572 0zm4.665 7.51c.27.034.49.137.626.292.06.067.21.36.21.413 0 .015-.073.013-.123 0l-.117-.04c-.31-.073-.66-.044-.96.08-.31.13-.51.34-.624.65-.146.4-.043.81.27 1.084.083.077.18.13.516.291l.18.087c.45.215.752.523.86.876.029.097.043.224.043.355 0 .447-.221.83-.628 1.087-.452.286-1.114.354-1.7.176-.484-.147-.95-.491-1.158-.86l-.123-.21c.024-.013.06-.034.07-.044l.085-.05.16-.094.07.107a.99.99 0 0 0 .268.282c.337.218.83.193 1.18-.063.197-.142.293-.31.293-.51 0-.179-.063-.31-.234-.485-.124-.127-.205-.176-.59-.36-.5-.243-.795-.467-1.027-.79a1.34 1.34 0 0 1-.23-.748c-.018-.422.117-.776.4-1.058.343-.34.84-.51 1.452-.484zm-7.42 1.045v6.05c0 .117-.005.227-.013.245-.026.058-.087.118-.16.157-.058.029-.108.034-.376.034H7.992v-.166c0-.092.005-.166.012-.166.007 0 .078-.007.158-.015.236-.025.388-.16.45-.395.016-.06.025-.225.025-1.66V8.555zm-.026.184l1.572 2.07.788 1.034c.013-.013.044-.234.073-.49.013-.117.026-.252.026-.295V8.738z"/>
+          <svg width="14" height="14" viewBox="0 0 180 180" fill="none" aria-hidden="true">
+            <circle cx="90" cy="90" r="87" fill="currentColor"/>
+            <path d="M149.508 157.52L69.142 54H54v71.97h12.114V69.384l73.885 95.461a90.304 90.304 0 0 0 9.509-7.325z" fill="#0c0d10"/>
+            <path d="M116 54h12v72h-12z" fill="#0c0d10"/>
           </svg>
           Next.js
         </span>
 
         <span class="hero__stackItem" title="Svelte">
-          <svg width="14" height="14" viewBox="0 0 98.1 118" fill="currentColor" aria-hidden="true">
-            <path d="M91.8 15.6C80.9-.1 59.2-4.7 43.6 5.2L16.1 22.8C8.6 27.5 3.4 35.2 1.9 43.9c-1.3 7.3-.2 14.8 3.3 21.3-2.4 3.6-4 7.6-4.7 11.8-1.6 8.9.5 18 5.7 25.3 11 15.7 32.6 20.3 48.2 10.4l27.5-17.5c7.5-4.7 12.7-12.4 14.2-21.1 1.3-7.3.2-14.8-3.3-21.3 2.4-3.6 4-7.6 4.7-11.8 1.7-9-.4-18.1-5.6-25.4M40.9 103.9c-7.9 2-16.3-1.1-21-7.7-3.1-4.4-4.4-9.9-3.4-15.3.2-.9.4-1.7.7-2.6l.5-1.7 1.5 1.1c3.5 2.6 7.4 4.5 11.6 5.8l1.1.3-.1 1.1c-.1 1.6.3 3.2 1.2 4.5 1.4 2 3.9 2.9 6.2 2.3.5-.1 1-.3 1.5-.6l27.5-17.5c1.2-.8 2-2 2.3-3.4.3-1.4 0-2.9-.8-4.1-1.4-2-3.9-2.9-6.2-2.3-.5.1-1 .3-1.5.6L52 70.1c-1.6.9-3.3 1.7-5 2.2-7.9 2-16.3-1.1-21-7.7-2.9-4.4-4.2-9.9-3.4-15.3 1-8.7 7.8-15.1 16.4-17.8 1.7-.5 3.4-.9 5.2-1 7.9-2 16.3 1.1 21 7.7 3.1 4.4 4.4 9.9 3.4 15.3-.2.9-.4 1.7-.7 2.6l-.5 1.7-1.5-1c-3.5-2.6-7.4-4.5-11.6-5.8L51 50.7l.1-1.1c.1-1.6-.3-3.2-1.2-4.5-1.4-2-3.9-2.9-6.2-2.3-.5.1-1 .3-1.5.6L14.6 60.8c-1.2.8-2 2-2.3 3.4-.3 1.4 0 2.9.8 4.1 1.4 2 3.9 2.9 6.2 2.3.5-.1 1-.3 1.5-.6L31.4 64c1.6-.9 3.3-1.7 5-2.2 1.7-.5 3.4-.9 5.2-1z"/>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M19.589 6.591a5.61 5.61 0 0 0-7.571-1.645l-5.36 3.42a6.146 6.146 0 0 0-2.779 4.114 6.472 6.472 0 0 0 .64 4.158 6.158 6.158 0 0 0-.92 2.297 6.554 6.554 0 0 0 1.121 4.959 5.616 5.616 0 0 0 7.571 1.645l5.36-3.42a6.146 6.146 0 0 0 2.779-4.114 6.471 6.471 0 0 0-.64-4.158 6.146 6.146 0 0 0 .92-2.297 6.55 6.55 0 0 0-1.121-4.959m-9.469 13.713a4.169 4.169 0 0 1-4.482-1.661 3.95 3.95 0 0 1-.679-2.985 3.736 3.736 0 0 1 .128-.5l.1-.31.273.2c.638.466 1.32.83 2.039 1.086l.198.06-.018.196a1.193 1.193 0 0 0 .216.79 1.243 1.243 0 0 0 1.334.494c.087-.027.17-.064.252-.107l5.358-3.422c.221-.137.388-.357.469-.612a1.295 1.295 0 0 0-.234-1.106 1.244 1.244 0 0 0-1.334-.495c-.086.024-.17.058-.249.103l-2.046 1.301a4.13 4.13 0 0 1-.83.34 4.17 4.17 0 0 1-4.483-1.661 3.952 3.952 0 0 1-.68-2.985 3.71 3.71 0 0 1 1.681-2.487l5.359-3.42c.265-.169.547-.301.842-.395a4.17 4.17 0 0 1 4.482 1.661 3.949 3.949 0 0 1 .679 2.985 3.762 3.762 0 0 1-.128.5l-.1.31-.272-.2a6.683 6.683 0 0 0-2.039-1.087l-.198-.06.018-.195a1.184 1.184 0 0 0-.216-.79 1.243 1.243 0 0 0-1.334-.494c-.087.023-.17.057-.252.107l-5.359 3.422a1.198 1.198 0 0 0-.468.612c-.087.247-.087.515 0 .763a1.244 1.244 0 0 0 1.567.598c.087-.023.17-.057.252-.107l2.046-1.301c.262-.166.543-.281.83-.34a4.17 4.17 0 0 1 4.482 1.661 3.952 3.952 0 0 1 .68 2.985 3.71 3.71 0 0 1-1.681 2.487l-5.359 3.42a3.85 3.85 0 0 1-.842.394"/>
           </svg>
           Svelte
         </span>
@@ -385,6 +393,56 @@
             <path d="M12 2C7 9 5 12.5 5 16a7 7 0 0 0 14 0c0-3.5-2-7-7-14zm0 5.6c1.4 2 2.7 3.9 3.6 5.3.9 1.4 1.4 2.3 1.4 3.1a5 5 0 0 1-10 0c0-.8.5-1.7 1.4-3.1.9-1.4 2.2-3.3 3.6-5.3z"/>
           </svg>
           SUI
+        </span>
+
+        <span class="hero__stackItem" title="Solana">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M4.2 16.4c.2-.2.4-.3.6-.3h17c.4 0 .6.5.3.8l-3.3 3.4c-.2.2-.4.3-.6.3h-17c-.4 0-.6-.5-.3-.8l3.3-3.4zM4.2 3.7c.2-.2.4-.3.6-.3h17c.4 0 .6.5.3.8L18.8 7.6c-.2.2-.4.3-.6.3h-17c-.4 0-.6-.5-.3-.8l3.3-3.4zM18.8 10c-.2-.2-.4-.3-.6-.3h-17c-.4 0-.6.5-.3.8l3.3 3.4c.2.2.4.3.6.3h17c.4 0 .6-.5.3-.8L18.8 10z"/>
+          </svg>
+          Solana
+        </span>
+
+        <span class="hero__stackItem" title="Cardano">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="12" cy="12" r="1.6"/>
+            <circle cx="12" cy="6.4" r="1"/>
+            <circle cx="12" cy="17.6" r="1"/>
+            <circle cx="7" cy="9.2" r="1"/>
+            <circle cx="17" cy="9.2" r="1"/>
+            <circle cx="7" cy="14.8" r="1"/>
+            <circle cx="17" cy="14.8" r="1"/>
+            <circle cx="3" cy="12" r="0.8"/>
+            <circle cx="21" cy="12" r="0.8"/>
+            <circle cx="5.4" cy="6" r="0.6"/>
+            <circle cx="18.6" cy="6" r="0.6"/>
+            <circle cx="5.4" cy="18" r="0.6"/>
+            <circle cx="18.6" cy="18" r="0.6"/>
+          </svg>
+          Cardano
+        </span>
+
+        <span class="hero__stackItem" title="GraphQL">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="12,2 21,7 21,17 12,22 3,17 3,7"/>
+            <line x1="3" y1="7" x2="21" y2="17"/>
+            <line x1="21" y1="7" x2="3" y2="17"/>
+            <line x1="12" y1="2" x2="12" y2="22"/>
+          </svg>
+          GraphQL
+        </span>
+
+        <span class="hero__stackItem" title="Tailwind">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.337 6.182 14.976 4.8 12.001 4.8zM6.001 12c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.337 13.382 8.976 12 6.001 12z"/>
+          </svg>
+          Tailwind
+        </span>
+
+        <span class="hero__stackItem" title="Claude">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M6.93 17.04l4.13-10.08h1.88l4.13 10.08h-1.92l-.92-2.36H9.78l-.93 2.36H6.93zm3.42-3.92h3.3l-1.65-4.24-1.65 4.24z"/>
+          </svg>
+          Claude
         </span>
     </div>
   </div>
@@ -480,42 +538,52 @@
     color: rgba(190, 230, 255, 0.62) !important;
   }
 
-  /* Quantum-style flashlight halo — bright near-white core + cyan-frost falloff */
+  /* Quantum-style flashlight halo — bright near-white core, wider falloff.
+     Stronger than before so the cursor reads as an actual light source. */
   .hero__halo {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
+      /* Tight bright core */
       radial-gradient(
-        circle 90px at var(--mx, 50%) var(--my, 50%),
-        rgba(255, 255, 255, 0.55) 0%,
-        rgba(220, 240, 255, 0.3) 60%,
+        circle 110px at var(--mx, 50%) var(--my, 50%),
+        rgba(255, 255, 255, 0.7) 0%,
+        rgba(220, 240, 255, 0.4) 55%,
         transparent 100%
       ),
+      /* Mid frost ring */
       radial-gradient(
-        circle 320px at var(--mx, 50%) var(--my, 50%),
-        rgba(190, 230, 255, 0.22) 0%,
-        rgba(120, 185, 235, 0.1) 40%,
-        transparent 72%
+        circle 260px at var(--mx, 50%) var(--my, 50%),
+        rgba(190, 230, 255, 0.28) 0%,
+        rgba(120, 185, 235, 0.14) 45%,
+        transparent 75%
+      ),
+      /* Wide ambient glow */
+      radial-gradient(
+        circle 460px at var(--mx, 50%) var(--my, 50%),
+        rgba(94, 200, 255, 0.12) 0%,
+        rgba(94, 200, 255, 0.05) 50%,
+        transparent 80%
       );
     mix-blend-mode: screen;
-    transition: background 70ms linear;
+    transition: background 60ms linear;
     opacity: 1;
   }
 
-  /* Vignette — sides nearly black, soft center clean, plus a strong darken
-     in the bottom-left where the lede now sits so the big H1 always reads. */
+  /* Vignette — sides pushed almost solid black, soft center stays clean,
+     plus a strong darken in the bottom-left where the lede sits. */
   .hero__vignette {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
       /* Strong darken under the bottom-left lede zone */
-      radial-gradient(ellipse 55% 50% at 28% 82%, rgba(6, 8, 15, 0.65) 0%, rgba(6, 8, 15, 0.28) 55%, transparent 82%),
-      /* Side bars — pure black columns fading inward */
-      linear-gradient(90deg, rgba(6, 8, 15, 0.95) 0%, rgba(6, 8, 15, 0.7) 6%, transparent 22%, transparent 82%, rgba(6, 8, 15, 0.7) 94%, rgba(6, 8, 15, 0.95) 100%),
+      radial-gradient(ellipse 55% 55% at 22% 80%, rgba(6, 8, 15, 0.7) 0%, rgba(6, 8, 15, 0.32) 55%, transparent 82%),
+      /* Side bars — near-solid black columns fading inward (darker than before) */
+      linear-gradient(90deg, rgba(6, 8, 15, 1) 0%, rgba(6, 8, 15, 0.9) 7%, rgba(6, 8, 15, 0.45) 16%, transparent 28%, transparent 72%, rgba(6, 8, 15, 0.45) 84%, rgba(6, 8, 15, 0.9) 93%, rgba(6, 8, 15, 1) 100%),
       /* Top and bottom darkening */
-      linear-gradient(180deg, rgba(6, 8, 15, 0.78) 0%, transparent 18%, transparent 55%, rgba(6, 8, 15, 0.88) 100%);
+      linear-gradient(180deg, rgba(6, 8, 15, 0.85) 0%, transparent 18%, transparent 55%, rgba(6, 8, 15, 0.92) 100%);
   }
 
   .hero__grid {
@@ -647,33 +715,32 @@
   .hero__intro {
     margin: 0;
     font-family: var(--font-sans);
-    font-size: clamp(1.05rem, 1.4vw, 1.35rem);
+    font-size: clamp(1.15rem, 1.7vw, 1.55rem);
     color: var(--muted);
-    line-height: 1.4;
-    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+    line-height: 1.35;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.65);
   }
-  .hero__introName {
+  .hero__introName,
+  .hero__introVerb {
     color: var(--accent-soft);
     font-weight: 500;
     cursor: default;
     transition: color var(--duration-hover) var(--ease-default);
   }
-  .hero__introName:hover { color: #c8def0; }
+  .hero__introName:hover,
+  .hero__introVerb:hover { color: #c8def0; }
 
   .hero__title {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(3rem, 8.5vw, 7rem);
+    font-size: clamp(3.4rem, 9.5vw, 7.5rem);
     line-height: 0.96;
-    letter-spacing: -0.028em;
+    letter-spacing: -0.03em;
     font-weight: 500;
     color: var(--text);
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.4rem 0.8rem;
+    display: block;
     text-wrap: balance;
-    text-shadow: 0 2px 32px rgba(0, 0, 0, 0.7);
+    text-shadow: 0 2px 32px rgba(0, 0, 0, 0.75);
   }
 
   .hero__titleWord {
@@ -759,7 +826,7 @@
      accent tint. Stays subtle because the surrounding pill is dark. */
   .hero__stackItem[title="TypeScript"] svg { color: #3178c6; }
   .hero__stackItem[title="Node.js"]    svg { color: #5fa04e; }
-  .hero__stackItem[title="Python"]     svg { color: #3776ab; }
+  .hero__stackItem[title="Python"]     svg { color: #ffd43b; }
   .hero__stackItem[title="React"]      svg { color: #61dafb; }
   .hero__stackItem[title="Next.js"]    svg { color: #f5f1ea; }
   .hero__stackItem[title="Svelte"]     svg { color: #ff3e00; }
@@ -767,6 +834,11 @@
   .hero__stackItem[title^="EVM"]       svg { color: #c4cbf5; }
   .hero__stackItem[title="NEAR"]       svg { color: #f5f1ea; }
   .hero__stackItem[title="SUI"]        svg { color: #4ca2ff; }
+  .hero__stackItem[title="Solana"]     svg { color: #14f195; }
+  .hero__stackItem[title="Cardano"]    svg { color: #5085ff; }
+  .hero__stackItem[title="GraphQL"]    svg { color: #e535ab; }
+  .hero__stackItem[title="Tailwind"]   svg { color: #38bdf8; }
+  .hero__stackItem[title="Claude"]     svg { color: #d97757; }
 
   /* ── Side icon column ── */
   .hero__sideIcons {
