@@ -287,6 +287,67 @@
         </div>
       </a>
     {/if}
+
+    <a class="hero__stat" href="/portfolio">
+      <svg class="hero__statIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="16" rx="2"/>
+        <line x1="3" y1="9" x2="21" y2="9"/>
+        <line x1="9" y1="20" x2="9" y2="9"/>
+      </svg>
+      <div class="hero__statBody">
+        <span class="hero__statBig">62 projects</span>
+        <span class="hero__statSub">shipped in 13 years</span>
+      </div>
+    </a>
+
+    <a class="hero__stat" href="/ai">
+      <svg class="hero__statIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
+      </svg>
+      <div class="hero__statBody">
+        <span class="hero__statBig">10 AI agents</span>
+        <span class="hero__statSub">for DeFi across 5 chains</span>
+      </div>
+    </a>
+
+    <a class="hero__stat" href="/ai">
+      <svg class="hero__statIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="4 17 10 11 4 5"/>
+        <line x1="12" y1="19" x2="20" y2="19"/>
+      </svg>
+      <div class="hero__statBody">
+        <span class="hero__statBig">5 AI tools</span>
+        <span class="hero__statSub">shipped open source</span>
+      </div>
+    </a>
+
+    <a class="hero__stat" href="/ai">
+      <svg class="hero__statIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+        <line x1="12" y1="22.08" x2="12" y2="12"/>
+      </svg>
+      <div class="hero__statBody">
+        <span class="hero__statBig">5 SDK tools</span>
+        <span class="hero__statSub">for Web3 + AI</span>
+      </div>
+    </a>
+
+    <a class="hero__stat" href="/portfolio">
+      <svg class="hero__statIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+        <line x1="4" y1="22" x2="20" y2="22"/>
+        <line x1="10" y1="14.66" x2="10" y2="22"/>
+        <line x1="14" y1="14.66" x2="14" y2="22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/>
+      </svg>
+      <div class="hero__statBody">
+        <span class="hero__statBig">7 hackathons</span>
+        <span class="hero__statSub">joined + shipped</span>
+      </div>
+    </a>
   </div>
 
   <!-- Bottom-left lede: intro line ("Hello, I'm Ruben Marcus and I Build") on
@@ -598,17 +659,17 @@
     mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
   }
 
-  /* ── Top-right stat stack: commits / stars / followers ── */
+  /* ── Top-right stat stack: 8 badges, compact ── */
   .hero__stats {
     position: absolute;
-    top: 6.5rem;
+    top: 6.25rem;
     right: clamp(1rem, 3vw, 2rem);
     z-index: 3;
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 0.5rem;
-    max-width: 340px;
+    gap: 0.45rem;
+    max-width: 320px;
   }
 
   .hero__stat {
@@ -616,9 +677,9 @@
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
-    gap: 0.65rem;
-    padding: 0.7rem 0.95rem;
-    border-radius: 12px;
+    gap: 0.6rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 11px;
     background: rgba(6, 8, 15, 0.78);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
@@ -641,29 +702,29 @@
   .hero__statBody {
     display: flex;
     flex-direction: column;
-    gap: 0.1rem;
+    gap: 0.05rem;
     min-width: 0;
   }
 
   .hero__statBig {
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
-    line-height: 1.15;
+    line-height: 1.1;
     color: var(--text);
   }
   .hero__statSub {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     color: var(--muted);
     letter-spacing: 0.01em;
   }
   .hero__statLast {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.66rem;
     color: var(--muted-soft);
-    margin-top: 0.2rem;
-    max-width: 260px;
+    margin-top: 0.15rem;
+    max-width: 230px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
