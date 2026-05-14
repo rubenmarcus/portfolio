@@ -619,25 +619,29 @@
   }
 
   /* ── Bottom-left lede ──
-     No backdrop card — text floats over the bg, relies on vignette + text-shadow.
-     Sits OUT of the page container — hugs the left viewport edge with a
-     small inset gap so the title can really breathe. */
+     Anchored at ~20% from the left edge and ~10% up from the bottom of the
+     hero, out of the normal flow. Wide max-width so the big H1 can stretch. */
   .hero__lede {
-    position: relative;
+    position: absolute;
+    left: 20%;
+    bottom: 10%;
+    right: clamp(1rem, 4vw, 3rem);
     z-index: 3;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 1.55rem;
     max-width: 1100px;
-    /* Hug the left edge — less gutter than the container */
-    padding-left: clamp(1.25rem, 2.5vw, 2rem);
-    padding-right: clamp(1.25rem, 2.5vw, 2rem);
-    /* Push to the bottom of the hero (above the stack bar) */
-    margin-top: auto;
-    margin-bottom: 1.5rem;
-    /* Subtle drop-shadow for separation against the bg */
     filter: drop-shadow(0 4px 24px rgba(0, 0, 0, 0.55));
+  }
+
+  /* On narrow screens, fall back to flush-left so we don't waste space */
+  @media (max-width: 720px) {
+    .hero__lede {
+      left: 1rem;
+      right: 1rem;
+      bottom: 8%;
+    }
   }
 
   .hero__intro {
@@ -695,36 +699,36 @@
     margin-top: auto;
   }
 
-  /* Stack row with inline tech icons */
+  /* Stack row with inline tech icons (2x sized) */
   .hero__stack {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.7rem;
     padding-top: 1.5rem;
     border-top: 1px solid rgba(245, 241, 234, 0.08);
   }
 
   .hero__stackLabel {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     color: var(--muted-soft);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-right: 0.35rem;
+    margin-right: 0.5rem;
   }
 
   .hero__stackItem {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.3rem 0.7rem;
+    gap: 0.6rem;
+    padding: 0.55rem 1.05rem;
     border-radius: var(--radius-pill);
-    border: 1px solid rgba(245, 241, 234, 0.08);
+    border: 1px solid rgba(245, 241, 234, 0.1);
     background: rgba(160, 195, 255, 0.05);
     color: var(--muted);
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.95rem;
     letter-spacing: 0.01em;
     transition:
       color var(--duration-hover) var(--ease-default),
@@ -733,12 +737,20 @@
   }
   .hero__stackItem:hover {
     color: var(--accent-soft);
-    border-color: rgba(58, 109, 255, 0.4);
-    background: rgba(58, 109, 255, 0.08);
+    border-color: rgba(94, 200, 255, 0.45);
+    background: rgba(94, 200, 255, 0.09);
   }
+  /* All inline SVG icons inside the stack — scale uniformly to ~2x */
   .hero__stackItem svg {
     flex-shrink: 0;
+    width: 22px !important;
+    height: 22px !important;
     color: var(--accent-soft);
+  }
+  /* EVM icon is intentionally narrower than tall — keep its aspect */
+  .hero__stackItem[title^="EVM"] svg {
+    width: 18px !important;
+    height: 22px !important;
   }
 
   /* ── Side icon column ── */
