@@ -23,7 +23,6 @@
     uniform vec2  uResolution;
     uniform float uTime;
 
-    // Hash + noise primitives
     float hash(vec2 p) {
       return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
     }
@@ -49,11 +48,11 @@
     }
 
     void main() {
+      // Sample FBM in normalized space for a slow drifting ice field
       vec2 uv = gl_FragCoord.xy / uResolution.xy;
       vec2 p = uv * 1.6;
       p.x *= uResolution.x / uResolution.y;
 
-      // Domain warp so it billows
       float t = uTime * 0.06;
       vec2 q = vec2(fbm(p + vec2(t, 0.0)), fbm(p + vec2(0.0, t)));
       vec2 r = vec2(
@@ -62,18 +61,39 @@
       );
       float n = fbm(p + r);
 
-      // Ice palette — black to glacial cyan
-      vec3 deep = vec3(0.02, 0.03, 0.05);
-      vec3 mid  = vec3(0.16, 0.34, 0.52);
-      vec3 hi   = vec3(0.55, 0.78, 0.94);
+      // ─── Quantize to a dot grid (ASCII-dot feel) ──────────────────
+      // Cell size in pixels — bigger = chunkier dots
+      float cell = 9.0;
+      vec2 cellId = floor(gl_FragCoord.xy / cell);
+      vec2 cellCenter = (cellId + 0.5) * cell;
+      // Distance from current fragment to the centre of its cell, in pixels
+      float distToCenter = length(gl_FragCoord.xy - cellCenter);
 
-      float v = smoothstep(0.25, 0.85, n);
-      vec3 col = mix(deep, mid, v);
-      col = mix(col, hi, smoothstep(0.7, 1.0, n) * 0.55);
+      // Per-cell noise sample drives the dot's intensity / radius
+      float cellNoise = fbm(cellId * 0.08 + r * 0.5 + t * 0.6);
+      // Threshold low values to empty (sparse field) — only brighter cells get dots
+      float intensity = smoothstep(0.52, 0.85, cellNoise);
 
-      // Vignette
-      float vig = smoothstep(1.1, 0.35, length(uv - 0.5));
-      col *= 0.55 + 0.45 * vig;
+      // Dot radius scales with intensity; antialias edges with smoothstep
+      float dotRadius = mix(0.0, cell * 0.42, intensity);
+      float dot = 1.0 - smoothstep(dotRadius - 0.8, dotRadius + 0.8, distToCenter);
+      dot *= intensity;
+
+      // Ice palette — deep black to glacial cyan
+      vec3 deep = vec3(0.01, 0.02, 0.03);
+      vec3 mid  = vec3(0.12, 0.26, 0.40);
+      vec3 hi   = vec3(0.50, 0.74, 0.92);
+
+      vec3 col = mix(deep, mid, smoothstep(0.3, 0.85, cellNoise));
+      col = mix(col, hi, smoothstep(0.7, 1.0, cellNoise) * 0.6);
+      col *= dot;
+
+      // Strong black overlay so the dots float on near-pure black
+      col *= 0.45;
+
+      // Vignette pulls the edges to black
+      float vig = smoothstep(1.05, 0.3, length(uv - 0.5));
+      col *= 0.35 + 0.65 * vig;
 
       gl_FragColor = vec4(col, 1.0);
     }
