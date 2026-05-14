@@ -86,19 +86,34 @@
     filter: brightness(0.86) contrast(1.04) saturate(0.18);
   }
 
-  /* Ice tint over the video */
+  /* Ice tint — applied ONLY where the ASCII head sits (centered ellipse
+     in the video). The rest of the bg keeps the original grayscale ASCII
+     so the colour is localised to the character, not the whole viewport. */
   .hero__iceTint {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background: linear-gradient(
       135deg,
-      rgba(200, 235, 255, 0.5) 0%,
-      rgba(150, 210, 245, 0.45) 35%,
-      rgba(100, 180, 230, 0.45) 65%,
-      rgba(60, 140, 200, 0.5) 100%
+      rgba(200, 235, 255, 0.6) 0%,
+      rgba(150, 210, 245, 0.55) 35%,
+      rgba(100, 180, 230, 0.55) 65%,
+      rgba(60, 140, 200, 0.6) 100%
     );
     mix-blend-mode: color;
+    /* Mask: only paint colour inside the ellipse where the head appears */
+    mask-image: radial-gradient(
+      ellipse 22% 42% at 50% 50%,
+      #000 55%,
+      rgba(0, 0, 0, 0.6) 75%,
+      transparent 100%
+    );
+    -webkit-mask-image: radial-gradient(
+      ellipse 22% 42% at 50% 50%,
+      #000 55%,
+      rgba(0, 0, 0, 0.6) 75%,
+      transparent 100%
+    );
   }
 
   .hero__vignette {
