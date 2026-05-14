@@ -71,29 +71,26 @@
 
       // Per-cell noise sample drives the dot's intensity / radius
       float cellNoise = fbm(cellId * 0.08 + r * 0.5 + t * 0.6);
-      // Threshold low values to empty (sparse field) — only brighter cells get dots
-      float intensity = smoothstep(0.52, 0.85, cellNoise);
+      // Lower threshold so more cells get visible dots
+      float intensity = smoothstep(0.38, 0.82, cellNoise);
 
       // Dot radius scales with intensity; antialias edges with smoothstep
-      float dotRadius = mix(0.0, cell * 0.42, intensity);
+      float dotRadius = mix(0.0, cell * 0.48, intensity);
       float dot = 1.0 - smoothstep(dotRadius - 0.8, dotRadius + 0.8, distToCenter);
       dot *= intensity;
 
-      // Ice palette — deep black to glacial cyan
-      vec3 deep = vec3(0.01, 0.02, 0.03);
-      vec3 mid  = vec3(0.12, 0.26, 0.40);
-      vec3 hi   = vec3(0.50, 0.74, 0.92);
+      // Ice palette — pumped a stop brighter so the dots actually read
+      vec3 deep = vec3(0.04, 0.10, 0.16);
+      vec3 mid  = vec3(0.28, 0.52, 0.72);
+      vec3 hi   = vec3(0.70, 0.90, 1.00);
 
-      vec3 col = mix(deep, mid, smoothstep(0.3, 0.85, cellNoise));
-      col = mix(col, hi, smoothstep(0.7, 1.0, cellNoise) * 0.6);
+      vec3 col = mix(deep, mid, smoothstep(0.25, 0.80, cellNoise));
+      col = mix(col, hi, smoothstep(0.65, 1.0, cellNoise) * 0.75);
       col *= dot;
 
-      // Strong black overlay so the dots float on near-pure black
-      col *= 0.45;
-
-      // Vignette pulls the edges to black
-      float vig = smoothstep(1.05, 0.3, length(uv - 0.5));
-      col *= 0.35 + 0.65 * vig;
+      // Soft vignette only — no heavy global darken anymore
+      float vig = smoothstep(1.15, 0.45, length(uv - 0.5));
+      col *= 0.65 + 0.35 * vig;
 
       gl_FragColor = vec4(col, 1.0);
     }

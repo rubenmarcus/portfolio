@@ -174,7 +174,7 @@
         preload="auto"
         aria-hidden="true"
       >
-        <source src="/1.webm" type="video/webm" />
+        <source src="/3.webm" type="video/webm" />
       </video>
       <div class="stats__body">
         <span class="stats__big">62 projects</span>
@@ -287,8 +287,11 @@
     padding: 0;
     overflow: hidden;
     background: #000;
-    border-color: rgba(76, 201, 240, 0.18);
-    /* Span 2 columns at desktop so it reads as the feature card */
+    border-color: rgba(76, 201, 240, 0.22);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      transform var(--duration-hover) var(--ease-default),
+      box-shadow var(--duration-hover) var(--ease-default);
   }
   @media (min-width: 900px) {
     .stats__card--video {
@@ -297,7 +300,15 @@
   }
   .stats__card--video:hover {
     background: #000;
-    border-color: rgba(76, 201, 240, 0.4);
+    border-color: rgba(76, 201, 240, 0.7);
+    transform: translateY(-3px);
+    box-shadow:
+      0 0 0 1px rgba(76, 201, 240, 0.35),
+      0 18px 40px rgba(76, 201, 240, 0.18),
+      0 0 60px rgba(76, 201, 240, 0.12);
+  }
+  .stats__card--video:hover .stats__video {
+    filter: brightness(1.05) saturate(1);
   }
 
   .stats__icon { color: var(--accent-soft); flex-shrink: 0; }
@@ -311,6 +322,7 @@
     background: #000;
     border-bottom: 1px solid rgba(76, 201, 240, 0.14);
     filter: brightness(0.95) saturate(0.9);
+    transition: filter var(--duration-hover) var(--ease-default);
   }
   @media (max-width: 640px) {
     .stats__video { height: 200px; }
