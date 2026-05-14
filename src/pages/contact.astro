@@ -1,0 +1,176 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/Section.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import { socialLinks } from "../lib/navigation";
+---
+
+<BaseLayout
+  title="Contact — Ruben Marcus"
+  description="Get in touch with Ruben Marcus. Selectively available for AI tooling, Web3, and post-quantum work."
+>
+  <Section id="intro">
+    <SectionHeader
+      index="05"
+      overline="Contact"
+      title="Let's talk."
+      description="Selectively available for AI tooling, Web3, and post-quantum infrastructure work. Email is the fastest channel — I usually reply within a day or two."
+    />
+
+    <div class="contact-grid">
+      <a href="mailto:ruben@rubenmarcus.dev" class="contact-card contact-card--primary" data-reveal>
+        <div class="contact-card__head">
+          <span class="bracket">[ Primary ]</span>
+          <span class="contact-card__arrow" aria-hidden="true">↗</span>
+        </div>
+        <span class="contact-card__value">ruben@rubenmarcus.dev</span>
+        <span class="contact-card__note">Best for project inquiries, longer-form questions, or anything off-public.</span>
+      </a>
+
+      <div class="contact-card" data-reveal>
+        <div class="contact-card__head">
+          <span class="bracket">[ Public channels ]</span>
+        </div>
+        <ul class="contact-socials">
+          {socialLinks.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener noreferrer" class="contact-social">
+                <span>{s.label}</span>
+                <span class="contact-social__url">{s.href.replace("https://", "").replace("mailto:", "")}</span>
+                <span class="contact-card__arrow" aria-hidden="true">↗</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="contact-note" data-reveal>
+      <span class="bracket" data-reveal-item>[ A heads up ]</span>
+      <p data-reveal-item>
+        I'm intentionally selective with new engagements right now — most of my week goes to
+        MultiVM Labs and the Ralph / Autoresearcher / AEO tooling. If you're building something
+        in autonomous agents, post-quantum infrastructure, or interesting on-chain product, please
+        do reach out. If you need a generic frontend body for hire, I'm probably not your fit.
+      </p>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .contact-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    margin-bottom: 2rem;
+  }
+  @media (min-width: 720px) { .contact-grid { grid-template-columns: 1fr 1fr; } }
+
+  .contact-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--bg-1);
+    color: var(--text);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      background-color var(--duration-hover) var(--ease-default),
+      transform var(--duration-hover) var(--ease-default);
+  }
+  .contact-card:hover {
+    border-color: var(--line-bright);
+    transform: translateY(-2px);
+    background: var(--bg-2);
+  }
+
+  .contact-card--primary { background: linear-gradient(180deg, rgba(42, 92, 255, 0.06), rgba(42, 92, 255, 0.02)); border-color: rgba(42, 92, 255, 0.22); }
+  .contact-card--primary:hover { border-color: rgba(42, 92, 255, 0.45); }
+
+  .contact-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--muted);
+  }
+
+  .contact-card__value {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    line-height: 1.05;
+  }
+
+  .contact-card__note {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .contact-card__arrow {
+    color: var(--muted-soft);
+    transition: transform var(--duration-hover) var(--ease-default), color var(--duration-hover) var(--ease-default);
+  }
+  .contact-card:hover .contact-card__arrow { transform: translate(2px, -2px); color: var(--accent-soft); }
+
+  .contact-socials {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .contact-social {
+    display: grid;
+    grid-template-columns: 100px 1fr auto;
+    gap: 0.8rem;
+    align-items: center;
+    padding: 0.65rem 0;
+    border-top: 1px solid var(--line);
+    color: var(--text);
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .contact-social:hover { color: var(--accent-soft); }
+  .contact-socials li:first-child .contact-social { border-top: none; padding-top: 0; }
+
+  .contact-social__url {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .contact-note {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-card);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .contact-note p {
+    color: var(--muted);
+    max-width: 68ch;
+    line-height: 1.65;
+  }
+</style>
+
+<script>
+  import { reveal } from "../lib/motion/reveal";
+  const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            reveal(e.target as HTMLElement);
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { threshold: 0.16, rootMargin: "0px 0px -8% 0px" },
+    );
+    targets.forEach((t) => io.observe(t));
+  }
+</script>

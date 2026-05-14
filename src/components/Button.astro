@@ -1,0 +1,52 @@
+---
+interface Props {
+  href?: string;
+  variant?: "primary" | "secondary" | "accent" | "ghost";
+  size?: "sm" | "md" | "lg";
+  target?: string;
+  rel?: string;
+  class?: string;
+  type?: "button" | "submit" | "reset";
+}
+
+const {
+  href,
+  variant = "secondary",
+  size = "md",
+  target,
+  rel,
+  class: className = "",
+  type = "button",
+} = Astro.props;
+
+const classes = [
+  "btn",
+  `btn-${variant}`,
+  size === "sm" && "btn--sm",
+  size === "lg" && "btn--lg",
+  className,
+];
+---
+
+{href ? (
+  <a href={href} class:list={classes} {target} rel={rel ?? (target === "_blank" ? "noopener noreferrer" : undefined)}>
+    <slot />
+  </a>
+) : (
+  <button class:list={classes} {type}>
+    <slot />
+  </button>
+)}
+
+<style>
+  .btn--sm {
+    min-height: 36px;
+    padding: 0.45rem 0.95rem;
+    font-size: 0.78rem;
+  }
+  .btn--lg {
+    min-height: 52px;
+    padding: 0.95rem 1.7rem;
+    font-size: 0.95rem;
+  }
+</style>

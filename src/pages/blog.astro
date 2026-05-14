@@ -1,0 +1,160 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/Section.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import { articles } from "../lib/data/articles";
+
+const sorted = [...articles].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+---
+
+<BaseLayout
+  title="Blog — Ruben Marcus"
+  description="Articles on AI tooling, autonomous agents, post-quantum infrastructure, and the modern frontend stack. Published on dev.to."
+>
+  <Section id="intro">
+    <SectionHeader
+      index="03"
+      overline="Writing"
+      title="Notes from the loop."
+      description="Articles on dev.to about the tools I ship and the patterns underneath them. More long-form pieces coming as the AI tooling matures — for now, my output here is sparse and deliberate."
+    />
+
+    <ul class="article-list" data-reveal>
+      {sorted.map((a, i) => (
+        <li class="article-row" data-reveal-item>
+          <a class="article-link" href={a.url} target="_blank" rel="noopener noreferrer">
+            <span class="article-index">[{String(i + 1).padStart(2, "0")}]</span>
+            <div class="article-body">
+              <span class="article-title">{a.title}</span>
+              <p class="article-desc">{a.description}</p>
+              <div class="article-meta">
+                <span>{new Date(a.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</span>
+                <span class="sep">·</span>
+                <span>{a.readTime}</span>
+                <span class="sep">·</span>
+                <span>{a.tags.map((t) => `#${t}`).join(" ")}</span>
+                {a.reactions ? (
+                  <>
+                    <span class="sep">·</span>
+                    <span>{a.reactions} reactions</span>
+                  </>
+                ) : null}
+              </div>
+            </div>
+            <span class="article-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="more" data-reveal>
+      <span class="bracket" data-reveal-item>[ More on the way ]</span>
+      <p class="more__desc" data-reveal-item>
+        Drafts in flight: a deep-dive on Ralph Starter's auto-mode, a teardown of Autoresearcher's
+        accept/reject loop, and an essay on what AEO actually moves once you ship it.
+      </p>
+      <div class="more__actions" data-reveal-item>
+        <a href="https://dev.to/rubenmarcus" target="_blank" rel="noopener" class="btn btn-secondary">
+          dev.to/rubenmarcus ↗
+        </a>
+        <a href="/contact" class="btn btn-ghost">Suggest a topic →</a>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .article-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 3rem;
+  }
+
+  .article-row {
+    border-top: 1px solid var(--line);
+  }
+  .article-row:last-child { border-bottom: 1px solid var(--line); }
+
+  .article-link {
+    display: grid;
+    grid-template-columns: 38px 1fr auto;
+    gap: 1rem;
+    padding: 1.6rem 0;
+    color: var(--text);
+    transition: background-color var(--duration-hover) var(--ease-default);
+  }
+  .article-link:hover { background: rgba(245, 241, 234, 0.02); }
+
+  .article-index {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--muted-soft);
+    padding-top: 0.35rem;
+  }
+
+  .article-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .article-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.6vw, 1.95rem);
+    line-height: 1.1;
+  }
+
+  .article-desc { color: var(--muted); max-width: 70ch; }
+
+  .article-meta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted-soft);
+  }
+  .sep { color: var(--muted-soft); opacity: 0.55; }
+
+  .article-arrow {
+    color: var(--muted-soft);
+    align-self: center;
+    transition: transform var(--duration-hover) var(--ease-default), color var(--duration-hover) var(--ease-default);
+  }
+  .article-link:hover .article-arrow {
+    transform: translate(2px, -2px);
+    color: var(--accent-soft);
+  }
+
+  .more {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--bg-1);
+  }
+
+  .more__desc { color: var(--muted); max-width: 64ch; }
+  .more__actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 0.4rem; }
+</style>
+
+<script>
+  import { reveal } from "../lib/motion/reveal";
+  const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            reveal(e.target as HTMLElement, { stagger: 70 });
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    );
+    targets.forEach((t) => io.observe(t));
+  }
+</script>

@@ -1,0 +1,81 @@
+---
+interface Props {
+  index?: string;
+  overline?: string;
+  title: string;
+  description?: string;
+  align?: "left" | "center";
+  class?: string;
+}
+
+const {
+  index,
+  overline,
+  title,
+  description,
+  align = "left",
+  class: className = "",
+} = Astro.props;
+---
+
+<header class:list={["section-header", `section-header--${align}`, className]} data-reveal>
+  <div class="section-header__top" data-reveal-item>
+    {overline && (
+      <span class="bracket">
+        {index && <span class="section-header__index">{index}</span>}
+        {index && <span class="section-header__sep">/</span>}
+        <span>{overline}</span>
+      </span>
+    )}
+  </div>
+
+  <h2 class="section-header__title" data-reveal-item>{title}</h2>
+
+  {description && (
+    <p class="section-header__desc" data-reveal-item>{description}</p>
+  )}
+</header>
+
+<style>
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    max-width: 720px;
+  }
+
+  .section-header--center {
+    align-items: center;
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  .section-header__top {
+    color: var(--muted);
+  }
+
+  .section-header__index {
+    color: var(--accent-soft);
+  }
+
+  .section-header__sep {
+    color: var(--muted-soft);
+  }
+
+  .section-header__title {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 5vw, 3.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.012em;
+    color: var(--text);
+    text-wrap: balance;
+  }
+
+  .section-header__desc {
+    color: var(--muted);
+    max-width: var(--text-max);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+</style>

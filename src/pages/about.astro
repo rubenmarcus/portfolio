@@ -1,0 +1,253 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/Section.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import Divider from "../components/Divider.astro";
+
+const timeline = [
+  { year: "2026", role: "Senior AI Fullstack Engineer", org: "MultiVM Labs", note: "Shipping Ralph Starter, Autoresearcher, AEO.js. Also: post-quantum tooling for the Quantum L1." },
+  { year: "2023", role: "Senior Software Engineer", org: "Bitte Protocol", note: "Wallet, Minsta, Mintbase.js, marketplace. NEAR + EVM, frontend + backend." },
+  { year: "2021", role: "Senior Software Engineer", org: "Grover", note: "Features, docs, bug fixes on the tech-rental marketplace." },
+  { year: "2020", role: "Lead Frontend / Architect", org: "Zup Innovation → Itaú", note: "Owned architecture for Itaú's developer portal — the face of Open Banking at the largest bank in Latin America." },
+  { year: "2018", role: "Frontend Engineer", org: "GO.K + freelance", note: "Angular, RxJS, Next.js, WordPress. JSL, Kanamobi, INCA, Dole International." },
+  { year: "2015", role: "Frontend Engineer", org: "Grupo SBF", note: "Centauro, Shopping Lance, Under Armour, Flamengo Loja. E-commerce at scale." },
+  { year: "2011", role: "Freelance Frontend / Designer", org: "São Paulo + Lisbon", note: "Started with WordPress, PHP, .NET, jQuery. Built the agency-era muscle that pays off now." },
+];
+
+const skills = [
+  { group: "Languages",   items: ["TypeScript", "JavaScript", "Rust (learning)", "PHP", "C#"] },
+  { group: "Frameworks",  items: ["Astro", "Svelte 5", "Next.js", "React", "Angular", "Express", "Node"] },
+  { group: "AI / agents", items: ["Claude Code", "Cursor", "Codex", "Gemini CLI", "Copilot", "OpenCode", "Amp"] },
+  { group: "Web3",        items: ["NEAR", "EVM", "ERC-4337", "Smart wallets", "Chain abstraction"] },
+  { group: "Infra",       items: ["AWS Lambda", "Vercel", "Docker", "Terraform", "Jenkins", "GitLab CI"] },
+  { group: "Design",      items: ["Figma", "Storybook", "Tailwind", "Three.js", "GLSL shaders"] },
+];
+---
+
+<BaseLayout
+  title="About — Ruben Marcus"
+  description="Brazilian engineer based in Lisbon, Portugal. 14 years across e-commerce, banking, NFT infrastructure, and AI tooling. Senior AI Fullstack at MultiVM Labs."
+>
+  <Section id="intro">
+    <SectionHeader
+      index="04"
+      overline="About"
+      title="Brazilian engineer, Lisbon-based. Shipping for 14 years."
+    />
+
+    <div class="about-grid">
+      <div class="about-body" data-reveal>
+        <p data-reveal-item>
+          I started building websites in São Paulo around 2011 — WordPress, PHP, .NET, jQuery, all the
+          agency stuff. Worked through the e-commerce years at Grupo SBF (Centauro, Under Armour,
+          Flamengo), then moved into product engineering at Zup, where I led architecture for Itaú's
+          developer portal — the face of Open Banking at the largest bank in Latin America.
+        </p>
+        <p data-reveal-item>
+          From 2022 I went deep into Web3 at Bitte Protocol on NEAR — wallet code, Mintbase.js,
+          the Minsta NFT minter, the Mintbase marketplace. Now I'm at MultiVM Labs as Senior AI
+          Fullstack Engineer, shipping autonomous coding tools (Ralph Starter), benchmark-driven
+          research loops (Autoresearcher), and Answer Engine Optimization for LLMs (AEO.js) — plus
+          contributing to the Quantum L1's post-quantum cryptography stack.
+        </p>
+        <p data-reveal-item>
+          I care about the seams between things: how spec becomes code, how research becomes a
+          product, how a UI feels when an agent owns half of it. I'm based in Lisbon, work
+          worldwide, and selectively available for AI tooling, Web3, and post-quantum projects.
+        </p>
+      </div>
+
+      <aside class="about-card" data-reveal>
+        <img src="/rubenmarcus.jpeg" alt="Ruben Marcus" width="320" height="320" loading="eager" />
+        <div class="about-card__meta">
+          <span class="bracket">[ At a glance ]</span>
+          <dl>
+            <div><dt>Based</dt><dd>Lisbon, Portugal</dd></div>
+            <div><dt>Role</dt><dd>Sr. AI Fullstack Engineer</dd></div>
+            <div><dt>Org</dt><dd>MultiVM Labs</dd></div>
+            <div><dt>Open to</dt><dd>Select consulting, AI / Web3</dd></div>
+          </dl>
+        </div>
+      </aside>
+    </div>
+  </Section>
+
+  <Divider index="04.1" label="Timeline" />
+
+  <Section id="timeline" tight>
+    <ol class="timeline" data-reveal>
+      {timeline.map((t, i) => (
+        <li class="timeline-row" data-reveal-item>
+          <span class="timeline-year">{t.year}</span>
+          <div class="timeline-body">
+            <div class="timeline-head">
+              <span class="timeline-role">{t.role}</span>
+              <span class="timeline-org">{t.org}</span>
+            </div>
+            <p class="timeline-note">{t.note}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <Divider index="04.2" label="Skills" />
+
+  <Section id="skills" tight>
+    <div class="skills-grid" data-reveal>
+      {skills.map((s) => (
+        <div class="skills-col" data-reveal-item>
+          <span class="bracket skills-label">[ {s.group} ]</span>
+          <ul>
+            {s.items.map((it) => <li>{it}</li>)}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .about-grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 880px) {
+    .about-grid { grid-template-columns: 1.4fr 1fr; gap: 4rem; }
+  }
+
+  .about-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .about-body p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 60ch;
+  }
+
+  .about-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 1rem;
+    background: var(--bg-1);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .about-card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 12px;
+    filter: grayscale(40%) contrast(1.05);
+  }
+
+  .about-card__meta dl {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0.55rem 0 0;
+  }
+  .about-card__meta dl > div {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: 0.6rem;
+  }
+  .about-card__meta dt {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--muted-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .about-card__meta dd {
+    color: var(--text);
+    margin: 0;
+    font-size: 0.92rem;
+  }
+
+  /* Timeline */
+  .timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .timeline-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 1.2rem;
+    padding: 1.2rem 0;
+    border-top: 1px solid var(--line);
+  }
+  .timeline-row:last-child { border-bottom: 1px solid var(--line); }
+
+  .timeline-year {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--accent-soft);
+  }
+
+  .timeline-body { display: flex; flex-direction: column; gap: 0.4rem; }
+  .timeline-head { display: flex; flex-wrap: wrap; gap: 0.4rem 0.85rem; align-items: baseline; }
+  .timeline-role { font-family: var(--font-display); font-size: 1.25rem; line-height: 1.15; color: var(--text); }
+  .timeline-org { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted-soft); text-transform: uppercase; letter-spacing: 0.08em; }
+  .timeline-note { color: var(--muted); font-size: 0.95rem; max-width: 68ch; }
+
+  /* Skills */
+  .skills-grid {
+    display: grid;
+    gap: 1.2rem;
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (min-width: 720px) { .skills-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .skills-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-1);
+  }
+  .skills-label { color: var(--muted); }
+
+  .skills-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .skills-col li {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text);
+  }
+</style>
+
+<script>
+  import { reveal } from "../lib/motion/reveal";
+  const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            reveal(e.target as HTMLElement);
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { threshold: 0.14, rootMargin: "0px 0px -8% 0px" },
+    );
+    targets.forEach((t) => io.observe(t));
+  }
+</script>

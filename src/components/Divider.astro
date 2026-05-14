@@ -1,0 +1,35 @@
+---
+interface Props {
+  label?: string;
+  index?: string;
+  class?: string;
+}
+
+const { label, index, class: className = "" } = Astro.props;
+---
+
+<div class:list={["divider", className]}>
+  <div class="hairline"></div>
+  {(label || index) && (
+    <span class="bracket divider__label">
+      {index && <span class="divider__index">{index}</span>}
+      {index && label && <span class="divider__sep">/</span>}
+      {label && <span>{label}</span>}
+    </span>
+  )}
+  <div class="hairline"></div>
+</div>
+
+<style>
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 2rem;
+  }
+
+  .divider .hairline { flex: 1; }
+  .divider__label { white-space: nowrap; }
+  .divider__index { color: var(--accent-soft); }
+  .divider__sep   { color: var(--muted-soft); }
+</style>

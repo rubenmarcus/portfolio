@@ -1,0 +1,24 @@
+---
+interface Props {
+  index?: string;
+  strong?: boolean;
+  class?: string;
+}
+
+const { index, strong = false, class: className = "" } = Astro.props;
+---
+
+<span class:list={["bracket", strong && "bracket--strong", className]}>
+  {index ? <span class="bracket__index">{index}</span> : null}
+  {index ? <span class="bracket__sep">/</span> : null}
+  <slot />
+</span>
+
+<style>
+  .bracket__index {
+    color: var(--accent-soft);
+  }
+  .bracket__sep {
+    color: var(--muted-soft);
+  }
+</style>

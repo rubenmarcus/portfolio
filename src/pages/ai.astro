@@ -1,0 +1,290 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/Section.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import Divider from "../components/Divider.astro";
+import { aiTools, supportingTools } from "../lib/data/aiTools";
+---
+
+<BaseLayout
+  title="AI Tools — Ruben Marcus"
+  description="Open-source AI tools I'm shipping at MultiVM Labs — Ralph Starter, Autoresearcher, and AEO.js. Spec-driven coding, benchmark-driven research loops, and Answer Engine Optimization for the modern web."
+>
+  <Section id="intro">
+    <SectionHeader
+      index="02"
+      overline="AI tools"
+      title="Three open tools, one thesis: software writes itself when you give it the right loop."
+      description="At MultiVM Labs I focus on the connective tissue around autonomous agents — the harnesses, the benchmarks, the AEO layer for AI search. All open source, all in production."
+    />
+  </Section>
+
+  {aiTools.map((t, i) => (
+    <Section id={t.slug} tight>
+      <article class="tool" data-reveal>
+        <header class="tool__head" data-reveal-item>
+          <span class="bracket">[ {String(i + 1).padStart(2, "0")} / {t.tags[0]} ]</span>
+          <h2 class="tool__name">{t.name}</h2>
+          <p class="tool__tagline">{t.tagline}</p>
+        </header>
+
+        <div class="tool__grid">
+          <div class="tool__col" data-reveal-item>
+            <p class="tool__desc">{t.description}</p>
+
+            <div class="tool__tags">
+              {t.tags.map((tg) => <span class="tool__tag">{tg}</span>)}
+            </div>
+
+            <div class="tool__actions">
+              <a href={t.url} class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                Visit {t.url.replace("https://", "")} ↗
+              </a>
+              {t.repo && (
+                <a href={t.repo} class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+                  GitHub
+                </a>
+              )}
+            </div>
+          </div>
+
+          <ul class="tool__features" data-reveal-item>
+            <span class="bracket tool__featuresLabel">[ Features ]</span>
+            {t.features.map((f) => (
+              <li>{f}</li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    </Section>
+  ))}
+
+  <Divider index="03" label="Supporting work" />
+
+  <Section id="supporting" tight>
+    <SectionHeader
+      index="03"
+      overline="Supporting repos"
+      title="The ecosystem around the tools."
+      description="Templates, ideas trackers, curated awesome-lists, and the post-quantum cryptography packages that power the Quantum chain."
+    />
+
+    <div class="support-grid">
+      {supportingTools.map((s) => (
+        <a class="support-card" href={s.repo} target="_blank" rel="noopener noreferrer" data-reveal>
+          <div class="support-card__top">
+            <span class="support-card__name">{s.name}</span>
+            <span class="support-card__arrow" aria-hidden="true">↗</span>
+          </div>
+          <p class="support-card__desc">{s.description}</p>
+          <span class="overline">{s.repo.replace("https://", "")}</span>
+        </a>
+      ))}
+    </div>
+  </Section>
+
+  <Section id="cta" tight>
+    <div class="cta-band" data-reveal>
+      <span class="bracket" data-reveal-item>[ 06 / Contact ]</span>
+      <h2 class="cta-title" data-reveal-item>Want to integrate one of these into your stack?</h2>
+      <p class="cta-desc" data-reveal-item>I'm happy to chat — these are open source, but I'll often help teams adopt them.</p>
+      <div class="cta-actions" data-reveal-item>
+        <a href="mailto:ruben@rubenmarcus.dev" class="btn btn-primary">ruben@rubenmarcus.dev</a>
+        <a href="https://github.com/multivmlabs" class="btn btn-secondary" target="_blank" rel="noopener">All MultiVM Labs repos</a>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .tool {
+    border-top: 1px solid var(--line);
+    padding-top: 2.5rem;
+  }
+
+  .tool__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-bottom: 2rem;
+  }
+
+  .tool__name {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    color: var(--text);
+  }
+
+  .tool__tagline {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--accent-soft);
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    line-height: 1.2;
+    max-width: 38ch;
+  }
+
+  .tool__grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 880px) {
+    .tool__grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; }
+  }
+
+  .tool__col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .tool__desc {
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.65;
+  }
+
+  .tool__tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tool__tag {
+    padding: 0.22rem 0.6rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .tool__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 0.5rem;
+  }
+
+  .tool__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 1.4rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-1);
+  }
+
+  .tool__featuresLabel {
+    margin-bottom: 0.4rem;
+    color: var(--muted-soft);
+  }
+
+  .tool__features li {
+    color: var(--text);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    padding-left: 1.1rem;
+    position: relative;
+  }
+
+  .tool__features li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent-soft);
+  }
+
+  /* Supporting */
+  .support-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) { .support-grid { grid-template-columns: 1fr 1fr; } }
+
+  .support-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 1.35rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-1);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      transform var(--duration-hover) var(--ease-default);
+  }
+  .support-card:hover {
+    border-color: var(--line-bright);
+    transform: translateY(-2px);
+  }
+
+  .support-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+  }
+
+  .support-card__name {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .support-card__arrow { color: var(--muted-soft); }
+  .support-card:hover .support-card__arrow { color: var(--accent-soft); }
+
+  .support-card__desc { color: var(--muted); font-size: 0.92rem; }
+
+  /* CTA */
+  .cta-band {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(245, 241, 234, 0.035), rgba(245, 241, 234, 0.015));
+    padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3rem);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.04;
+    max-width: 24ch;
+    text-wrap: balance;
+  }
+  .cta-desc { max-width: 52ch; color: var(--muted); }
+  .cta-actions {
+    display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 0.4rem;
+  }
+</style>
+
+<script>
+  import { reveal } from "../lib/motion/reveal";
+  const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            reveal(e.target as HTMLElement);
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
+    );
+    targets.forEach((t) => io.observe(t));
+  }
+</script>

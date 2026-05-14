@@ -1,0 +1,25 @@
+---
+interface Props {
+  class?: string;
+  /** Allow full width on narrower content rails. */
+  narrow?: boolean;
+}
+
+const { class: className = "", narrow = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    "container-x",
+    narrow && "container-x--narrow",
+    className,
+  ]}
+>
+  <slot />
+</div>
+
+<style>
+  .container-x--narrow {
+    max-width: 880px;
+  }
+</style>
