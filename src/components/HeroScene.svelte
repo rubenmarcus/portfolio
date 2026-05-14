@@ -1,8 +1,5 @@
 <script lang="ts">
   import RotatingVerb from "./RotatingVerb.svelte";
-  import CodeStream from "./CodeStream.svelte";
-  import CloudField from "./CloudField.svelte";
-  import AsciiField from "./AsciiField.svelte";
   import { scramble } from "../lib/motion/scramble";
 
   const verbs = [
@@ -83,21 +80,7 @@
 
     <div class="hero__iceTint" aria-hidden="true"></div>
 
-    <CloudField client:load blobs={6} class="hero__clouds" />
-
-    <AsciiField
-      client:load
-      cell={12}
-      density={0.16}
-      morphRate={1.2}
-      opacity={0.22}
-      reactive={true}
-      color="rgba(200, 230, 255, 1)"
-      class="hero__asciiHalo"
-    />
-
-    <CodeStream client:load count={7} class="hero__code" />
-
+    <!-- Mouse halo only — no busy ASCII/code/cloud overlays that read as blinking -->
     <div
       class="hero__halo"
       aria-hidden="true"
@@ -163,27 +146,6 @@
       rgba(60, 140, 200, 0.5) 100%
     );
     mix-blend-mode: color;
-  }
-
-  :global(.hero__clouds) {
-    position: absolute !important;
-    inset: 0;
-    z-index: 0;
-    opacity: 0.75;
-  }
-
-  :global(.hero__asciiHalo) {
-    position: absolute !important;
-    inset: 0;
-    z-index: 0;
-    mix-blend-mode: screen;
-  }
-
-  :global(.hero__code) {
-    position: absolute !important;
-    inset: 0;
-    z-index: 0;
-    color: rgba(190, 230, 255, 0.62) !important;
   }
 
   /* Quantum-style flashlight halo */
