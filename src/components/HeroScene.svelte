@@ -103,7 +103,7 @@
     </p>
 
     <h1 class="hero__title">
-      <RotatingVerb words={verbs} interval={5200} morphMs={1100} class="hero__verb" />
+      <RotatingVerb words={verbs} interval={7000} morphMs={1800} class="hero__verb" />
     </h1>
 
     <div class="hero__ctas">

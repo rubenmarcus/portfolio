@@ -21,12 +21,16 @@
     class: className = "",
   }: Props = $props();
 
-  // Same three-way pool as the global scramble utility
+  // Hash-style pool: regular alphabet + heavy weighting of 0/1 binary digits.
+  // No katakana / symbols — reads like a hex/binary scramble.
   const LATIN = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  const NUMS = "0123456789";
-  const KATAKANA =
-    "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
-  const POOL = LATIN + LATIN + NUMS + NUMS + KATAKANA;
+  const BINARY = "01";
+  // Repeat binary many times so 0s and 1s show up about as often as letters
+  const POOL =
+    LATIN +
+    BINARY + BINARY + BINARY + BINARY + BINARY +
+    BINARY + BINARY + BINARY + BINARY + BINARY +
+    BINARY + BINARY + BINARY;
 
   function rand(): string {
     return POOL[Math.floor(Math.random() * POOL.length)];
