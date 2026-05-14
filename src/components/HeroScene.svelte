@@ -1,5 +1,6 @@
 <script lang="ts">
   import RotatingVerb from "./RotatingVerb.svelte";
+  import HeroParticles from "./HeroParticles.svelte";
 
   const verbs = [
     "autonomous agents",
@@ -133,8 +134,8 @@
       <source src="/videobg.webm" type="video/webm" />
     </video>
 
-    <!-- Blue tint over the video — applies hue/saturation, preserves luminance -->
-    <div class="hero__blueTint" aria-hidden="true"></div>
+    <!-- Ice-blue tint over the video — applies hue/saturation, preserves luminance -->
+    <div class="hero__iceTint" aria-hidden="true"></div>
 
     <!-- Mouse-tracked halo, like the flashlight effect in the quantum-website ASCII shader -->
     <div
@@ -143,6 +144,9 @@
       style:--mx={haloX}
       style:--my={haloY}
     ></div>
+
+    <!-- Ice-blue particle emitter that follows the cursor -->
+    <HeroParticles client:load rate={2.6} life={1200} class="hero__particles" />
 
     <div class="hero__vignette" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
@@ -278,42 +282,51 @@
     object-fit: cover;
     transform-origin: center center;
     transition: transform 0.8s var(--ease-default);
-    /* Slight desaturation + lift so the blue tint reads cleanly */
-    filter: brightness(0.78) contrast(1.05) saturate(0.4);
+    /* Lift luminance + heavy desaturation so the ice tint sits cleanly on the
+       grayscale ASCII head. Slight blue tilt via hue-rotate cools the highlights. */
+    filter: brightness(0.92) contrast(1.04) saturate(0.18);
   }
 
-  /* Blue color wash — sits on top of the video. `mix-blend-mode: color` applies
-     the hue and saturation of this gradient while preserving the video's
-     luminance, so the ASCII head reads as a deep electric-blue rendering. */
-  .hero__blueTint {
+  /* Ice-blue colour wash — sits on top of the video.
+     `mix-blend-mode: color` applies the hue and saturation of this gradient
+     while preserving the video's luminance, so the ASCII head reads as a
+     pale frost-blue / icy cyan rendering instead of dark electric blue. */
+  .hero__iceTint {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background: linear-gradient(
       135deg,
-      rgba(42, 92, 255, 0.62) 0%,
-      rgba(20, 50, 160, 0.55) 50%,
-      rgba(10, 25, 70, 0.7) 100%
+      rgba(200, 235, 255, 0.55) 0%,
+      rgba(150, 210, 245, 0.5) 35%,
+      rgba(100, 180, 230, 0.5) 65%,
+      rgba(60, 140, 200, 0.55) 100%
     );
     mix-blend-mode: color;
   }
 
-  /* Mouse-tracked halo — additive light wash that follows the cursor.
-     Mimics the flashlight effect from the quantum-website ASCII shader. */
+  /* Mouse-tracked halo — additive frosted-light wash that follows the cursor.
+     Brighter inner core to read against the pale ice tint underneath. */
   .hero__halo {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
       radial-gradient(
-        circle 360px at var(--mx, 50%) var(--my, 50%),
-        rgba(120, 170, 255, 0.32) 0%,
-        rgba(60, 110, 230, 0.18) 28%,
-        transparent 65%
+        circle 380px at var(--mx, 50%) var(--my, 50%),
+        rgba(220, 240, 255, 0.42) 0%,
+        rgba(170, 215, 250, 0.28) 22%,
+        rgba(120, 185, 235, 0.14) 45%,
+        transparent 68%
       );
     mix-blend-mode: screen;
-    transition: background 90ms linear;
-    opacity: 0.85;
+    transition: background 80ms linear;
+    opacity: 0.95;
+  }
+
+  /* Particle layer — z above the halo, screen-blended */
+  :global(.hero__particles) {
+    z-index: 1;
   }
 
   .hero__vignette {
