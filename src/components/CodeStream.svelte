@@ -233,27 +233,36 @@ return wrapKey(ss, payload);`,
     inset: 0;
     pointer-events: none;
     overflow: hidden;
-    /* Mask out the bottom-left zone where the lede sits — title + intro
-       need a clean field. Code is free to roam everywhere else. */
-    mask-image: radial-gradient(ellipse 55% 55% at 28% 82%, transparent 40%, #000 82%);
-    -webkit-mask-image: radial-gradient(ellipse 55% 55% at 28% 82%, transparent 40%, #000 82%);
+    /* Two-region cutout — code is hidden from both the lede zone
+       (bottom-left where intro + title sit) AND from the ASCII head
+       region (centered ellipse where the character appears in the
+       video). It renders everywhere else. mask-composite: intersect
+       means both masks have to allow a pixel for code to show there. */
+    mask-image:
+      radial-gradient(ellipse 55% 55% at 22% 80%, transparent 45%, #000 88%),
+      radial-gradient(ellipse 26% 48% at 50% 50%, transparent 60%, #000 100%);
+    -webkit-mask-image:
+      radial-gradient(ellipse 55% 55% at 22% 80%, transparent 45%, #000 88%),
+      radial-gradient(ellipse 26% 48% at 50% 50%, transparent 60%, #000 100%);
+    mask-composite: intersect;
+    -webkit-mask-composite: source-in;
   }
 
   .code-stream__item {
     position: absolute;
     margin: 0;
     font-family: var(--font-mono);
-    font-size: 0.82rem;
+    font-size: 1.05rem;
     line-height: 1.45;
     letter-spacing: 0.01em;
     color: inherit;
     white-space: pre;
     text-shadow: 0 0 14px rgba(58, 109, 255, 0.32);
-    max-width: 42ch;
+    max-width: 48ch;
     opacity: 0;
   }
   @media (max-width: 900px) {
-    .code-stream__item { font-size: 0.7rem; max-width: 32ch; }
+    .code-stream__item { font-size: 0.85rem; max-width: 36ch; }
   }
 
   .code-stream__item.enabled {
@@ -272,9 +281,9 @@ return wrapKey(ss, payload);`,
 
   .code-stream__repo {
     display: block;
-    margin-bottom: 0.22rem;
-    color: rgba(160, 195, 255, 0.7);
-    font-size: 0.72rem;
+    margin-bottom: 0.3rem;
+    color: rgba(160, 195, 255, 0.75);
+    font-size: 0.82rem;
     letter-spacing: 0.04em;
   }
 

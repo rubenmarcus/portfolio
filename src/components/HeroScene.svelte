@@ -42,6 +42,10 @@
       // 1.15 base, up to ~1.55 after 600px of scroll
       const zoom = 1.15 + Math.min(y * 0.00065, 0.4);
       hero.style.setProperty("--scroll-zoom", zoom.toFixed(3));
+      // ASCII digit layer brightens as the user scrolls past it
+      // (0.15 base → 0.9 after 700px of scroll)
+      const light = 0.15 + Math.min(y / 700, 1) * 0.75;
+      hero.style.setProperty("--scroll-light", light.toFixed(3));
       ticking = false;
     };
     const onScroll = () => {
@@ -116,6 +120,7 @@
     overflow: hidden;
     isolation: isolate;
     --scroll-zoom: 1.15;
+    --scroll-light: 0.15;
   }
 
   .hero__bg {
@@ -161,7 +166,9 @@
     );
   }
 
-  /* ASCII glyph overlay — same scale as the video so it zooms with it */
+  /* ASCII glyph overlay — same scale as the video so it zooms with it.
+     Layer opacity is driven by scroll position so glyphs "light up"
+     progressively as the user scrolls past the hero. */
   :global(.hero__asciiOverlay) {
     position: absolute !important;
     inset: 0;
@@ -169,7 +176,8 @@
     mix-blend-mode: screen;
     transform: scale(var(--scroll-zoom, 1.15));
     transform-origin: center center;
-    transition: transform 250ms ease-out;
+    opacity: var(--scroll-light, 0.15);
+    transition: transform 250ms ease-out, opacity 200ms linear;
   }
 
   /* Code snippets float over everything else in the bg */
