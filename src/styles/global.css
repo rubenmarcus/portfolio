@@ -41,8 +41,8 @@
   --duration-default: 220ms;
   --duration-reveal: 640ms;
 
-  --font-display: "Instrument Serif", Georgia, serif;
-  --font-sans: "Geist", system-ui, -apple-system, sans-serif;
+  --font-display: "Inter Tight", "Geist", system-ui, -apple-system, sans-serif;
+  --font-sans: "Geist", "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
 
   --z-nav: 1000;
@@ -97,9 +97,9 @@
   h2 {
     margin: 0;
     font-family: var(--font-display);
-    font-weight: 400;
+    font-weight: 500;
     line-height: 1.02;
-    letter-spacing: -0.012em;
+    letter-spacing: -0.022em;
     color: var(--text);
     text-wrap: balance;
   }
@@ -190,21 +190,18 @@
     }
   }
 
-  /* ── Bracket label — Nillion's signature mono-uppercase-in-brackets ── */
+  /* Mono label — uppercase mono text, no decorative bracket chars */
   .bracket {
     display: inline-flex;
     align-items: center;
-    gap: 0.35em;
+    gap: 0.45em;
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     line-height: 1;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--muted);
   }
-
-  .bracket::before { content: "["; opacity: 0.55; }
-  .bracket::after  { content: "]"; opacity: 0.55; }
 
   .bracket--strong {
     color: var(--text);

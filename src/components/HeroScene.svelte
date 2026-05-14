@@ -165,30 +165,27 @@
     <div class="hero__grid" aria-hidden="true"></div>
   </div>
 
-  <!-- Top row: GitHub stats marquee + status pill -->
-  <div class="hero__top container-x">
-    <div class="hero__status">
+  <!-- Top-right: live GitHub commits badge with the green pulse dot -->
+  {#if stats}
+    <a
+      class="hero__commitsBadge"
+      href={stats.lastCommit?.url ?? `https://github.com/${GH_USER}`}
+      target="_blank"
+      rel="noopener"
+    >
       <span class="hero__dot" aria-hidden="true"></span>
-      <span class="bracket hero__statusBracket">[ Available — selectively ]</span>
-      <span class="hero__statusBase">Lisbon · Worldwide</span>
-    </div>
-
-    {#if stats}
-      <div class="hero__stats">
-        <span>{stats.today} commits today</span>
-        <span class="hero__sep">·</span>
-        <span>{stats.month} this month</span>
-        <span class="hero__sep">·</span>
-        <span>{stats.year} this year</span>
-        {#if stats.lastCommit}
-          <span class="hero__sep">·</span>
-          <a class="hero__commit" href={stats.lastCommit.url} target="_blank" rel="noopener">
-            last: {stats.lastCommit.message} <span class="hero__commitRepo">({stats.lastCommit.repo})</span>
-          </a>
-        {/if}
-      </div>
-    {/if}
-  </div>
+      <span class="hero__commitsBig">{stats.today} commits today</span>
+      <span class="hero__commitsSub">
+        {stats.month} this month · {stats.year} this year
+      </span>
+      {#if stats.lastCommit}
+        <span class="hero__commitsLast">
+          last: <em>{stats.lastCommit.message}</em>
+          <span class="hero__commitsRepo">({stats.lastCommit.repo})</span>
+        </span>
+      {/if}
+    </a>
+  {/if}
 
   <!-- Bottom-right: heavy dark card carrying the main text (Defined VC style).
        Intentionally OUT of the page container — hugs the right edge of the
@@ -196,13 +193,13 @@
   <div class="hero__cardWrap">
     <div class="hero__card">
       <div class="hero__cardHead">
-        <span class="bracket">[ 00 / Index ]</span>
+        <span class="hero__indexLabel">00 / Index</span>
         <span class="hero__cardName">Ruben Marcus</span>
       </div>
 
       <h1 class="hero__title">
         Building
-        <RotatingVerb words={verbs} interval={2800} fadeMs={340} italic={true} class="hero__verb" />
+        <RotatingVerb words={verbs} interval={2800} fadeMs={340} italic={false} class="hero__verb" />
         <span class="hero__cursor" aria-hidden="true">_</span>
       </h1>
 
@@ -216,16 +213,76 @@
         <a href="/ai" class="btn btn-secondary">AI tools I ship</a>
       </div>
 
-      <div class="hero__tagRow">
-        <span class="bracket">[ Stack ]</span>
-        <span>React</span><span>·</span>
-        <span>Next.js</span><span>·</span>
-        <span>TypeScript</span><span>·</span>
-        <span>Svelte</span><span>·</span>
-        <span>Rust</span><span>·</span>
-        <span>EVM</span><span>·</span>
-        <span>NEAR</span><span>·</span>
-        <span>SUI</span>
+      <!-- Stack row with inline brand icons -->
+      <div class="hero__stack">
+        <span class="hero__stackLabel">Stack</span>
+
+        <span class="hero__stackItem" title="React">
+          <svg width="14" height="14" viewBox="-11.5 -10.232 23 20.463" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">
+            <circle r="2.05" fill="currentColor"/>
+            <g stroke="currentColor" fill="none">
+              <ellipse rx="11" ry="4.2"/>
+              <ellipse rx="11" ry="4.2" transform="rotate(60)"/>
+              <ellipse rx="11" ry="4.2" transform="rotate(120)"/>
+            </g>
+          </svg>
+          React
+        </span>
+
+        <span class="hero__stackItem" title="Next.js">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M11.572 0c-.176.01-.722.054-1.235.106C6.394.473 2.831 2.622 1.057 5.949A12.39 12.39 0 0 0 .15 8.366c-.25.844-.36 1.518-.394 2.451-.025.728-.012 1.072.039 1.747.166 2.213.95 4.346 2.231 6.066.273.368.929 1.124 1.298 1.497.732.74 1.451 1.297 2.39 1.81.99.541 1.857.892 2.873 1.16.516.137 1.123.241 1.602.273.276.018 1.21.018 1.473 0 .728-.05 1.218-.144 1.937-.371.85-.268 1.69-.673 2.39-1.16 1.61-1.12 2.95-2.71 3.853-4.553a12.06 12.06 0 0 0 .77-2.215c.298-1.32.42-2.685.353-3.973-.103-1.991-.62-3.86-1.553-5.535-.745-1.34-1.762-2.486-2.998-3.38C16.927.957 14.99.275 13.084.106 12.864.087 11.91.011 11.572 0zm4.665 7.51c.27.034.49.137.626.292.06.067.21.36.21.413 0 .015-.073.013-.123 0l-.117-.04c-.31-.073-.66-.044-.96.08-.31.13-.51.34-.624.65-.146.4-.043.81.27 1.084.083.077.18.13.516.291l.18.087c.45.215.752.523.86.876.029.097.043.224.043.355 0 .447-.221.83-.628 1.087-.452.286-1.114.354-1.7.176-.484-.147-.95-.491-1.158-.86l-.123-.21c.024-.013.06-.034.07-.044l.085-.05.16-.094.07.107a.99.99 0 0 0 .268.282c.337.218.83.193 1.18-.063.197-.142.293-.31.293-.51 0-.179-.063-.31-.234-.485-.124-.127-.205-.176-.59-.36-.5-.243-.795-.467-1.027-.79a1.34 1.34 0 0 1-.23-.748c-.018-.422.117-.776.4-1.058.343-.34.84-.51 1.452-.484zm-7.42 1.045v6.05c0 .117-.005.227-.013.245-.026.058-.087.118-.16.157-.058.029-.108.034-.376.034H7.992v-.166c0-.092.005-.166.012-.166.007 0 .078-.007.158-.015.236-.025.388-.16.45-.395.016-.06.025-.225.025-1.66V8.555zm-.026.184l1.572 2.07.788 1.034c.013-.013.044-.234.073-.49.013-.117.026-.252.026-.295V8.738z"/>
+          </svg>
+          Next.js
+        </span>
+
+        <span class="hero__stackItem" title="TypeScript">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.1 5.1 0 0 0-.717-.26 5.5 5.5 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.87.87 0 0 0-.14.484c0 .197.05.375.151.532.1.158.244.31.43.453s.41.286.673.427c.263.14.56.286.892.437.46.221.879.482 1.255.785s.71.673.978 1.058c.27.385.483.84.643 1.358.16.518.241 1.135.241 1.847 0 .814-.158 1.51-.473 2.087a4 4 0 0 1-1.302 1.432 5.7 5.7 0 0 1-1.953.823 12 12 0 0 1-2.382.243c-.781 0-1.5-.057-2.184-.173-.685-.117-1.276-.291-1.775-.524v-2.621a5 5 0 0 0 1.083.621 7 7 0 0 0 1.226.36 6.4 6.4 0 0 0 1.255.13c.471 0 .863-.038 1.184-.124.32-.085.57-.213.755-.385.184-.171.31-.376.385-.617a2 2 0 0 0 .102-.624 1.4 1.4 0 0 0-.198-.741 2.2 2.2 0 0 0-.51-.617 5.5 5.5 0 0 0-.793-.51c-.305-.16-.682-.327-1.083-.494a8.9 8.9 0 0 1-1.165-.585 4.6 4.6 0 0 1-.94-.726c-.27-.27-.482-.575-.642-.927a2.95 2.95 0 0 1-.234-1.222c0-.69.155-1.275.466-1.755.31-.48.72-.886 1.226-1.222.51-.336 1.083-.575 1.74-.726a8.4 8.4 0 0 1 1.997-.226zM3.31 9.945h11.13v2.082h-4.244v12.001H7.625V12.027H3.31z"/>
+          </svg>
+          TypeScript
+        </span>
+
+        <span class="hero__stackItem" title="Svelte">
+          <svg width="14" height="14" viewBox="0 0 98.1 118" fill="currentColor" aria-hidden="true">
+            <path d="M91.8 15.6C80.9-.1 59.2-4.7 43.6 5.2L16.1 22.8C8.6 27.5 3.4 35.2 1.9 43.9c-1.3 7.3-.2 14.8 3.3 21.3-2.4 3.6-4 7.6-4.7 11.8-1.6 8.9.5 18 5.7 25.3 11 15.7 32.6 20.3 48.2 10.4l27.5-17.5c7.5-4.7 12.7-12.4 14.2-21.1 1.3-7.3.2-14.8-3.3-21.3 2.4-3.6 4-7.6 4.7-11.8 1.7-9-.4-18.1-5.6-25.4M40.9 103.9c-7.9 2-16.3-1.1-21-7.7-3.1-4.4-4.4-9.9-3.4-15.3.2-.9.4-1.7.7-2.6l.5-1.7 1.5 1.1c3.5 2.6 7.4 4.5 11.6 5.8l1.1.3-.1 1.1c-.1 1.6.3 3.2 1.2 4.5 1.4 2 3.9 2.9 6.2 2.3.5-.1 1-.3 1.5-.6l27.5-17.5c1.2-.8 2-2 2.3-3.4.3-1.4 0-2.9-.8-4.1-1.4-2-3.9-2.9-6.2-2.3-.5.1-1 .3-1.5.6L52 70.1c-1.6.9-3.3 1.7-5 2.2-7.9 2-16.3-1.1-21-7.7-2.9-4.4-4.2-9.9-3.4-15.3 1-8.7 7.8-15.1 16.4-17.8 1.7-.5 3.4-.9 5.2-1 7.9-2 16.3 1.1 21 7.7 3.1 4.4 4.4 9.9 3.4 15.3-.2.9-.4 1.7-.7 2.6l-.5 1.7-1.5-1c-3.5-2.6-7.4-4.5-11.6-5.8L51 50.7l.1-1.1c.1-1.6-.3-3.2-1.2-4.5-1.4-2-3.9-2.9-6.2-2.3-.5.1-1 .3-1.5.6L14.6 60.8c-1.2.8-2 2-2.3 3.4-.3 1.4 0 2.9.8 4.1 1.4 2 3.9 2.9 6.2 2.3.5-.1 1-.3 1.5-.6L31.4 64c1.6-.9 3.3-1.7 5-2.2 1.7-.5 3.4-.9 5.2-1z"/>
+          </svg>
+          Svelte
+        </span>
+
+        <span class="hero__stackItem" title="Rust">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 8h5a2.5 2.5 0 0 1 0 5H8zM8 8v8M12 13l3 3"/>
+          </svg>
+          Rust
+        </span>
+
+        <span class="hero__stackItem" title="EVM / Ethereum">
+          <svg width="12" height="14" viewBox="0 0 256 417" fill="currentColor" aria-hidden="true">
+            <path opacity="0.7" d="M127.961 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z"/>
+            <path d="M127.962 0L0 212.32l127.962 75.639V154.158z"/>
+            <path opacity="0.7" d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.6L256 236.587z"/>
+            <path d="M127.962 416.905v-104.72L0 236.585z"/>
+            <path opacity="0.4" d="M127.961 287.958l127.96-75.637-127.96-58.162z"/>
+            <path opacity="0.5" d="M0 212.32l127.96 75.638v-133.8z"/>
+          </svg>
+          EVM
+        </span>
+
+        <span class="hero__stackItem" title="NEAR">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.97 2.51l-4.93 7.32a.43.43 0 0 0 .65.55l4.84-4.2c.16-.13.39-.02.39.18v11.31c0 .21-.27.31-.41.15L4.43 1.45A2.18 2.18 0 0 0 2.78.69h-.5a2.27 2.27 0 0 0-2.27 2.27v18.07a2.27 2.27 0 0 0 2.27 2.27 2.27 2.27 0 0 0 1.94-1.07l4.93-7.32a.43.43 0 0 0-.65-.55l-4.84 4.2c-.16.13-.39.02-.39-.18V7.05c0-.21.27-.31.41-.15L19.6 22.55a2.18 2.18 0 0 0 1.65.76h.5a2.27 2.27 0 0 0 2.27-2.27V2.97A2.27 2.27 0 0 0 21.74.7a2.27 2.27 0 0 0-1.94 1.07z"/>
+          </svg>
+          NEAR
+        </span>
+
+        <span class="hero__stackItem" title="SUI">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2C7 9 5 12.5 5 16a7 7 0 0 0 14 0c0-3.5-2-7-7-14zm0 5.6c1.4 2 2.7 3.9 3.6 5.3.9 1.4 1.4 2.3 1.4 3.1a5 5 0 0 1-10 0c0-.8.5-1.7 1.4-3.1.9-1.4 2.2-3.3 3.6-5.3z"/>
+          </svg>
+          SUI
+        </span>
       </div>
     </div>
   </div>
@@ -366,69 +423,78 @@
     mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
   }
 
-  /* ── Top row ── */
-  .hero__top {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-  @media (min-width: 720px) {
-    .hero__top { flex-direction: row; align-items: center; }
-  }
-
-  .hero__status {
+  /* ── Top-right commits badge ── */
+  .hero__commitsBadge {
+    position: absolute;
+    top: 6.5rem;
+    right: clamp(1rem, 3vw, 2rem);
+    z-index: 3;
     display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.4rem 0.7rem;
-    border-radius: var(--radius-pill);
-    background: rgba(6, 8, 15, 0.6);
-    backdrop-filter: blur(var(--blur-sm));
-    -webkit-backdrop-filter: blur(var(--blur-sm));
-    border: 1px solid var(--line);
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    color: var(--muted);
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 14px;
+    background: rgba(6, 8, 15, 0.78);
+    backdrop-filter: blur(var(--blur-md));
+    -webkit-backdrop-filter: blur(var(--blur-md));
+    color: var(--text);
+    text-align: right;
+    max-width: 320px;
+    transition: background-color var(--duration-hover) var(--ease-default), transform var(--duration-hover) var(--ease-default);
+  }
+  .hero__commitsBadge:hover {
+    background: rgba(6, 8, 15, 0.88);
+    transform: translateY(-1px);
   }
 
   .hero__dot {
-    width: 8px;
-    height: 8px;
+    position: absolute;
+    top: 1.05rem;
+    left: 0.95rem;
+    width: 9px;
+    height: 9px;
     border-radius: 999px;
     background: #5ee2a8;
-    box-shadow: 0 0 0 4px rgba(94, 226, 168, 0.18);
+    box-shadow: 0 0 0 5px rgba(94, 226, 168, 0.2);
     animation: pulse 2s infinite var(--ease-default);
   }
 
   @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.55; }
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.9); }
   }
 
-  .hero__statusBase { color: var(--muted-soft); }
+  .hero__commitsBig {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--text);
+    padding-left: 1.1rem;
+  }
 
-  .hero__stats {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 0.45rem 0.55rem;
-    padding: 0.4rem 0.75rem;
-    border-radius: var(--radius-pill);
-    background: rgba(6, 8, 15, 0.5);
-    backdrop-filter: blur(var(--blur-sm));
-    -webkit-backdrop-filter: blur(var(--blur-sm));
-    border: 1px solid var(--line);
+  .hero__commitsSub {
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    color: var(--muted-soft);
+    color: var(--muted);
+    letter-spacing: 0.02em;
   }
-  .hero__sep { color: var(--muted-soft); opacity: 0.6; }
-  .hero__commit { color: var(--muted); transition: color var(--duration-hover) var(--ease-default); }
-  .hero__commit:hover { color: var(--accent-soft); }
-  .hero__commitRepo { color: var(--muted-soft); }
+
+  .hero__commitsLast {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted-soft);
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .hero__commitsLast em {
+    color: var(--accent-soft);
+    font-style: normal;
+  }
+  .hero__commitsRepo { color: var(--muted-soft); }
 
   /* ── Bottom-right text card (Defined VC inspired) ──
      Sits OUT of the content container — pinned to the right viewport edge with
@@ -447,17 +513,17 @@
     width: 100%;
     max-width: 680px;
     padding: 2rem 2rem 1.75rem;
-    border: 1px solid var(--line-strong);
+    border: none;
     border-radius: 20px;
-    background: rgba(6, 8, 15, 0.93);
+    background: rgba(6, 8, 15, 0.94);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
     box-shadow:
-      0 0 0 1px rgba(58, 109, 255, 0.2),
-      0 32px 72px rgba(0, 0, 0, 0.6);
+      0 32px 72px rgba(0, 0, 0, 0.65),
+      0 12px 32px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
-    gap: 1.05rem;
+    gap: 1.1rem;
   }
 
   @media (min-width: 720px) {
@@ -474,9 +540,17 @@
     gap: 0.8rem;
   }
 
+  .hero__indexLabel {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--muted-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
   .hero__cardName {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     color: var(--muted-soft);
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -526,31 +600,51 @@
     margin-top: 0.4rem;
   }
 
-  .hero__tagRow {
+  /* Stack row with inline tech icons */
+  .hero__stack {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.4rem;
-    margin-top: 0.6rem;
-    padding-top: 1rem;
-    border-top: 1px dashed var(--line);
+    gap: 0.45rem;
+    margin-top: 0.55rem;
+    padding-top: 1.05rem;
+    border-top: 1px solid rgba(245, 241, 234, 0.07);
+  }
+
+  .hero__stackLabel {
     font-family: var(--font-mono);
     font-size: 0.7rem;
     color: var(--muted-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-right: 0.35rem;
   }
-  .hero__tagRow > span:not(.bracket) {
-    padding: 0.18rem 0.5rem;
-    border: 1px solid var(--line);
+
+  .hero__stackItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
     border-radius: var(--radius-pill);
+    border: 1px solid rgba(245, 241, 234, 0.08);
+    background: rgba(160, 195, 255, 0.05);
     color: var(--muted);
-    background: rgba(160, 195, 255, 0.04);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.01em;
+    transition:
+      color var(--duration-hover) var(--ease-default),
+      border-color var(--duration-hover) var(--ease-default),
+      background-color var(--duration-hover) var(--ease-default);
   }
-  .hero__tagRow > span:nth-child(even):not(.bracket) {
-    border: none;
-    padding: 0;
-    background: transparent;
-    color: var(--muted-soft);
-    opacity: 0.45;
+  .hero__stackItem:hover {
+    color: var(--accent-soft);
+    border-color: rgba(58, 109, 255, 0.4);
+    background: rgba(58, 109, 255, 0.08);
+  }
+  .hero__stackItem svg {
+    flex-shrink: 0;
+    color: var(--accent-soft);
   }
 
   /* ── Side icon column ── */

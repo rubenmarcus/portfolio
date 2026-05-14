@@ -51,7 +51,7 @@
           class="nav-link header__link"
           aria-current={isCurrent(item.href) ? "page" : undefined}
         >
-          <span class="header__index">[{item.index}]</span>
+          <span class="header__index">{item.index}</span>
           <span>{item.label}</span>
         </a>
       {/each}
@@ -79,7 +79,7 @@
             aria-current={isCurrent(item.href) ? "page" : undefined}
             onclick={() => (menuOpen = false)}
           >
-            <span class="header__index">[{item.index}]</span>
+            <span class="header__index">{item.index}</span>
             <span class="header__overlay-label">{item.label}</span>
           </a>
         {/each}
@@ -133,14 +133,14 @@
   }
 
   .header__name {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-weight: 500;
     letter-spacing: 0.01em;
   }
 
   .header__nav {
     display: none;
-    gap: 1.75rem;
+    gap: 2rem;
   }
 
   @media (min-width: 880px) {
@@ -153,13 +153,14 @@
   .header__link {
     display: inline-flex;
     align-items: baseline;
-    gap: 0.45rem;
+    gap: 0.5rem;
     font-family: var(--font-sans);
+    font-size: 1.02rem;
   }
 
   .header__index {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     letter-spacing: 0.06em;
     color: var(--muted-soft);
     transition: color var(--duration-hover) var(--ease-default);

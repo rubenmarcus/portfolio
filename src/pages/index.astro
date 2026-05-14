@@ -36,7 +36,7 @@ const featuredArticles = allPosts.slice(0, 3);
       {featured.map((p, i) => (
         <li class="work-row" data-reveal>
           <a class="work-link" href={p.url ?? "/portfolio"} target={p.url ? "_blank" : "_self"} rel={p.url ? "noopener noreferrer" : undefined}>
-            <span class="work-index">[{String(i + 1).padStart(2, "0")}]</span>
+            <span class="work-index">{String(i + 1).padStart(2, "0")}</span>
             <div class="work-body">
               <div class="work-head">
                 <span class="work-title">{p.title}</span>
@@ -78,7 +78,7 @@ const featuredArticles = allPosts.slice(0, 3);
           <CardAscii client:visible seed={`home-${t.slug}`} variant={(["wave","noise","block"] as const)[i % 3]} cols={11} rows={4} />
           <div class="ai-card__top">
             <span class="ai-card__name">{t.name}</span>
-            <span class="bracket">[ {t.year} ]</span>
+            <span class="bracket">{t.year}</span>
           </div>
           <p class="ai-card__tagline">{t.tagline}</p>
           <p class="ai-card__desc">{t.description}</p>
@@ -110,7 +110,7 @@ const featuredArticles = allPosts.slice(0, 3);
       {featuredArticles.map((post, i) => (
         <li class="article-row" data-reveal>
           <a class="article-link" href={`/blog/${post.id}`}>
-            <span class="article-index">[{String(i + 1).padStart(2, "0")}]</span>
+            <span class="article-index">{String(i + 1).padStart(2, "0")}</span>
             <div class="article-body">
               <span class="article-title">{post.data.title}</span>
               <p class="article-desc">{post.data.description}</p>
@@ -138,7 +138,7 @@ const featuredArticles = allPosts.slice(0, 3);
     <div class="cta-band" data-reveal>
       <AsciiField client:visible cell={20} density={0.18} morphRate={1.1} opacity={0.35} class="cta-ascii" />
       <div class="cta-band__inner">
-        <span class="bracket" data-reveal-item>[ 06 / Contact ]</span>
+        <span class="bracket" data-reveal-item>06 / Contact</span>
         <h2 class="cta-title" data-reveal-item>
           Need an engineer who can ship from spec to PR?
         </h2>

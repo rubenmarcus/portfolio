@@ -154,7 +154,7 @@ const education = [
       <aside class="about-card" data-reveal>
         <img src="/rubenmarcus.jpeg" alt="Ruben Marcus" width="320" height="320" loading="eager" />
         <div class="about-card__meta">
-          <span class="bracket">[ At a glance ]</span>
+          <span class="bracket">At a glance</span>
           <dl>
             <div><dt>Full name</dt><dd>Ruben Marcus Luz Paschoarelli</dd></div>
             <div><dt>Based</dt><dd>Lisbon, Portugal</dd></div>
@@ -204,7 +204,7 @@ const education = [
       {skills.map((s, i) => (
         <div class="skills-col" data-reveal-item>
           <CardAscii client:visible seed={`skill-${s.group}`} variant={(["noise","wave","block"] as const)[i % 3]} cols={9} rows={4} />
-          <span class="bracket skills-label">[ {s.group} ]</span>
+          <span class="bracket skills-label">{s.group}</span>
           <ul>
             {s.items.map((it) => <li>{it}</li>)}
           </ul>

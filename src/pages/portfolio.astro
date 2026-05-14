@@ -56,7 +56,7 @@ const total = projects.length;
     return (
       <Section id={g} tight>
         <header class="group-head" data-reveal>
-          <span class="bracket" data-reveal-item>[ {String(gi + 1).padStart(2, "0")} / {list.length} projects ]</span>
+          <span class="bracket" data-reveal-item>{String(gi + 1).padStart(2, "0")} / {list.length} projects</span>
           <h2 class="group-title" data-reveal-item>{groupLabels[g]}</h2>
         </header>
 
@@ -65,7 +65,7 @@ const total = projects.length;
             <li class="proj-row" data-reveal>
               {p.url ? (
                 <a class="proj-link" href={p.url} target="_blank" rel="noopener noreferrer">
-                  <span class="proj-index">[{String(i + 1).padStart(2, "0")}]</span>
+                  <span class="proj-index">{String(i + 1).padStart(2, "0")}</span>
                   <div class="proj-body">
                     <div class="proj-head">
                       <span class="proj-title">{p.title}</span>
@@ -83,7 +83,7 @@ const total = projects.length;
                 </a>
               ) : (
                 <div class="proj-link proj-link--static">
-                  <span class="proj-index">[{String(i + 1).padStart(2, "0")}]</span>
+                  <span class="proj-index">{String(i + 1).padStart(2, "0")}</span>
                   <div class="proj-body">
                     <div class="proj-head">
                       <span class="proj-title">{p.title}</span>

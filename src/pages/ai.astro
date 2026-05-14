@@ -30,7 +30,7 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
     <Section id={t.slug} tight>
       <article class="tool" data-reveal>
         <header class="tool__head" data-reveal-item>
-          <span class="bracket">[ {String(i + 1).padStart(2, "0")} / {t.tags[0]} ]</span>
+          <span class="bracket">{String(i + 1).padStart(2, "0")} / {t.tags[0]}</span>
           <h2 class="tool__name">{t.name}</h2>
           <p class="tool__tagline">{t.tagline}</p>
         </header>
@@ -57,7 +57,7 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
 
           <ul class="tool__features" data-reveal-item>
             <CardAscii client:visible seed={`feat-${t.slug}`} variant="block" cols={14} rows={5} />
-            <span class="bracket tool__featuresLabel">[ Features ]</span>
+            <span class="bracket tool__featuresLabel">Features</span>
             {t.features.map((f) => (
               <li>{f}</li>
             ))}
@@ -94,7 +94,7 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
 
   <Section id="cta" tight>
     <div class="cta-band" data-reveal>
-      <span class="bracket" data-reveal-item>[ 06 / Contact ]</span>
+      <span class="bracket" data-reveal-item>06 / Contact</span>
       <h2 class="cta-title" data-reveal-item>Want to integrate one of these into your stack?</h2>
       <p class="cta-desc" data-reveal-item>I'm happy to chat — these are open source, but I'll often help teams adopt them.</p>
       <div class="cta-actions" data-reveal-item>

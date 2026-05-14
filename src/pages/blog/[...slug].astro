@@ -40,7 +40,7 @@ const formattedDate = post.data.date.toLocaleDateString("en-US", {
         <a class="post-back" href="/blog">← All writing</a>
 
         <div class="post-meta">
-          <span class="bracket">[ {post.data.tags[0] ?? "Writing"} ]</span>
+          <span class="bracket">{post.data.tags[0] ?? "Writing"}</span>
           <span class="post-meta__sep">·</span>
           <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
           <span class="post-meta__sep">·</span>

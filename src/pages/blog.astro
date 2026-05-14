@@ -25,7 +25,7 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
       {posts.map((post, i) => (
         <li class="article-row" data-reveal-item>
           <a class="article-link" href={`/blog/${post.id}`}>
-            <span class="article-index">[{String(i + 1).padStart(2, "0")}]</span>
+            <span class="article-index">{String(i + 1).padStart(2, "0")}</span>
             <div class="article-body">
               <span class="article-title">{post.data.title}</span>
               <p class="article-desc">{post.data.description}</p>
@@ -50,7 +50,7 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
     </ul>
 
     <div class="more" data-reveal>
-      <span class="bracket" data-reveal-item>[ More on the way ]</span>
+      <span class="bracket" data-reveal-item>More on the way</span>
       <p class="more__desc" data-reveal-item>
         Drafts in flight: a deep-dive on Ralph Starter's auto-mode, a teardown of Autoresearcher's
         accept/reject loop, and an essay on what AEO actually moves once you ship it.

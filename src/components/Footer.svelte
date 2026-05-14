@@ -33,7 +33,7 @@
 <footer class="footer">
   <div class="container-x footer__inner">
     <div class="footer__col">
-      <div class="bracket">[ Footer / 06 ]</div>
+      <div class="bracket">Footer / 06</div>
       <p class="footer__line">
         <span class="footer__name">{siteMeta.name}</span>
         <span class="footer__sep">·</span>
@@ -45,7 +45,7 @@
     </div>
 
     <div class="footer__col footer__col--right">
-      <div class="bracket">[ Reach ]</div>
+      <div class="bracket">Reach</div>
       <ul class="footer__socials">
         {#each socials as s}
           <li>
