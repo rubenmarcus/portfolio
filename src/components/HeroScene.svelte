@@ -17,53 +17,17 @@
     "open-source libraries",
   ];
 
-  let mouse = $state({ x: 0, y: 0 });
-  let zoom = $state(1.15);
   let video: HTMLVideoElement | null = $state(null);
-  let hovering = $state(false);
 
   $effect(() => {
     if (video) {
       try { video.playbackRate = 1.15; } catch {}
     }
   });
-
-  $effect(() => {
-    const onMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      mouse = { x, y };
-    };
-    const onWheel = (e: WheelEvent) => {
-      zoom = Math.min(Math.max(zoom + e.deltaY * 0.0008, 1.1), 1.4);
-    };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("wheel", onWheel, { passive: true });
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("wheel", onWheel);
-    };
-  });
-
-  const inCenter = $derived(hovering && Math.abs(mouse.x) < 0.3 && Math.abs(mouse.y) < 0.3);
-  const activeZoom = $derived(inCenter ? zoom + 0.08 : zoom);
-  const parallaxX = $derived(mouse.x * 22);
-  const parallaxY = $derived(mouse.y * 22);
-  const haloX = $derived(((mouse.x + 1) * 50).toFixed(1) + "%");
-  const haloY = $derived(((mouse.y + 1) * 50).toFixed(1) + "%");
 </script>
 
-<section
-  class="hero"
-  onmouseenter={() => (hovering = true)}
-  onmouseleave={() => (hovering = false)}
-  role="region"
-  aria-label="Intro"
->
-  <div
-    class="hero__bg"
-    style:transform={`translate(${parallaxX}px, ${parallaxY}px)`}
-  >
+<section class="hero" aria-label="Intro">
+  <div class="hero__bg">
     <video
       bind:this={video}
       autoplay
@@ -72,26 +36,15 @@
       playsinline
       preload="auto"
       class="hero__video"
-      style:transform={`scale(${activeZoom})`}
     >
       <source src="/videobg.webm" type="video/webm" />
     </video>
 
     <div class="hero__iceTint" aria-hidden="true"></div>
-
-    <!-- Mouse halo only — no busy ASCII/code/cloud overlays that read as blinking -->
-    <div
-      class="hero__halo"
-      aria-hidden="true"
-      style:--mx={haloX}
-      style:--my={haloY}
-    ></div>
-
     <div class="hero__vignette" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
   </div>
 
-  <!-- Lede pinned at 10% from left, 10% from bottom -->
   <div class="hero__lede">
     <p class="hero__intro">
       Hello, I'm <span class="hero__introName">Ruben Marcus</span>
@@ -117,22 +70,23 @@
     isolation: isolate;
   }
 
+  /* Static background — no parallax, no zoom transitions, no mouse tracking */
   .hero__bg {
     position: absolute;
-    inset: -4%;
+    inset: 0;
     z-index: -2;
-    transition: transform 0.8s var(--ease-default);
   }
 
   .hero__video {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform: scale(1.15);
     transform-origin: center center;
-    transition: transform 0.8s var(--ease-default);
     filter: brightness(0.86) contrast(1.04) saturate(0.18);
   }
 
+  /* Ice tint over the video */
   .hero__iceTint {
     position: absolute;
     inset: 0;
@@ -147,36 +101,6 @@
     mix-blend-mode: color;
   }
 
-  /* Quantum-style flashlight halo */
-  .hero__halo {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(
-        circle 110px at var(--mx, 50%) var(--my, 50%),
-        rgba(255, 255, 255, 0.7) 0%,
-        rgba(220, 240, 255, 0.4) 55%,
-        transparent 100%
-      ),
-      radial-gradient(
-        circle 260px at var(--mx, 50%) var(--my, 50%),
-        rgba(190, 230, 255, 0.28) 0%,
-        rgba(120, 185, 235, 0.14) 45%,
-        transparent 75%
-      ),
-      radial-gradient(
-        circle 460px at var(--mx, 50%) var(--my, 50%),
-        rgba(94, 200, 255, 0.12) 0%,
-        rgba(94, 200, 255, 0.05) 50%,
-        transparent 80%
-      );
-    mix-blend-mode: screen;
-    transition: background 60ms linear;
-    opacity: 1;
-  }
-
-  /* Vignette — sides near-black, strong bottom-left darken under the lede */
   .hero__vignette {
     position: absolute;
     inset: 0;
@@ -199,7 +123,7 @@
     mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
   }
 
-  /* ── Lede ── */
+  /* Lede */
   .hero__lede {
     position: absolute;
     left: 10%;
@@ -211,7 +135,6 @@
     align-items: flex-start;
     gap: 1.55rem;
     max-width: 1100px;
-    filter: drop-shadow(0 4px 24px rgba(0, 0, 0, 0.55));
   }
   @media (max-width: 720px) {
     .hero__lede {
@@ -227,17 +150,12 @@
     font-size: clamp(1.15rem, 1.7vw, 1.55rem);
     color: var(--muted);
     line-height: 1.35;
-    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.65);
   }
   .hero__introName,
   .hero__introVerb {
     color: var(--accent-soft);
     font-weight: 500;
-    cursor: default;
-    transition: color var(--duration-hover) var(--ease-default);
   }
-  .hero__introName:hover,
-  .hero__introVerb:hover { color: #c8def0; }
 
   .hero__title {
     margin: 0;
@@ -249,11 +167,15 @@
     color: var(--text);
     display: block;
     text-wrap: balance;
-    text-shadow: 0 2px 32px rgba(0, 0, 0, 0.75);
   }
 
+  /* The blue glow lives on the rotating word ONLY — no cursor halo, no
+     viewport-wide filter. The rotating text is itself the blue accent. */
   :global(.hero__verb) {
     color: var(--accent-soft);
+    text-shadow:
+      0 0 24px rgba(94, 200, 255, 0.45),
+      0 0 48px rgba(94, 200, 255, 0.22);
   }
 
   .hero__ctas {
