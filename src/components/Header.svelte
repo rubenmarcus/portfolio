@@ -7,18 +7,7 @@
 
   let { currentPath = "/" }: Props = $props();
 
-  let scrolled = $state(false);
   let menuOpen = $state(false);
-
-  // Track scroll for navbar shrink
-  $effect(() => {
-    const onScroll = () => {
-      scrolled = window.scrollY > 24;
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  });
 
   // Lock body scroll while mobile menu is open
   $effect(() => {
@@ -35,10 +24,7 @@
   }
 </script>
 
-<header
-  class="header"
-  class:header--scrolled={scrolled}
->
+<header class="header">
   <div class="header__inner">
     <a href="/" class="header__brand" aria-label="rubenmarcus.dev — home">
       <span class="header__name">rubenmarcus.dev</span>
@@ -127,20 +113,9 @@
     left: 0;
     right: 0;
     z-index: var(--z-nav);
-    padding-block: 1.1rem;
-    background: transparent;
-    border-bottom: 1px solid transparent;
-    transition:
-      padding-block 280ms var(--ease-default),
-      background-color var(--duration-hover) var(--ease-default),
-      border-color var(--duration-hover) var(--ease-default),
-      backdrop-filter var(--duration-hover) var(--ease-default);
-  }
-
-  .header--scrolled {
-    padding-block: 0.7rem;
+    padding-block: 1rem;
     background: rgba(12, 13, 16, 0.72);
-    border-bottom-color: var(--line);
+    border-bottom: 1px solid var(--line);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
   }
@@ -161,10 +136,6 @@
     color: var(--text);
     font-family: var(--font-mono);
     letter-spacing: 0.02em;
-    transition: color var(--duration-hover) var(--ease-default);
-  }
-  .header__brand:hover {
-    color: var(--accent-soft);
   }
 
   .header__name {
@@ -220,13 +191,9 @@
     height: 36px;
     border-radius: 999px;
     color: var(--muted);
-    transition:
-      color var(--duration-hover) var(--ease-default),
-      background-color var(--duration-hover) var(--ease-default);
   }
   .header__socialIcon:hover {
-    color: var(--accent-soft);
-    background: rgba(94, 200, 255, 0.08);
+    color: var(--text);
   }
 
   .header__burger {

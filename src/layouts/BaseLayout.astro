@@ -3,8 +3,6 @@ import "../styles/global.css";
 import Header from "../components/Header.svelte";
 import Footer from "../components/Footer.svelte";
 import SmoothScroll from "../components/SmoothScroll.svelte";
-import CursorHalo from "../components/CursorHalo.svelte";
-import QuantumLattice from "../components/QuantumLattice.svelte";
 import Analytics from "@vercel/analytics/astro";
 
 interface Props {
@@ -103,12 +101,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <body>
     <SmoothScroll client:load />
 
-    <!-- Site-wide ambient lattice — Canvas 2D, ice-blue tuned -->
-    <div class="lattice-wrap" aria-hidden="true">
-      <QuantumLattice client:load />
-    </div>
-
-    <CursorHalo client:load />
     <Header client:load currentPath={Astro.url.pathname} />
 
     <main>
@@ -116,18 +108,5 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </main>
 
     <Footer />
-
-    <style>
-      .lattice-wrap {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        opacity: 0.55;
-        /* Center mask — keep content area readable */
-        mask-image: radial-gradient(ellipse at center, transparent 12%, #000 55%);
-        -webkit-mask-image: radial-gradient(ellipse at center, transparent 12%, #000 55%);
-      }
-    </style>
   </body>
 </html>

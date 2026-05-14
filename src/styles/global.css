@@ -322,12 +322,11 @@
     border-bottom-color: var(--accent-soft);
   }
 
-  /* Nav link */
+  /* Nav link — static, simple color change on hover, no transition */
   .nav-link {
     color: var(--muted);
     font-size: 0.9rem;
     font-weight: 500;
-    transition: color var(--duration-hover) var(--ease-default);
   }
   .nav-link:hover,
   .nav-link[aria-current="page"] {
