@@ -164,12 +164,18 @@
       </a>
     {/if}
 
-    <a class="stats__card" href="/portfolio">
-      <svg class="stats__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <rect x="3" y="4" width="18" height="16" rx="2"/>
-        <line x1="3" y1="9" x2="21" y2="9"/>
-        <line x1="9" y1="20" x2="9" y2="9"/>
-      </svg>
+    <a class="stats__card stats__card--video" href="/portfolio">
+      <video
+        class="stats__video"
+        autoplay
+        loop
+        muted
+        playsinline
+        preload="auto"
+        aria-hidden="true"
+      >
+        <source src="/1.webm" type="video/webm" />
+      </video>
       <div class="stats__body">
         <span class="stats__big">62 projects</span>
         <span class="stats__sub">shipped in 13 years</span>
@@ -269,6 +275,21 @@
   }
 
   .stats__icon { color: var(--accent-soft); flex-shrink: 0; }
+
+  /* Card variant that uses a looping video as its icon */
+  .stats__card--video {
+    overflow: hidden;
+  }
+  .stats__video {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    filter: brightness(0.95) saturate(0.85);
+    /* Soft frosted ring around the video so it sits cleanly in the card */
+    box-shadow: inset 0 0 0 1px rgba(94, 200, 255, 0.18);
+  }
 
   .stats__body {
     display: flex;
