@@ -278,30 +278,53 @@
     transform: translateY(-2px);
   }
 
-  /* Video card variant: video sits on its own row on top, text below */
+  /* Video card variant — bigger, all-black, video fills the top row */
   .stats__card--video {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
     align-items: stretch;
-    gap: 0.85rem;
+    gap: 0;
     padding: 0;
     overflow: hidden;
+    background: #000;
+    border-color: rgba(76, 201, 240, 0.18);
+    /* Span 2 columns at desktop so it reads as the feature card */
+  }
+  @media (min-width: 900px) {
+    .stats__card--video {
+      grid-column: span 2;
+    }
+  }
+  .stats__card--video:hover {
+    background: #000;
+    border-color: rgba(76, 201, 240, 0.4);
   }
 
   .stats__icon { color: var(--accent-soft); flex-shrink: 0; }
 
-  /* Video sits full-width on its own row at the top of the card */
+  /* Video sits full-width on its own row at the top of the card — bigger */
   .stats__video {
     display: block;
     width: 100%;
-    height: 140px;
+    height: 260px;
     object-fit: cover;
-    border-bottom: 1px solid var(--line);
-    filter: brightness(0.92) saturate(0.85);
+    background: #000;
+    border-bottom: 1px solid rgba(76, 201, 240, 0.14);
+    filter: brightness(0.95) saturate(0.9);
+  }
+  @media (max-width: 640px) {
+    .stats__video { height: 200px; }
   }
   /* Text block inside the video card needs its own padding now */
   .stats__card--video .stats__body {
-    padding: 0 1.15rem 1rem 1.15rem;
+    padding: 1.1rem 1.3rem 1.25rem;
+    gap: 0.25rem;
+  }
+  .stats__card--video .stats__big {
+    font-size: 1.4rem;
+  }
+  .stats__card--video .stats__sub {
+    font-size: 0.85rem;
   }
 
   .stats__body {

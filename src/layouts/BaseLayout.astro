@@ -3,6 +3,7 @@ import "../styles/global.css";
 import Header from "../components/Header.svelte";
 import Footer from "../components/Footer.svelte";
 import SmoothScroll from "../components/SmoothScroll.svelte";
+import IceFlowBg from "../components/IceFlowBg.svelte";
 import Analytics from "@vercel/analytics/astro";
 
 interface Props {
@@ -100,6 +101,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body>
     <SmoothScroll client:load />
+
+    <!-- Site-wide Three.js ice-flow shader bg (FBM noise + glacial palette) -->
+    <IceFlowBg client:load />
 
     <Header client:load currentPath={Astro.url.pathname} />
 

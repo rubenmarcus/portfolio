@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 :root {
-  /* Partial cyberpunk: deep purple-black bg, cyan primary accent,
-     hot pink as a secondary accent used sparingly. */
-  --bg-0: #0d0221;
+  /* Pure-black anchor — the live ice-flow Three.js shader provides all
+     the colour atmosphere, so the static body bg can stay pitch-black. */
+  --bg-0: #000000;
   --bg-1: rgba(180, 200, 255, 0.035);
   --bg-2: rgba(180, 200, 255, 0.055);
   --line: rgba(180, 200, 255, 0.09);
@@ -72,17 +72,15 @@
     font-family: var(--font-sans);
     color: var(--text);
     line-height: 1.65;
-    background:
-      /* Cyan glow top-left */
-      radial-gradient(circle at 10% -10%, rgba(76, 201, 240, 0.10), transparent 36%),
-      /* Hot pink glow top-right — the cyberpunk hint */
-      radial-gradient(circle at 92% 4%, rgba(247, 37, 133, 0.07), transparent 36%),
-      /* Deep magenta wash bottom */
-      radial-gradient(circle at 50% 110%, rgba(107, 45, 92, 0.14), transparent 42%),
-      var(--bg-0);
+    /* The IceFlowBg shader paints colour. Body just stays black. */
+    background: var(--bg-0);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     position: relative;
+  }
+  main {
+    position: relative;
+    z-index: 2;
   }
 
   /* Film-grain overlay — fixed, low-opacity, decorative */
