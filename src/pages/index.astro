@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HeroScene from "../components/HeroScene.svelte";
+import AsciiField from "../components/AsciiField.svelte";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import Divider from "../components/Divider.astro";
@@ -133,16 +134,19 @@ const featuredArticles = allPosts.slice(0, 3);
   <!-- Contact CTA -->
   <Section id="contact-cta" tight>
     <div class="cta-band" data-reveal>
-      <span class="bracket" data-reveal-item>[ 06 / Contact ]</span>
-      <h2 class="cta-title" data-reveal-item>
-        Need an engineer who can ship from spec to PR?
-      </h2>
-      <p class="cta-desc" data-reveal-item>
-        I'm selectively available for AI tooling, Web3, and post-quantum infrastructure work.
-      </p>
-      <div class="cta-actions" data-reveal-item>
-        <a href="mailto:ruben@rubenmarcus.dev" class="btn btn-primary">ruben@rubenmarcus.dev</a>
-        <a href="/contact" class="btn btn-secondary">All contact channels</a>
+      <AsciiField client:visible cell={20} density={0.18} morphRate={1.1} opacity={0.35} class="cta-ascii" />
+      <div class="cta-band__inner">
+        <span class="bracket" data-reveal-item>[ 06 / Contact ]</span>
+        <h2 class="cta-title" data-reveal-item>
+          Need an engineer who can ship from spec to PR?
+        </h2>
+        <p class="cta-desc" data-reveal-item>
+          I'm selectively available for AI tooling, Web3, and post-quantum infrastructure work.
+        </p>
+        <div class="cta-actions" data-reveal-item>
+          <a href="mailto:ruben@rubenmarcus.dev" class="btn btn-primary">ruben@rubenmarcus.dev</a>
+          <a href="/contact" class="btn btn-secondary">All contact channels</a>
+        </div>
       </div>
     </div>
   </Section>
@@ -382,15 +386,28 @@ const featuredArticles = allPosts.slice(0, 3);
 
   /* CTA band */
   .cta-band {
-    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(58, 109, 255, 0.22);
     border-radius: 18px;
-    background: linear-gradient(180deg, rgba(245, 241, 234, 0.035), rgba(245, 241, 234, 0.015));
+    background:
+      radial-gradient(circle at 20% 0%, rgba(58, 109, 255, 0.12), transparent 50%),
+      linear-gradient(180deg, rgba(160, 195, 255, 0.04), rgba(160, 195, 255, 0.015));
     padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3rem);
     text-align: center;
+  }
+
+  .cta-band__inner {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+  }
+
+  :global(.cta-ascii) {
+    mask-image: radial-gradient(ellipse at center, #000 25%, transparent 75%);
   }
 
   .cta-title {

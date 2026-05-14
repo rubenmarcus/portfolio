@@ -3,28 +3,29 @@
 @tailwind utilities;
 
 :root {
-  /* Nillion-warmed dark palette */
-  --bg-0: #0c0d10;
-  --bg-1: rgba(245, 241, 234, 0.035);
-  --bg-2: rgba(245, 241, 234, 0.055);
-  --line: rgba(245, 241, 234, 0.08);
-  --line-strong: rgba(245, 241, 234, 0.14);
-  --line-bright: rgba(245, 241, 234, 0.24);
+  /* Nillion-deep blue palette */
+  --bg-0: #06080f;
+  --bg-1: rgba(160, 195, 255, 0.035);
+  --bg-2: rgba(160, 195, 255, 0.055);
+  --line: rgba(160, 195, 255, 0.09);
+  --line-strong: rgba(160, 195, 255, 0.16);
+  --line-bright: rgba(160, 195, 255, 0.28);
 
   --text: #f5f1ea;
   --cream: #f5f1ea;
   --muted: rgba(245, 241, 234, 0.66);
   --muted-soft: rgba(245, 241, 234, 0.42);
 
-  --accent: #2a5cff;
-  --accent-soft: #6f8dff;
-  --focus: rgba(42, 92, 255, 0.72);
+  --accent: #3a6dff;
+  --accent-soft: #8fa9ff;
+  --accent-deep: #1a3da8;
+  --focus: rgba(58, 109, 255, 0.72);
 
-  --section-y-mobile: 80px;
-  --section-y-desktop: 136px;
-  --content-max: 1180px;
-  --text-max: 680px;
-  --gutter-x: clamp(1.25rem, 4vw, 2.5rem);
+  --section-y-mobile: 96px;
+  --section-y-desktop: 176px;
+  --content-max: 1200px;
+  --text-max: 700px;
+  --gutter-x: clamp(1.25rem, 4vw, 2.75rem);
 
   --radius-card: 16px;
   --radius-button: 12px;
@@ -64,8 +65,9 @@
     color: var(--text);
     line-height: 1.65;
     background:
-      radial-gradient(circle at 8% -6%, rgba(42, 92, 255, 0.07), transparent 32%),
-      radial-gradient(circle at 92% 8%, rgba(245, 241, 234, 0.025), transparent 36%),
+      radial-gradient(circle at 12% -8%, rgba(58, 109, 255, 0.14), transparent 34%),
+      radial-gradient(circle at 88% 6%, rgba(120, 160, 255, 0.07), transparent 36%),
+      radial-gradient(circle at 50% 110%, rgba(20, 50, 130, 0.16), transparent 42%),
       var(--bg-0);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -139,7 +141,7 @@
   }
 
   ::selection {
-    background: rgba(42, 92, 255, 0.32);
+    background: rgba(58, 109, 255, 0.36);
     color: #ffffff;
   }
 
@@ -149,16 +151,16 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #08090b;
+    background: #05070c;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(245, 241, 234, 0.14);
+    background: rgba(160, 195, 255, 0.14);
     border-radius: 999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(245, 241, 234, 0.24);
+    background: rgba(160, 195, 255, 0.26);
   }
 
   /* Hide reveal targets until JS hydrates */

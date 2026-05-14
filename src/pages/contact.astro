@@ -2,13 +2,29 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
+import AsciiField from "../components/AsciiField.svelte";
+import Icon from "../components/Icon.astro";
 import { socialLinks } from "../lib/navigation";
+
+const iconMap: Record<string, "github" | "x-twitter" | "linkedin" | "mail" | "telegram" | "dev-to"> = {
+  GitHub: "github",
+  X: "x-twitter",
+  LinkedIn: "linkedin",
+  Email: "mail",
+  Telegram: "telegram",
+  "dev.to": "dev-to",
+};
 ---
 
 <BaseLayout
   title="Contact — Ruben Marcus"
   description="Get in touch with Ruben Marcus. Selectively available for AI tooling, Web3, and post-quantum work."
 >
+  <!-- Atmospheric ASCII field -->
+  <div class="contact-atmos" aria-hidden="true">
+    <AsciiField client:load cell={22} density={0.14} morphRate={1.0} opacity={0.32} reactive={true} />
+  </div>
+
   <Section id="intro">
     <SectionHeader
       index="05"
@@ -21,9 +37,12 @@ import { socialLinks } from "../lib/navigation";
       <a href="mailto:ruben@rubenmarcus.dev" class="contact-card contact-card--primary" data-reveal>
         <div class="contact-card__head">
           <span class="bracket">[ Primary ]</span>
-          <span class="contact-card__arrow" aria-hidden="true">↗</span>
+          <Icon name="arrow-up-right" size={18} class="contact-card__arrow" />
         </div>
-        <span class="contact-card__value">ruben@rubenmarcus.dev</span>
+        <div class="contact-card__valueRow">
+          <Icon name="mail" size={22} class="contact-card__icon" />
+          <span class="contact-card__value">ruben@rubenmarcus.dev</span>
+        </div>
         <span class="contact-card__note">Best for project inquiries, longer-form questions, or anything off-public.</span>
       </a>
 
@@ -35,9 +54,12 @@ import { socialLinks } from "../lib/navigation";
           {socialLinks.map((s) => (
             <li>
               <a href={s.href} target="_blank" rel="noopener noreferrer" class="contact-social">
+                <span class="contact-social__icon">
+                  <Icon name={iconMap[s.label] ?? "external"} size={16} />
+                </span>
                 <span>{s.label}</span>
                 <span class="contact-social__url">{s.href.replace("https://", "").replace("mailto:", "")}</span>
-                <span class="contact-card__arrow" aria-hidden="true">↗</span>
+                <Icon name="arrow-up-right" size={14} class="contact-card__arrow" />
               </a>
             </li>
           ))}
@@ -58,6 +80,16 @@ import { socialLinks } from "../lib/navigation";
 </BaseLayout>
 
 <style>
+  /* ASCII atmosphere — fixed, masked to keep content readable */
+  .contact-atmos {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at 50% 35%, transparent 22%, #000 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 35%, transparent 22%, #000 75%);
+  }
+
   .contact-grid {
     display: grid;
     gap: 1rem;
@@ -96,22 +128,33 @@ import { socialLinks } from "../lib/navigation";
     color: var(--muted);
   }
 
+  .contact-card__valueRow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
   .contact-card__value {
     font-family: var(--font-display);
     font-size: clamp(1.5rem, 3vw, 2.1rem);
     line-height: 1.05;
   }
 
+  :global(.contact-card__icon) { color: var(--accent-soft); }
+
   .contact-card__note {
     color: var(--muted);
     font-size: 0.9rem;
   }
 
-  .contact-card__arrow {
+  :global(.contact-card__arrow) {
     color: var(--muted-soft);
     transition: transform var(--duration-hover) var(--ease-default), color var(--duration-hover) var(--ease-default);
   }
-  .contact-card:hover .contact-card__arrow { transform: translate(2px, -2px); color: var(--accent-soft); }
+  .contact-card:hover :global(.contact-card__arrow) {
+    transform: translate(2px, -2px);
+    color: var(--accent-soft);
+  }
 
   .contact-socials {
     list-style: none;
@@ -123,16 +166,22 @@ import { socialLinks } from "../lib/navigation";
 
   .contact-social {
     display: grid;
-    grid-template-columns: 100px 1fr auto;
-    gap: 0.8rem;
+    grid-template-columns: 24px 100px 1fr auto;
+    gap: 0.7rem;
     align-items: center;
-    padding: 0.65rem 0;
+    padding: 0.7rem 0;
     border-top: 1px solid var(--line);
     color: var(--text);
     transition: color var(--duration-hover) var(--ease-default);
   }
   .contact-social:hover { color: var(--accent-soft); }
   .contact-socials li:first-child .contact-social { border-top: none; padding-top: 0; }
+
+  .contact-social__icon {
+    color: var(--accent-soft);
+    display: inline-grid;
+    place-items: center;
+  }
 
   .contact-social__url {
     font-family: var(--font-mono);

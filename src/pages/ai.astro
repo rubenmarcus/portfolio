@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import Divider from "../components/Divider.astro";
+import AsciiField from "../components/AsciiField.svelte";
 import { aiTools, supportingTools } from "../lib/data/aiTools";
 ---
 
@@ -10,6 +11,11 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
   title="AI Tools — Ruben Marcus"
   description="Open-source AI tools I'm shipping at MultiVM Labs — Ralph Starter, Autoresearcher, and AEO.js. Spec-driven coding, benchmark-driven research loops, and Answer Engine Optimization for the modern web."
 >
+  <!-- Sparse ASCII atmosphere — only visible at the page edges -->
+  <div class="ai-atmos" aria-hidden="true">
+    <AsciiField client:load cell={20} density={0.16} morphRate={0.9} opacity={0.3} reactive={true} />
+  </div>
+
   <Section id="intro">
     <SectionHeader
       index="02"
@@ -97,6 +103,23 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
 </BaseLayout>
 
 <style>
+  /* ASCII atmospheric layer behind the AI page — masked to edges so content
+     remains highly readable. Reactive halo behaviour comes from the component. */
+  .ai-atmos {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    mask-image:
+      radial-gradient(ellipse at center, transparent 38%, #000 78%),
+      linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-image:
+      radial-gradient(ellipse at center, transparent 38%, #000 78%),
+      linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+    -webkit-mask-composite: source-in;
+  }
+
   .tool {
     border-top: 1px solid var(--line);
     padding-top: 2.5rem;

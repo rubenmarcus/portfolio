@@ -1,0 +1,138 @@
+---
+interface Props {
+  name:
+    | "arrow-right"
+    | "arrow-up-right"
+    | "arrow-down"
+    | "github"
+    | "x-twitter"
+    | "linkedin"
+    | "mail"
+    | "telegram"
+    | "dev-to"
+    | "external"
+    | "terminal"
+    | "zap"
+    | "code"
+    | "package"
+    | "sparkles"
+    | "feather"
+    | "globe"
+    | "command"
+    | "circle-dot"
+    | "rss";
+  size?: number;
+  stroke?: number;
+  class?: string;
+}
+
+const { name, size = 16, stroke = 1.6, class: className = "" } = Astro.props;
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width={stroke}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class:list={["icon", className]}
+  aria-hidden="true"
+>
+  {name === "arrow-right" && <path d="M5 12h14M13 5l7 7-7 7" />}
+  {name === "arrow-up-right" && <><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></>}
+  {name === "arrow-down" && <path d="M12 5v14M5 12l7 7 7-7" />}
+  {name === "external" && <><path d="M15 3h6v6" /><path d="M10 14L21 3" /><path d="M21 14v7H3V3h7" /></>}
+  {name === "github" && (
+    <path d="M12 2A10 10 0 0 0 8.84 21.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.1.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.69 0 3.84-2.34 4.68-4.57 4.93.36.31.69.92.69 1.85V21c0 .27.16.59.67.5A10 10 0 0 0 12 2z" fill="currentColor" stroke="none" />
+  )}
+  {name === "x-twitter" && (
+    <path d="M18.244 2H21.5l-7.5 8.572L23 22h-6.91l-4.81-6.288L5.7 22H2.44l8.02-9.166L1.5 2h7.05l4.34 5.745L18.244 2zm-1.21 18h1.91L7.06 4H5.05l11.985 16z" fill="currentColor" stroke="none" />
+  )}
+  {name === "linkedin" && (
+    <>
+      <path d="M4 4h4v16H4zM6 2.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM10 8h3.8v2.2h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V20h-4v-5.7c0-1.36-.03-3.1-1.9-3.1-1.9 0-2.2 1.48-2.2 3v5.8h-4V8z" fill="currentColor" stroke="none" />
+    </>
+  )}
+  {name === "mail" && (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M3 7l9 6 9-6" />
+    </>
+  )}
+  {name === "telegram" && (
+    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+  )}
+  {name === "dev-to" && (
+    <>
+      <rect x="2.5" y="4.5" width="19" height="15" rx="2" />
+      <path d="M7 9v6M5.5 9h3M5.5 12h2.5M5.5 15h3" stroke-width={stroke + 0.2} />
+      <path d="M11 9l1.7 6L14.4 9" stroke-width={stroke + 0.2} />
+      <path d="M17 9v6h2.5M17 12h1.8" stroke-width={stroke + 0.2} />
+    </>
+  )}
+  {name === "terminal" && (
+    <>
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" y1="19" x2="20" y2="19" />
+    </>
+  )}
+  {name === "zap" && (
+    <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
+  )}
+  {name === "code" && (
+    <>
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </>
+  )}
+  {name === "package" && (
+    <>
+      <path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+      <line x1="12" y1="22.08" x2="12" y2="12" />
+    </>
+  )}
+  {name === "sparkles" && (
+    <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2 2M16.4 16.4l2 2M5.6 18.4l2-2M16.4 7.6l2-2" />
+  )}
+  {name === "feather" && (
+    <>
+      <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" />
+      <line x1="16" y1="8" x2="2" y2="22" />
+      <line x1="17.5" y1="15" x2="9" y2="15" />
+    </>
+  )}
+  {name === "globe" && (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z" />
+    </>
+  )}
+  {name === "command" && (
+    <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z" />
+  )}
+  {name === "circle-dot" && (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none" />
+    </>
+  )}
+  {name === "rss" && (
+    <>
+      <path d="M4 11a9 9 0 0 1 9 9" />
+      <path d="M4 4a16 16 0 0 1 16 16" />
+      <circle cx="5" cy="19" r="1.2" fill="currentColor" stroke="none" />
+    </>
+  )}
+</svg>
+
+<style>
+  .icon {
+    flex-shrink: 0;
+    transition: transform var(--duration-hover) var(--ease-default), color var(--duration-hover) var(--ease-default);
+  }
+</style>
