@@ -1,17 +1,18 @@
 <script lang="ts">
   import RotatingVerb from "./RotatingVerb.svelte";
   import HeroParticles from "./HeroParticles.svelte";
-  import AsciiField from "./AsciiField.svelte";
+  import CodeStream from "./CodeStream.svelte";
+  import CloudField from "./CloudField.svelte";
 
   const verbs = [
     "autonomous agents",
     "post-quantum tools",
-    "NFT infrastructure",
-    "AI tooling",
+    "DeFi trading bots",
     "spec-driven loops",
+    "AI search infra",
+    "wallet UX",
   ];
 
-  // GitHub stats — same source as before
   const GH_USER = "rubenmarcus";
 
   interface GitHubStats {
@@ -34,7 +35,6 @@
     }
   });
 
-  // Mouse + wheel for parallax and zoom
   $effect(() => {
     const onMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -42,7 +42,6 @@
       mouse = { x, y };
     };
     const onWheel = (e: WheelEvent) => {
-      // gentle parallax zoom — don't preventDefault so smooth scroll still works
       zoom = Math.min(Math.max(zoom + e.deltaY * 0.0008, 1.1), 1.4);
     };
     window.addEventListener("mousemove", onMove);
@@ -53,7 +52,6 @@
     };
   });
 
-  // GitHub stats fetch
   $effect(() => {
     const now = new Date();
     const todayStr = now.toISOString().slice(0, 10);
@@ -68,9 +66,7 @@
       .then(([contribData, events, allData]) => {
         if (!contribData) return;
         const contributions: { date: string; count: number }[] = contribData.contributions || [];
-        let today = 0,
-          month = 0,
-          year = 0;
+        let today = 0, month = 0, year = 0;
         for (const c of contributions) {
           const d = new Date(c.date);
           if (c.date === todayStr) today = c.count;
@@ -105,7 +101,6 @@
   const activeZoom = $derived(inCenter ? zoom + 0.08 : zoom);
   const parallaxX = $derived(mouse.x * 22);
   const parallaxY = $derived(mouse.y * 22);
-  // Mouse coords mapped to 0–100% for the halo CSS vars
   const haloX = $derived(((mouse.x + 1) * 50).toFixed(1) + "%");
   const haloY = $derived(((mouse.y + 1) * 50).toFixed(1) + "%");
 </script>
@@ -135,26 +130,16 @@
       <source src="/videobg.webm" type="video/webm" />
     </video>
 
-    <!-- Ice-blue tint over the video — applies hue/saturation, preserves luminance -->
+    <!-- Ice-blue tint over the video — preserves luminance, applies hue -->
     <div class="hero__iceTint" aria-hidden="true"></div>
 
-    <!-- Reactive ASCII overlay — sparse by default, glyphs brighten/condense
-         in a halo around the cursor. Mimics the flashlight density boost from
-         quantum-website's ASCII shader. -->
-    <AsciiField
-      client:load
-      cell={14}
-      density={0.1}
-      morphRate={1.6}
-      opacity={0.18}
-      reactive={true}
-      color="rgba(200, 230, 255, 1)"
-      class="hero__asciiOverlay"
-    />
+    <!-- Drifting cloud blobs, like the quantum-website FBM cloud field -->
+    <CloudField client:load blobs={6} class="hero__clouds" />
 
-    <!-- Mouse-tracked halo: brighter, tighter, more flashlight-like.
-         Sharper core (near-white) + cyan-frost edges so it reads as a focused
-         beam rather than a soft blob. -->
+    <!-- Live code feed — real snippets from his open-source projects -->
+    <CodeStream client:load count={5} class="hero__code" />
+
+    <!-- Mouse-tracked halo — quantum-style flashlight beam -->
     <div
       class="hero__halo"
       aria-hidden="true"
@@ -165,18 +150,18 @@
     <!-- Ice-blue particle emitter that follows the cursor -->
     <HeroParticles client:load rate={2.6} life={1200} class="hero__particles" />
 
+    <!-- Edge-darkening vignette — radial dark from edges in, plus a heavier
+         lower-right gradient where the text card sits -->
     <div class="hero__vignette" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
   </div>
 
-  <!-- Top marquee strip with GitHub stats / status -->
+  <!-- Top row: GitHub stats marquee + status pill -->
   <div class="hero__top container-x">
     <div class="hero__status">
       <span class="hero__dot" aria-hidden="true"></span>
-      <span class="hero__statusText">
-        <span class="bracket hero__statusBracket">[ Available — selectively ]</span>
-        <span class="hero__statusBase">Lisbon · Worldwide</span>
-      </span>
+      <span class="bracket hero__statusBracket">[ Available — selectively ]</span>
+      <span class="hero__statusBase">Lisbon · Worldwide</span>
     </div>
 
     {#if stats}
@@ -196,45 +181,41 @@
     {/if}
   </div>
 
-  <!-- Center content -->
-  <div class="hero__center container-x">
-    <span class="bracket hero__overline">[ 00 / Index ]</span>
+  <!-- Bottom-right: heavy dark card carrying the main text (Defined VC style) -->
+  <div class="hero__cardWrap container-x">
+    <div class="hero__card">
+      <div class="hero__cardHead">
+        <span class="bracket">[ 00 / Index ]</span>
+        <span class="hero__cardName">Ruben Marcus</span>
+      </div>
 
-    <h1 class="hero__title">
-      <span class="hero__titlePrefix">Ruben builds</span>
-      <RotatingVerb words={verbs} interval={2600} fadeMs={320} italic={true} class="hero__verb" />
-      <span class="hero__cursor" aria-hidden="true">_</span>
-    </h1>
+      <h1 class="hero__title">
+        Building
+        <RotatingVerb words={verbs} interval={2800} fadeMs={340} italic={true} class="hero__verb" />
+        <span class="hero__cursor" aria-hidden="true">_</span>
+      </h1>
 
-    <p class="hero__desc">
-      Senior AI Fullstack Engineer at <a href="https://multivmlabs.com" target="_blank" rel="noopener" class="link-inline">MultiVM Labs</a>.
-      I ship CLIs, agents, and product surfaces — from spec-to-PR autonomy to post-quantum infrastructure.
-    </p>
+      <p class="hero__desc">
+        Senior AI Fullstack Engineer at <a href="https://multivmlabs.com" target="_blank" rel="noopener" class="link-inline">MultiVM Labs</a>.
+        13 years shipping across web3, fintech, and e-commerce — most recently 10+ AI agents for DeFi on Solana, EVM, SUI, NEAR, and Cardano.
+      </p>
 
-    <div class="hero__ctas">
-      <a href="/portfolio" class="btn btn-primary">See the work</a>
-      <a href="/ai" class="btn btn-secondary">AI tools I ship</a>
-      <a href="/contact" class="btn btn-ghost">Get in touch →</a>
-    </div>
-  </div>
+      <div class="hero__ctas">
+        <a href="/portfolio" class="btn btn-primary">See the work</a>
+        <a href="/ai" class="btn btn-secondary">AI tools I ship</a>
+      </div>
 
-  <!-- Bottom row: identity tags -->
-  <div class="hero__bottom container-x">
-    <div class="hero__tagRow">
-      <span class="bracket">[ Stack ]</span>
-      <span class="hero__tag">Astro</span>
-      <span class="hero__tag">Svelte</span>
-      <span class="hero__tag">TypeScript</span>
-      <span class="hero__tag">Next.js</span>
-      <span class="hero__tag">Node</span>
-      <span class="hero__tag">Three.js</span>
-      <span class="hero__tag">Rust</span>
-      <span class="hero__tag">NEAR</span>
-      <span class="hero__tag">EVM</span>
-    </div>
-    <div class="hero__scrollHint">
-      <span class="overline">Scroll</span>
-      <span class="hero__arrow" aria-hidden="true">↓</span>
+      <div class="hero__tagRow">
+        <span class="bracket">[ Stack ]</span>
+        <span>React</span><span>·</span>
+        <span>Next.js</span><span>·</span>
+        <span>TypeScript</span><span>·</span>
+        <span>Svelte</span><span>·</span>
+        <span>Rust</span><span>·</span>
+        <span>EVM</span><span>·</span>
+        <span>NEAR</span><span>·</span>
+        <span>SUI</span>
+      </div>
     </div>
   </div>
 
@@ -255,18 +236,10 @@
         <path d="M4 4h4v16H4zM6 2.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM10 8h3.8v2.2h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V20h-4v-5.7c0-1.36-.03-3.1-1.9-3.1-1.9 0-2.2 1.48-2.2 3v5.8h-4V8z"/>
       </svg>
     </a>
-    <a href="mailto:ruben@rubenmarcus.dev" aria-label="Email" class="hero__iconLink">
+    <a href="mailto:rubenmarcus.dev@gmail.com" aria-label="Email" class="hero__iconLink">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="3" y="5" width="18" height="14" rx="2"/>
         <path d="M3 7l9 6 9-6"/>
-      </svg>
-    </a>
-    <a href="https://dev.to/rubenmarcus" target="_blank" rel="noopener" aria-label="dev.to" class="hero__iconLink">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <rect x="2.5" y="4.5" width="19" height="15" rx="2"/>
-        <path d="M7 9v6M5.5 9h3M5.5 12h2.5M5.5 15h3"/>
-        <path d="M11 9l1.7 6L14.4 9"/>
-        <path d="M17 9v6h2.5M17 12h1.8"/>
       </svg>
     </a>
   </div>
@@ -278,12 +251,8 @@
     min-height: 100vh;
     overflow: hidden;
     isolation: isolate;
-    padding-top: 7rem;
-    padding-bottom: 3rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 2rem;
+    padding-top: 6rem;
+    padding-bottom: 2.5rem;
   }
 
   .hero__bg {
@@ -299,46 +268,55 @@
     object-fit: cover;
     transform-origin: center center;
     transition: transform 0.8s var(--ease-default);
-    /* Lift luminance + heavy desaturation so the ice tint sits cleanly on the
-       grayscale ASCII head. Slight blue tilt via hue-rotate cools the highlights. */
-    filter: brightness(0.92) contrast(1.04) saturate(0.18);
+    /* Lift luminance + heavy desaturation so the ice tint reads cleanly */
+    filter: brightness(0.86) contrast(1.04) saturate(0.18);
   }
 
-  /* Ice-blue colour wash — sits on top of the video.
-     `mix-blend-mode: color` applies the hue and saturation of this gradient
-     while preserving the video's luminance, so the ASCII head reads as a
-     pale frost-blue / icy cyan rendering instead of dark electric blue. */
+  /* Ice-blue tint over the video */
   .hero__iceTint {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background: linear-gradient(
       135deg,
-      rgba(200, 235, 255, 0.55) 0%,
-      rgba(150, 210, 245, 0.5) 35%,
-      rgba(100, 180, 230, 0.5) 65%,
-      rgba(60, 140, 200, 0.55) 100%
+      rgba(200, 235, 255, 0.5) 0%,
+      rgba(150, 210, 245, 0.45) 35%,
+      rgba(100, 180, 230, 0.45) 65%,
+      rgba(60, 140, 200, 0.5) 100%
     );
     mix-blend-mode: color;
   }
 
-  /* Mouse-tracked halo — quantum-style flashlight beam:
-     small bright near-white core with steep cyan-frost falloff. */
+  :global(.hero__clouds) {
+    position: absolute !important;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.75;
+  }
+
+  :global(.hero__code) {
+    position: absolute !important;
+    inset: 0;
+    z-index: 0;
+    color: rgba(190, 230, 255, 0.55) !important;
+  }
+
+  /* Quantum-style flashlight halo */
   .hero__halo {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
       radial-gradient(
-        circle 80px at var(--mx, 50%) var(--my, 50%),
-        rgba(255, 255, 255, 0.55) 0%,
-        rgba(220, 240, 255, 0.32) 60%,
+        circle 90px at var(--mx, 50%) var(--my, 50%),
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(220, 240, 255, 0.28) 60%,
         transparent 100%
       ),
       radial-gradient(
-        circle 280px at var(--mx, 50%) var(--my, 50%),
-        rgba(190, 230, 255, 0.22) 0%,
-        rgba(120, 185, 235, 0.1) 40%,
+        circle 300px at var(--mx, 50%) var(--my, 50%),
+        rgba(190, 230, 255, 0.2) 0%,
+        rgba(120, 185, 235, 0.08) 40%,
         transparent 72%
       );
     mix-blend-mode: screen;
@@ -346,31 +324,25 @@
     opacity: 1;
   }
 
-  /* Reactive ASCII overlay sits above the video + tint, below the halo */
-  :global(.hero__asciiOverlay) {
-    z-index: 0;
-    mix-blend-mode: screen;
-  }
-
-  /* Particle layer — z above the halo, screen-blended */
   :global(.hero__particles) {
     z-index: 1;
   }
 
+  /* Vignette — darker at edges + heavier under the bottom-right card */
   .hero__vignette {
     position: absolute;
     inset: 0;
-    background:
-      radial-gradient(ellipse at center, transparent 35%, rgba(12, 13, 16, 0.55) 75%, var(--bg-0) 100%),
-      linear-gradient(180deg, rgba(12, 13, 16, 0.55) 0%, transparent 25%, transparent 65%, rgba(12, 13, 16, 0.85) 100%);
     pointer-events: none;
+    background:
+      radial-gradient(ellipse 110% 90% at 50% 45%, transparent 0%, rgba(6, 8, 15, 0.45) 70%, rgba(6, 8, 15, 0.85) 100%),
+      radial-gradient(circle at 90% 88%, rgba(6, 8, 15, 0.65) 0%, transparent 55%);
   }
 
   .hero__grid {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.18;
+    opacity: 0.14;
     background-image:
       linear-gradient(rgba(245, 241, 234, 0.06) 1px, transparent 1px),
       linear-gradient(90deg, rgba(245, 241, 234, 0.06) 1px, transparent 1px);
@@ -378,8 +350,10 @@
     mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
   }
 
-  /* Top stats strip */
+  /* ── Top row ── */
   .hero__top {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
@@ -394,8 +368,14 @@
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: rgba(6, 8, 15, 0.6);
+    backdrop-filter: blur(var(--blur-sm));
+    -webkit-backdrop-filter: blur(var(--blur-sm));
+    border: 1px solid var(--line);
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     color: var(--muted);
   }
 
@@ -413,21 +393,20 @@
     50% { opacity: 0.55; }
   }
 
-  .hero__statusText {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
-  .hero__statusBase {
-    color: var(--muted-soft);
-  }
+  .hero__statusBase { color: var(--muted-soft); }
 
   .hero__stats {
     display: inline-flex;
     flex-wrap: wrap;
     gap: 0.45rem 0.55rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: rgba(6, 8, 15, 0.5);
+    backdrop-filter: blur(var(--blur-sm));
+    -webkit-backdrop-filter: blur(var(--blur-sm));
+    border: 1px solid var(--line);
     font-family: var(--font-mono);
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     color: var(--muted-soft);
   }
   .hero__sep { color: var(--muted-soft); opacity: 0.6; }
@@ -435,35 +414,65 @@
   .hero__commit:hover { color: var(--accent-soft); }
   .hero__commitRepo { color: var(--muted-soft); }
 
-  /* Center block */
-  .hero__center {
+  /* ── Bottom-right text card (Defined VC inspired) ── */
+  .hero__cardWrap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2.5rem;
+    z-index: 3;
     display: flex;
-    flex-direction: column;
-    gap: 1.3rem;
-    flex: 1;
-    justify-content: center;
-    padding-block: 4rem;
+    justify-content: flex-end;
   }
 
-  .hero__overline {
-    color: var(--muted);
+  .hero__card {
+    width: 100%;
+    max-width: 540px;
+    padding: 1.8rem 1.8rem 1.6rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 18px;
+    background: rgba(6, 8, 15, 0.92);
+    backdrop-filter: blur(var(--blur-md));
+    -webkit-backdrop-filter: blur(var(--blur-md));
+    box-shadow:
+      0 0 0 1px rgba(58, 109, 255, 0.18),
+      0 24px 60px rgba(0, 0, 0, 0.55);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  @media (min-width: 720px) {
+    .hero__card { padding: 2.2rem 2.2rem 2rem; }
+  }
+
+  .hero__cardHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+  }
+
+  .hero__cardName {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted-soft);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .hero__title {
+    margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(2.75rem, 8vw, 7.5rem);
-    line-height: 0.96;
-    letter-spacing: -0.015em;
+    font-size: clamp(2rem, 4.5vw, 3.4rem);
+    line-height: 0.98;
+    letter-spacing: -0.012em;
     color: var(--text);
-    text-wrap: balance;
     display: inline-flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 0.4rem 0.55rem;
-  }
-
-  .hero__titlePrefix {
-    color: var(--text);
+    gap: 0.35rem 0.55rem;
+    text-wrap: balance;
   }
 
   :global(.hero__verb) {
@@ -483,64 +492,47 @@
   }
 
   .hero__desc {
-    max-width: 56ch;
     color: var(--muted);
-    font-size: 1.05rem;
+    font-size: 0.96rem;
+    line-height: 1.55;
+    max-width: 48ch;
   }
 
   .hero__ctas {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.8rem;
-    margin-top: 0.8rem;
-  }
-
-  /* Bottom row */
-  .hero__bottom {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    justify-content: space-between;
-  }
-  @media (min-width: 720px) {
-    .hero__bottom { flex-direction: row; align-items: center; }
+    gap: 0.6rem;
+    margin-top: 0.4rem;
   }
 
   .hero__tagRow {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem 0.6rem;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--line);
     font-family: var(--font-mono);
-    font-size: 0.74rem;
-    color: var(--muted);
+    font-size: 0.7rem;
+    color: var(--muted-soft);
   }
-
-  .hero__tag {
-    padding: 0.22rem 0.55rem;
+  .hero__tagRow > span:not(.bracket) {
+    padding: 0.18rem 0.5rem;
     border: 1px solid var(--line);
     border-radius: var(--radius-pill);
     color: var(--muted);
-    background: rgba(245, 241, 234, 0.02);
+    background: rgba(160, 195, 255, 0.04);
   }
-
-  .hero__scrollHint {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
+  .hero__tagRow > span:nth-child(even):not(.bracket) {
+    border: none;
+    padding: 0;
+    background: transparent;
     color: var(--muted-soft);
+    opacity: 0.45;
   }
 
-  .hero__arrow {
-    animation: arrow-bob 2s ease-in-out infinite;
-  }
-
-  @keyframes arrow-bob {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(4px); }
-  }
-
-  /* Side icon column */
+  /* ── Side icon column ── */
   .hero__sideIcons {
     display: none;
     position: absolute;
@@ -550,7 +542,7 @@
     flex-direction: column;
     gap: 1.1rem;
     align-items: center;
-    z-index: 2;
+    z-index: 3;
   }
   @media (min-width: 1100px) {
     .hero__sideIcons { display: inline-flex; }
@@ -564,7 +556,9 @@
     border: 1px solid var(--line);
     border-radius: 999px;
     color: var(--muted);
-    background: rgba(160, 195, 255, 0.02);
+    background: rgba(6, 8, 15, 0.55);
+    backdrop-filter: blur(var(--blur-sm));
+    -webkit-backdrop-filter: blur(var(--blur-sm));
     transition:
       color var(--duration-hover) var(--ease-default),
       border-color var(--duration-hover) var(--ease-default),
@@ -574,7 +568,7 @@
   .hero__iconLink:hover {
     color: var(--accent-soft);
     border-color: rgba(58, 109, 255, 0.45);
-    background: rgba(58, 109, 255, 0.08);
+    background: rgba(58, 109, 255, 0.12);
     transform: translateX(2px);
   }
 </style>

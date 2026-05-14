@@ -5,12 +5,12 @@
   type SocialKey = "github" | "x-twitter" | "linkedin" | "mail" | "telegram" | "dev-to";
 
   const socials: { label: string; href: string; icon: SocialKey }[] = [
-    { label: "GitHub",   href: "https://github.com/rubenmarcus",     icon: "github" },
-    { label: "X",        href: "https://x.com/rubenmarcus_dev",      icon: "x-twitter" },
-    { label: "LinkedIn", href: "https://linkedin.com/in/rubenmarcus", icon: "linkedin" },
-    { label: "Email",    href: "mailto:ruben@rubenmarcus.dev",       icon: "mail" },
-    { label: "Telegram", href: "https://t.me/rubenmarcus",           icon: "telegram" },
-    { label: "dev.to",   href: "https://dev.to/rubenmarcus",         icon: "dev-to" },
+    { label: "GitHub",   href: "https://github.com/rubenmarcus",       icon: "github" },
+    { label: "X",        href: "https://x.com/rubenmarcus_dev",        icon: "x-twitter" },
+    { label: "LinkedIn", href: "https://linkedin.com/in/rubenmarcus",  icon: "linkedin" },
+    { label: "Email",    href: "mailto:rubenmarcus.dev@gmail.com",     icon: "mail" },
+    { label: "Telegram", href: "https://t.me/rubenmarcus",             icon: "telegram" },
+    { label: "dev.to",   href: "https://dev.to/rubenmarcus",           icon: "dev-to" },
   ];
 
   // Inline SVG bodies — keeps Footer purely Svelte, no Astro Icon needed here

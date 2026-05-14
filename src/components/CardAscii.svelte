@@ -144,7 +144,7 @@
     top: 0.7rem;
     right: 0.85rem;
     pointer-events: none;
-    opacity: 0.85;
+    opacity: 0.45;
     transition: opacity var(--duration-hover) var(--ease-default), transform var(--duration-hover) var(--ease-default);
   }
 
@@ -169,7 +169,7 @@
   :global(.filter:hover) .card-ascii,
   :global(.skills-col:hover) .card-ascii,
   :global(.tool__features:hover) .card-ascii {
-    opacity: 1;
+    opacity: 0.85;
     transform: translateX(-2px);
   }
 </style>

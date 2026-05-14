@@ -79,6 +79,18 @@ export const aiTools: AITool[] = [
 
 export const supportingTools: { name: string; description: string; repo: string }[] = [
   {
+    name: "Mirofi.sh",
+    description:
+      "1-click deployment tool for Mirofish workflows — turn a Mirofish spec into a hosted endpoint without touching infra.",
+    repo: "https://mirofi.sh",
+  },
+  {
+    name: "SUI DeFi Agent",
+    description:
+      "AI-powered DeFi agent on SUI — chat interface, agent logic, real-time pool data. Part of the MultiVM Labs agent collection.",
+    repo: "https://github.com/multivmlabs",
+  },
+  {
     name: "ralph-templates",
     description: "Ready-to-use project templates consumed by ralph-starter.",
     repo: "https://github.com/multivmlabs/ralph-templates",

@@ -5,6 +5,7 @@ import Footer from "../components/Footer.svelte";
 import SmoothScroll from "../components/SmoothScroll.svelte";
 import CursorHalo from "../components/CursorHalo.svelte";
 import ThreeBg from "../components/ThreeBg.svelte";
+import QuantumLattice from "../components/QuantumLattice.svelte";
 import Analytics from "@vercel/analytics/astro";
 
 interface Props {
@@ -22,16 +23,12 @@ const {
   bgVariant = "particles",
 } = Astro.props;
 
-// Route-aware default variant if caller doesn't set one
+// Route-aware: portfolio and AI pages add a Three.js statement piece on top
+// of the global lattice. Everything else just gets the lattice.
 const path = Astro.url.pathname;
-let resolvedVariant: "particles" | "lattice" | "rings" = bgVariant;
-if (bgVariant === "particles") {
-  if (path.startsWith("/portfolio")) resolvedVariant = "lattice";
-  else if (path.startsWith("/ai")) resolvedVariant = "rings";
-  else if (path.startsWith("/about")) resolvedVariant = "lattice";
-  else if (path.startsWith("/contact")) resolvedVariant = "particles";
-  else if (path.startsWith("/blog")) resolvedVariant = "particles";
-}
+let threeVariant: "particles" | "lattice" | "rings" | null = null;
+if (path.startsWith("/portfolio")) threeVariant = "lattice";
+else if (path.startsWith("/ai")) threeVariant = "rings";
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -117,10 +114,17 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <body>
     <SmoothScroll client:load />
 
-    <!-- Site-wide Three.js ambient scene — variant changes per route -->
-    <div class="three-bg-wrap" aria-hidden="true">
-      <ThreeBg client:load variant={resolvedVariant} count={260} />
+    <!-- Site-wide ambient lattice — Canvas 2D, ice-blue tuned -->
+    <div class="lattice-wrap" aria-hidden="true">
+      <QuantumLattice client:load />
     </div>
+
+    <!-- Optional Three.js statement piece for /portfolio and /ai -->
+    {threeVariant && (
+      <div class="three-bg-wrap" aria-hidden="true">
+        <ThreeBg client:load variant={threeVariant} count={200} />
+      </div>
+    )}
 
     <CursorHalo client:load />
     <Header client:load currentPath={Astro.url.pathname} />
@@ -132,12 +136,24 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <Footer />
 
     <style>
+      .lattice-wrap {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.55;
+        /* Center mask — keep content area readable */
+        mask-image: radial-gradient(ellipse at center, transparent 12%, #000 55%);
+        -webkit-mask-image: radial-gradient(ellipse at center, transparent 12%, #000 55%);
+      }
       .three-bg-wrap {
         position: fixed;
         inset: 0;
         z-index: 0;
         pointer-events: none;
-        opacity: 0.65;
+        opacity: 0.5;
+        mask-image: radial-gradient(ellipse at center, transparent 16%, #000 60%);
+        -webkit-mask-image: radial-gradient(ellipse at center, transparent 16%, #000 60%);
       }
     </style>
   </body>

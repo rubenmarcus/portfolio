@@ -35,7 +35,7 @@ const iconMap: Record<string, "github" | "x-twitter" | "linkedin" | "mail" | "te
     />
 
     <div class="contact-grid">
-      <a href="mailto:ruben@rubenmarcus.dev" class="contact-card contact-card--primary" data-reveal>
+      <a href="mailto:rubenmarcus.dev@gmail.com" class="contact-card contact-card--primary" data-reveal>
         <CardAscii client:visible seed="contact-primary" variant="wave" cols={12} rows={5} />
         <div class="contact-card__head">
           <span class="bracket">[ Primary ]</span>
@@ -43,9 +43,21 @@ const iconMap: Record<string, "github" | "x-twitter" | "linkedin" | "mail" | "te
         </div>
         <div class="contact-card__valueRow">
           <Icon name="mail" size={22} class="contact-card__icon" />
-          <span class="contact-card__value">ruben@rubenmarcus.dev</span>
+          <span class="contact-card__value">rubenmarcus.dev@gmail.com</span>
         </div>
-        <span class="contact-card__note">Best for project inquiries, longer-form questions, or anything off-public.</span>
+        <span class="contact-card__note">Best for project inquiries, longer-form questions, or anything off-public. I usually reply within a day.</span>
+      </a>
+
+      <a href="tel:+351912892825" class="contact-card contact-card--phone" data-reveal>
+        <div class="contact-card__head">
+          <span class="bracket">[ Phone ]</span>
+          <Icon name="arrow-up-right" size={18} class="contact-card__arrow" />
+        </div>
+        <div class="contact-card__valueRow">
+          <Icon name="telegram" size={22} class="contact-card__icon" />
+          <span class="contact-card__value">+351 912 892 825</span>
+        </div>
+        <span class="contact-card__note">Lisbon, Portugal. WhatsApp / Telegram fine on this number.</span>
       </a>
 
       <div class="contact-card" data-reveal>
@@ -123,8 +135,10 @@ const iconMap: Record<string, "github" | "x-twitter" | "linkedin" | "mail" | "te
     background: var(--bg-2);
   }
 
-  .contact-card--primary { background: linear-gradient(180deg, rgba(42, 92, 255, 0.06), rgba(42, 92, 255, 0.02)); border-color: rgba(42, 92, 255, 0.22); }
-  .contact-card--primary:hover { border-color: rgba(42, 92, 255, 0.45); }
+  .contact-card--primary { background: linear-gradient(180deg, rgba(58, 109, 255, 0.07), rgba(58, 109, 255, 0.02)); border-color: rgba(58, 109, 255, 0.26); }
+  .contact-card--primary:hover { border-color: rgba(58, 109, 255, 0.5); }
+
+  .contact-card--phone { background: linear-gradient(180deg, rgba(160, 195, 255, 0.045), rgba(160, 195, 255, 0.015)); }
 
   .contact-card__head {
     display: flex;
