@@ -160,14 +160,14 @@
     display: inline-flex;
     align-items: center;
     color: var(--text);
-    font-family: var(--font-mono);
-    letter-spacing: 0.02em;
+    font-family: var(--font-rounded);
+    letter-spacing: -0.01em;
   }
 
   .header__name {
     font-size: 1.65rem;
-    font-weight: 500;
-    letter-spacing: 0.01em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   .header__nav {
@@ -186,9 +186,10 @@
   .header__link {
     display: inline-flex;
     align-items: baseline;
-    font-family: var(--font-sans);
-    font-size: 1.45rem;
+    font-family: var(--font-rounded);
+    font-size: 1.4rem;
     font-weight: 500;
+    letter-spacing: -0.005em;
   }
 
   /* Right cluster: socials + burger */
