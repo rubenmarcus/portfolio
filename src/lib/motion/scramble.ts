@@ -13,22 +13,28 @@
 
 import type { Action } from "svelte/action";
 
-// Latin glyphs + katakana (Matrix-rain feel). Katakana is preferred over
-// kanji/hiragana because individual characters are visually distinct and
-// roughly the same width as a Latin letter at the same point size.
+// Three-way mix: Latin letters, numbers, katakana (matrix-rain feel),
+// with a sprinkle of symbols. Each group is weighted so all three feel
+// equally represented in the shuffle.
+const LATIN_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const NUMBERS = "0123456789";
 const KATAKANA =
   "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン" +
   "ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ";
-const LATIN = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 const SYMBOLS = "!@#$%^&*+-=<>?/\\";
-// Weighted pool — repeat Latin a couple times so output stays readable
-// while katakana still appears regularly.
-const CHARS = LATIN + LATIN + KATAKANA + SYMBOLS;
+// Repeat each group so the pool stays balanced regardless of source size.
+// Letters x2 (most common), numbers x4 (10 chars compete with 52 latin),
+// katakana x2, symbols once.
+const CHARS =
+  LATIN_LETTERS + LATIN_LETTERS +
+  NUMBERS + NUMBERS + NUMBERS + NUMBERS +
+  KATAKANA + KATAKANA +
+  SYMBOLS;
 
 export interface ScrambleOptions {
-  /** ms between iterations — lower = faster shuffle. Default 28. */
+  /** ms between iterations — lower = faster shuffle. Default 48. */
   tick?: number;
-  /** how many chars to lock per iteration. Higher = quicker resolve. Default 0.6. */
+  /** how many chars to lock per iteration. Higher = quicker resolve. Default 0.35. */
   speed?: number;
   /** preserve these chars without scrambling */
   preserve?: RegExp;
@@ -44,8 +50,8 @@ function isReducedMotion(): boolean {
 }
 
 export function bindScramble(node: HTMLElement, opts: ScrambleOptions = {}): () => void {
-  const tick = opts.tick ?? 28;
-  const speed = opts.speed ?? 0.6;
+  const tick = opts.tick ?? 48;
+  const speed = opts.speed ?? 0.35;
   const preserve = opts.preserve ?? DEFAULT_PRESERVE;
 
   const original = (node.textContent ?? "").trim();

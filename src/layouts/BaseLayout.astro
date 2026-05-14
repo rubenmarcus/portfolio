@@ -150,7 +150,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         auto.forEach((el) => {
           if (el.dataset.scrambleBound === "true") return;
           el.dataset.scrambleBound = "true";
-          bindScramble(el, { tick: 24, speed: 0.7 });
+          bindScramble(el, { tick: 48, speed: 0.35 });
         });
       }
 
