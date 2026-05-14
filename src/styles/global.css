@@ -16,10 +16,10 @@
   --muted: rgba(245, 241, 234, 0.82);
   --muted-soft: rgba(245, 241, 234, 0.55);
 
-  --accent: #3a6dff;
-  --accent-soft: #8fa9ff;
-  --accent-deep: #1a3da8;
-  --focus: rgba(58, 109, 255, 0.72);
+  --accent: #2848d4;
+  --accent-soft: #6a85e8;
+  --accent-deep: #14296b;
+  --focus: rgba(40, 72, 212, 0.72);
 
   --section-y-mobile: 96px;
   --section-y-desktop: 176px;
@@ -65,9 +65,9 @@
     color: var(--text);
     line-height: 1.65;
     background:
-      radial-gradient(circle at 12% -8%, rgba(58, 109, 255, 0.10), transparent 34%),
-      radial-gradient(circle at 88% 6%, rgba(120, 160, 255, 0.05), transparent 36%),
-      radial-gradient(circle at 50% 110%, rgba(20, 50, 130, 0.12), transparent 42%),
+      radial-gradient(circle at 12% -8%, rgba(40, 72, 212, 0.10), transparent 34%),
+      radial-gradient(circle at 88% 6%, rgba(106, 133, 232, 0.05), transparent 36%),
+      radial-gradient(circle at 50% 110%, rgba(20, 41, 107, 0.12), transparent 42%),
       var(--bg-0);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

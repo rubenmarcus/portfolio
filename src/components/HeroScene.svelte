@@ -262,13 +262,13 @@
         </svg>
         <div class="hero__statBody">
           <span class="hero__statBig">{formatCount(stars)} stars</span>
-          <span class="hero__statSub">across multivmlabs · Bitte · Mintbase · personal</span>
+          <span class="hero__statSub">across all my projects</span>
         </div>
       </a>
     {/if}
 
     {#if followers !== null}
-      <a class="hero__stat" href="https://github.com/rubenmarcus" target="_blank" rel="noopener">
+      <a class="hero__stat" href="https://linkedin.com/in/rubenmarcus" target="_blank" rel="noopener">
         <svg class="hero__statIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
           <circle cx="9" cy="7" r="4"/>
@@ -276,7 +276,7 @@
         </svg>
         <div class="hero__statBody">
           <span class="hero__statBig">{formatCount(followers)} followers</span>
-          <span class="hero__statSub">GitHub · X · LinkedIn · dev.to</span>
+          <span class="hero__statSub">on all my socials</span>
         </div>
       </a>
     {/if}
@@ -294,13 +294,7 @@
       <h1 class="hero__title">
         <span class="hero__titleWord" use:scramble>Build</span>
         <RotatingVerb words={verbs} interval={2800} fadeMs={340} italic={false} class="hero__verb" />
-        <span class="hero__cursor" aria-hidden="true">_</span>
       </h1>
-
-      <p class="hero__desc">
-        Senior AI Fullstack Engineer at <a href="https://multivmlabs.com" target="_blank" rel="noopener" class="link-inline">MultiVM Labs</a>.
-        13 years shipping across web3, fintech, and e-commerce — most recently 10+ AI agents for DeFi on Solana, EVM, SUI, NEAR, and Cardano.
-      </p>
 
       <div class="hero__ctas">
         <a href="/portfolio" class="btn btn-primary">See the work</a>
@@ -592,16 +586,16 @@
   }
   .hero__statSub {
     font-family: var(--font-mono);
-    font-size: 0.66rem;
+    font-size: 0.8rem;
     color: var(--muted);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
   }
   .hero__statLast {
     font-family: var(--font-mono);
-    font-size: 0.64rem;
+    font-size: 0.72rem;
     color: var(--muted-soft);
-    margin-top: 0.15rem;
-    max-width: 240px;
+    margin-top: 0.2rem;
+    max-width: 260px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -646,9 +640,7 @@
     background: rgba(6, 8, 15, 0.94);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
-    box-shadow:
-      0 32px 72px rgba(0, 0, 0, 0.65),
-      0 12px 32px rgba(0, 0, 0, 0.4);
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     gap: 1.1rem;
@@ -698,25 +690,6 @@
 
   :global(.hero__verb) {
     color: var(--accent-soft);
-  }
-
-  .hero__cursor {
-    display: inline-block;
-    color: var(--accent-soft);
-    animation: blink 1.1s steps(1) infinite;
-    transform: translateY(-0.05em);
-  }
-
-  @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
-
-  .hero__desc {
-    color: var(--muted);
-    font-size: 0.96rem;
-    line-height: 1.55;
-    max-width: 48ch;
   }
 
   .hero__ctas {

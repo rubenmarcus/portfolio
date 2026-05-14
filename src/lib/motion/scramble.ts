@@ -13,7 +13,17 @@
 
 import type { Action } from "svelte/action";
 
-const CHARS = "!@#$%^&*+-=<>?/\\abcdefghijklmnopqrstuvwxyz0123456789";
+// Latin glyphs + katakana (Matrix-rain feel). Katakana is preferred over
+// kanji/hiragana because individual characters are visually distinct and
+// roughly the same width as a Latin letter at the same point size.
+const KATAKANA =
+  "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン" +
+  "ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ";
+const LATIN = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+const SYMBOLS = "!@#$%^&*+-=<>?/\\";
+// Weighted pool — repeat Latin a couple times so output stays readable
+// while katakana still appears regularly.
+const CHARS = LATIN + LATIN + KATAKANA + SYMBOLS;
 
 export interface ScrambleOptions {
   /** ms between iterations — lower = faster shuffle. Default 28. */
