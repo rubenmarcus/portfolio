@@ -1,6 +1,5 @@
 <script lang="ts">
   import RotatingVerb from "./RotatingVerb.svelte";
-  import { scramble } from "../lib/motion/scramble";
 
   const verbs = [
     "autonomous AI agents",
@@ -95,8 +94,8 @@
   <!-- Lede pinned at 10% from left, 10% from bottom -->
   <div class="hero__lede">
     <p class="hero__intro">
-      Hello, I'm <span class="hero__introName" use:scramble>Ruben Marcus</span>
-      and I <span class="hero__introVerb" use:scramble>Build</span>
+      Hello, I'm <span class="hero__introName">Ruben Marcus</span>
+      and I <span class="hero__introVerb">Build</span>
     </p>
 
     <h1 class="hero__title">

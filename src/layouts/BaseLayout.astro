@@ -117,30 +117,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     <Footer />
 
-    <!-- Scramble-on-hover for [data-scramble] targets, plus auto-tagging of
-         .link-inline and .nav-link anchors so titles + links shimmer on hover. -->
-    <script>
-      import { mountScrambleGlobals, bindScramble } from "../lib/motion/scramble";
-
-      function tagAndMount() {
-        // Auto-mount everything explicitly marked [data-scramble]
-        mountScrambleGlobals();
-        // Also auto-tag and bind common interactive text targets
-        const auto = document.querySelectorAll<HTMLElement>(
-          ".link-inline, .nav-link, .work-title, .article-title, .proj-title, .tool__name, .ai-card__name, .support-card__name, .timeline-role, .filter__label",
-        );
-        auto.forEach((el) => {
-          if (el.dataset.scrambleBound === "true") return;
-          el.dataset.scrambleBound = "true";
-          bindScramble(el, { tick: 48, speed: 0.35 });
-        });
-      }
-
-      tagAndMount();
-      // Re-mount after view-transition or async hydration adds new elements
-      document.addEventListener("astro:page-load", tagAndMount);
-    </script>
-
     <style>
       .lattice-wrap {
         position: fixed;
