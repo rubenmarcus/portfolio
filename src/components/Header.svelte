@@ -39,7 +39,7 @@
   class="header"
   class:header--scrolled={scrolled}
 >
-  <div class="container-x header__inner">
+  <div class="header__inner">
     <a href="/" class="header__brand" aria-label="rubenmarcus.dev — home">
       <span class="header__name">rubenmarcus.dev</span>
     </a>
@@ -51,8 +51,7 @@
           class="nav-link header__link"
           aria-current={isCurrent(item.href) ? "page" : undefined}
         >
-          <span class="header__index">{item.index}</span>
-          <span>{item.label}</span>
+          {item.label}
         </a>
       {/each}
     </nav>
@@ -113,7 +112,6 @@
             aria-current={isCurrent(item.href) ? "page" : undefined}
             onclick={() => (menuOpen = false)}
           >
-            <span class="header__index">{item.index}</span>
             <span class="header__overlay-label">{item.label}</span>
           </a>
         {/each}
@@ -152,6 +150,9 @@
     grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: 2rem;
+    width: 100%;
+    /* Full-width — no container, small edge padding only */
+    padding-inline: clamp(1rem, 2.5vw, 2rem);
   }
 
   .header__brand {
@@ -188,17 +189,9 @@
   .header__link {
     display: inline-flex;
     align-items: baseline;
-    gap: 0.55rem;
     font-family: var(--font-sans);
     font-size: 1.45rem;
-  }
-
-  .header__index {
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    letter-spacing: 0.06em;
-    color: var(--muted-soft);
-    transition: color var(--duration-hover) var(--ease-default);
+    font-weight: 500;
   }
 
   /* Right cluster: socials + burger */
@@ -234,11 +227,6 @@
   .header__socialIcon:hover {
     color: var(--accent-soft);
     background: rgba(94, 200, 255, 0.08);
-  }
-
-  .header__link:hover .header__index,
-  .header__link[aria-current="page"] .header__index {
-    color: var(--accent-soft);
   }
 
   .header__burger {

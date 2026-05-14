@@ -2,6 +2,8 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HeroScene from "../components/HeroScene.svelte";
+import HeroStats from "../components/HeroStats.svelte";
+import HeroStack from "../components/HeroStack.astro";
 import AsciiField from "../components/AsciiField.svelte";
 import CardAscii from "../components/CardAscii.svelte";
 import Section from "../components/Section.astro";
@@ -22,6 +24,12 @@ const featuredArticles = allPosts.slice(0, 3);
   description="Senior AI Fullstack Engineer building autonomous AI tooling, post-quantum infrastructure, and on-chain product surfaces at MultiVM Labs. Based in Lisbon."
 >
   <HeroScene client:load />
+
+  <!-- Live stats widget -->
+  <HeroStats client:load />
+
+  <!-- Tech stack pills widget -->
+  <HeroStack />
 
   <!-- Featured work -->
   <Section id="work">

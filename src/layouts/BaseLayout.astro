@@ -4,7 +4,6 @@ import Header from "../components/Header.svelte";
 import Footer from "../components/Footer.svelte";
 import SmoothScroll from "../components/SmoothScroll.svelte";
 import CursorHalo from "../components/CursorHalo.svelte";
-import ThreeBg from "../components/ThreeBg.svelte";
 import QuantumLattice from "../components/QuantumLattice.svelte";
 import Analytics from "@vercel/analytics/astro";
 
@@ -12,23 +11,13 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
-  /** Three.js scene variant for this page's ambient background. */
-  bgVariant?: "particles" | "lattice" | "rings";
 }
 
 const {
   title = "Ruben Marcus — AI Fullstack & Web3 Engineer",
   description = "Senior AI Fullstack Engineer building autonomous tooling, post-quantum infrastructure, and on-chain product surfaces at MultiVM Labs. Based in Lisbon.",
   image = "/thumbnail.png",
-  bgVariant = "particles",
 } = Astro.props;
-
-// Route-aware: portfolio and AI pages add a Three.js statement piece on top
-// of the global lattice. Everything else just gets the lattice.
-const path = Astro.url.pathname;
-let threeVariant: "particles" | "lattice" | "rings" | null = null;
-if (path.startsWith("/portfolio")) threeVariant = "lattice";
-else if (path.startsWith("/ai")) threeVariant = "rings";
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -119,13 +108,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       <QuantumLattice client:load />
     </div>
 
-    <!-- Optional Three.js statement piece for /portfolio and /ai -->
-    {threeVariant && (
-      <div class="three-bg-wrap" aria-hidden="true">
-        <ThreeBg client:load variant={threeVariant} count={200} />
-      </div>
-    )}
-
     <CursorHalo client:load />
     <Header client:load currentPath={Astro.url.pathname} />
 
@@ -169,15 +151,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         /* Center mask — keep content area readable */
         mask-image: radial-gradient(ellipse at center, transparent 12%, #000 55%);
         -webkit-mask-image: radial-gradient(ellipse at center, transparent 12%, #000 55%);
-      }
-      .three-bg-wrap {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        opacity: 0.5;
-        mask-image: radial-gradient(ellipse at center, transparent 16%, #000 60%);
-        -webkit-mask-image: radial-gradient(ellipse at center, transparent 16%, #000 60%);
       }
     </style>
   </body>
