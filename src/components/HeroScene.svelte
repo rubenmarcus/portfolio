@@ -19,11 +19,11 @@
   // Orgs to aggregate stars + repo counts from
   const GH_ORGS = ["multivmlabs", "BitteProtocol", "Mintbase"];
 
-  // Platforms without a public follower API — estimates the user can update.
-  // Live count from GitHub gets added on top of these.
+  // Platforms without a public follower API — counts the user keeps current
+  // by hand. Live count from GitHub gets added on top of these.
   const ESTIMATED_FOLLOWERS = {
+    linkedin: 33253,
     twitter: 480,
-    linkedin: 2100,
     devto: 45,
   };
 
