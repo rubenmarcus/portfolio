@@ -1,8 +1,8 @@
 <script lang="ts">
   import RotatingVerb from "./RotatingVerb.svelte";
-  import HeroParticles from "./HeroParticles.svelte";
   import CodeStream from "./CodeStream.svelte";
   import CloudField from "./CloudField.svelte";
+  import AsciiField from "./AsciiField.svelte";
 
   const verbs = [
     "autonomous agents",
@@ -136,8 +136,21 @@
     <!-- Drifting cloud blobs, like the quantum-website FBM cloud field -->
     <CloudField client:load blobs={6} class="hero__clouds" />
 
+    <!-- Sparse reactive ASCII field — glyphs brighten + condense in a halo
+         around the cursor (quantum-website density-boost flashlight) -->
+    <AsciiField
+      client:load
+      cell={14}
+      density={0.08}
+      morphRate={1.4}
+      opacity={0.16}
+      reactive={true}
+      color="rgba(200, 230, 255, 1)"
+      class="hero__asciiHalo"
+    />
+
     <!-- Live code feed — real snippets from his open-source projects -->
-    <CodeStream client:load count={5} class="hero__code" />
+    <CodeStream client:load count={7} class="hero__code" />
 
     <!-- Mouse-tracked halo — quantum-style flashlight beam -->
     <div
@@ -147,11 +160,7 @@
       style:--my={haloY}
     ></div>
 
-    <!-- Ice-blue particle emitter that follows the cursor -->
-    <HeroParticles client:load rate={2.6} life={1200} class="hero__particles" />
-
-    <!-- Edge-darkening vignette — radial dark from edges in, plus a heavier
-         lower-right gradient where the text card sits -->
+    <!-- Edge-darkening vignette — pushed darker so all text reads clearly -->
     <div class="hero__vignette" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
   </div>
@@ -181,8 +190,10 @@
     {/if}
   </div>
 
-  <!-- Bottom-right: heavy dark card carrying the main text (Defined VC style) -->
-  <div class="hero__cardWrap container-x">
+  <!-- Bottom-right: heavy dark card carrying the main text (Defined VC style).
+       Intentionally OUT of the page container — hugs the right edge of the
+       viewport with a small inset gap. -->
+  <div class="hero__cardWrap">
     <div class="hero__card">
       <div class="hero__cardHead">
         <span class="bracket">[ 00 / Index ]</span>
@@ -294,14 +305,21 @@
     opacity: 0.75;
   }
 
+  :global(.hero__asciiHalo) {
+    position: absolute !important;
+    inset: 0;
+    z-index: 0;
+    mix-blend-mode: screen;
+  }
+
   :global(.hero__code) {
     position: absolute !important;
     inset: 0;
     z-index: 0;
-    color: rgba(190, 230, 255, 0.55) !important;
+    color: rgba(190, 230, 255, 0.62) !important;
   }
 
-  /* Quantum-style flashlight halo */
+  /* Quantum-style flashlight halo — bright near-white core + cyan-frost falloff */
   .hero__halo {
     position: absolute;
     inset: 0;
@@ -309,14 +327,14 @@
     background:
       radial-gradient(
         circle 90px at var(--mx, 50%) var(--my, 50%),
-        rgba(255, 255, 255, 0.5) 0%,
-        rgba(220, 240, 255, 0.28) 60%,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(220, 240, 255, 0.3) 60%,
         transparent 100%
       ),
       radial-gradient(
-        circle 300px at var(--mx, 50%) var(--my, 50%),
-        rgba(190, 230, 255, 0.2) 0%,
-        rgba(120, 185, 235, 0.08) 40%,
+        circle 320px at var(--mx, 50%) var(--my, 50%),
+        rgba(190, 230, 255, 0.22) 0%,
+        rgba(120, 185, 235, 0.1) 40%,
         transparent 72%
       );
     mix-blend-mode: screen;
@@ -324,18 +342,16 @@
     opacity: 1;
   }
 
-  :global(.hero__particles) {
-    z-index: 1;
-  }
-
-  /* Vignette — darker at edges + heavier under the bottom-right card */
+  /* Vignette — pushed darker so the text card and any overlaid text always
+     reads cleanly. Three layers: top fade, bottom fade, edge ellipse. */
   .hero__vignette {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 110% 90% at 50% 45%, transparent 0%, rgba(6, 8, 15, 0.45) 70%, rgba(6, 8, 15, 0.85) 100%),
-      radial-gradient(circle at 90% 88%, rgba(6, 8, 15, 0.65) 0%, transparent 55%);
+      linear-gradient(180deg, rgba(6, 8, 15, 0.55) 0%, transparent 22%, transparent 60%, rgba(6, 8, 15, 0.65) 100%),
+      radial-gradient(ellipse 110% 95% at 50% 45%, rgba(6, 8, 15, 0.25) 0%, rgba(6, 8, 15, 0.75) 72%, rgba(6, 8, 15, 0.98) 100%),
+      radial-gradient(circle at 90% 90%, rgba(6, 8, 15, 0.78) 0%, transparent 55%);
   }
 
   .hero__grid {
@@ -414,12 +430,14 @@
   .hero__commit:hover { color: var(--accent-soft); }
   .hero__commitRepo { color: var(--muted-soft); }
 
-  /* ── Bottom-right text card (Defined VC inspired) ── */
+  /* ── Bottom-right text card (Defined VC inspired) ──
+     Sits OUT of the content container — pinned to the right viewport edge with
+     a small gap, so it extends visually further right than the page grid. */
   .hero__cardWrap {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 2.5rem;
+    right: clamp(0.75rem, 2vw, 1.5rem);
+    left: 1rem;
+    bottom: 2.25rem;
     z-index: 3;
     display: flex;
     justify-content: flex-end;
@@ -427,23 +445,26 @@
 
   .hero__card {
     width: 100%;
-    max-width: 540px;
-    padding: 1.8rem 1.8rem 1.6rem;
+    max-width: 680px;
+    padding: 2rem 2rem 1.75rem;
     border: 1px solid var(--line-strong);
-    border-radius: 18px;
-    background: rgba(6, 8, 15, 0.92);
+    border-radius: 20px;
+    background: rgba(6, 8, 15, 0.93);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
     box-shadow:
-      0 0 0 1px rgba(58, 109, 255, 0.18),
-      0 24px 60px rgba(0, 0, 0, 0.55);
+      0 0 0 1px rgba(58, 109, 255, 0.2),
+      0 32px 72px rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.05rem;
   }
 
   @media (min-width: 720px) {
-    .hero__card { padding: 2.2rem 2.2rem 2rem; }
+    .hero__card { padding: 2.4rem 2.4rem 2.1rem; }
+  }
+  @media (min-width: 1100px) {
+    .hero__card { max-width: 720px; }
   }
 
   .hero__cardHead {

@@ -40,9 +40,8 @@
   class:header--scrolled={scrolled}
 >
   <div class="container-x header__inner">
-    <a href="/" class="header__brand" aria-label="Ruben Marcus — home">
-      <span class="header__mark">RM</span>
-      <span class="header__name">Ruben Marcus</span>
+    <a href="/" class="header__brand" aria-label="rubenmarcus.dev — home">
+      <span class="header__name">rubenmarcus.dev</span>
     </a>
 
     <nav class="header__nav" aria-label="Primary">
@@ -124,27 +123,19 @@
   .header__brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.7rem;
     color: var(--text);
     font-family: var(--font-mono);
     letter-spacing: 0.02em;
+    transition: color var(--duration-hover) var(--ease-default);
   }
-
-  .header__mark {
-    display: inline-grid;
-    place-items: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    background: var(--cream);
-    color: #0c0d10;
-    font-size: 0.78rem;
-    font-weight: 600;
+  .header__brand:hover {
+    color: var(--accent-soft);
   }
 
   .header__name {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 500;
+    letter-spacing: 0.01em;
   }
 
   .header__nav {

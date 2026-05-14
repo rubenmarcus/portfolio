@@ -20,8 +20,8 @@
   }
 
   let {
-    count = 5,
-    color = "rgba(190, 230, 255, 0.55)",
+    count = 7,
+    color = "rgba(190, 230, 255, 0.62)",
     class: className = "",
   }: Props = $props();
 
@@ -136,8 +136,8 @@ return wrapKey(ss, payload);`,
   let enabled = $state(false);
   let nextId = 0;
 
-  const LIFE_MS = 6800;       // fade-in 600ms + sit 5000ms + fade-out 1200ms
-  const SPAWN_MS = 1400;
+  const LIFE_MS = 5800;       // fade-in + sit + fade-out
+  const SPAWN_MS = 850;        // a new snippet roughly every ~0.85s
 
   function pickSnippet(): Snippet {
     return SNIPPETS[Math.floor(Math.random() * SNIPPETS.length)];
@@ -170,14 +170,14 @@ return wrapKey(ss, payload);`,
     mounted = true;
 
     // Seed
-    for (let i = 0; i < Math.min(count, 3); i++) {
+    for (let i = 0; i < Math.min(count, 4); i++) {
       const pos = pickPosition();
       active.push({
         id: nextId++,
         snippet: pickSnippet(),
         x: pos.x,
         y: pos.y,
-        born: performance.now() - i * 1200,
+        born: performance.now() - i * 800,
       });
     }
     active = [...active];
@@ -244,14 +244,17 @@ return wrapKey(ss, payload);`,
     position: absolute;
     margin: 0;
     font-family: var(--font-mono);
-    font-size: 0.66rem;
-    line-height: 1.4;
+    font-size: 0.82rem;
+    line-height: 1.45;
     letter-spacing: 0.01em;
     color: inherit;
     white-space: pre;
-    text-shadow: 0 0 12px rgba(58, 109, 255, 0.25);
-    max-width: 30ch;
+    text-shadow: 0 0 14px rgba(58, 109, 255, 0.32);
+    max-width: 42ch;
     opacity: 0;
+  }
+  @media (max-width: 900px) {
+    .code-stream__item { font-size: 0.7rem; max-width: 32ch; }
   }
 
   .code-stream__item.enabled {
@@ -270,10 +273,10 @@ return wrapKey(ss, payload);`,
 
   .code-stream__repo {
     display: block;
-    margin-bottom: 0.18rem;
-    color: rgba(143, 169, 255, 0.55);
-    font-size: 0.6rem;
-    letter-spacing: 0.06em;
+    margin-bottom: 0.22rem;
+    color: rgba(160, 195, 255, 0.7);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
   }
 
   /* Hide static fallback on smaller screens to keep the hero clean */
