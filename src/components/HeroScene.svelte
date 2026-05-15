@@ -94,6 +94,7 @@
 
     <div class="hero__vignette" aria-hidden="true"></div>
     <div class="hero__grid" aria-hidden="true"></div>
+    <div class="hero__fadeBottom" aria-hidden="true"></div>
   </div>
 
   <div class="hero__lede">
@@ -210,6 +211,25 @@
     mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
   }
 
+  /* Bottom fade-to-black — pairs with the HeroStats top fade so the
+     transition between the two sections is a continuous gradient. */
+  .hero__fadeBottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 320px;
+    pointer-events: none;
+    z-index: 1;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.25) 30%,
+      rgba(0, 0, 0, 0.7) 65%,
+      #000 100%
+    );
+  }
+
   /* Lede */
   .hero__lede {
     position: absolute;
@@ -244,9 +264,9 @@
     color: var(--accent-soft);
     font-style: italic;
   }
-  /* "Build" gets the secondary hot-pink accent to set up the colour story */
+  /* "Build" gets a subtle ice-blue accent to match the cool palette */
   .hero__introVerb {
-    color: var(--accent-pink);
+    color: var(--accent-soft);
     font-style: italic;
   }
 

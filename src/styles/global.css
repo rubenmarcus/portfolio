@@ -17,15 +17,11 @@
   --muted: rgba(245, 241, 234, 0.82);
   --muted-soft: rgba(245, 241, 234, 0.55);
 
-  /* Primary accent — cyan (kept close to the prior glacial blue) */
-  --accent: #4cc9f0;
-  --accent-soft: #a8e1fa;
+  /* Primary accent — ice blue (single accent, no cyberpunk pink) */
+  --accent: #60b5ff;
+  --accent-soft: #a8d4ff;
   --accent-deep: #1e6a9e;
-  --focus: rgba(76, 201, 240, 0.72);
-
-  /* Secondary accent — hot pink. Use sparingly on highlights / CTAs. */
-  --accent-pink: #f72585;
-  --accent-pink-soft: #ff5fa4;
+  --focus: rgba(96, 181, 255, 0.72);
 
   --section-y-mobile: 96px;
   --section-y-desktop: 176px;
@@ -150,7 +146,7 @@
   }
 
   ::selection {
-    background: rgba(247, 37, 133, 0.4);
+    background: rgba(96, 181, 255, 0.35);
     color: #ffffff;
   }
 
@@ -259,8 +255,8 @@
   }
   .btn-primary:hover {
     background: #ffffff;
-    border-color: var(--accent-pink);
-    box-shadow: 0 0 0 1px var(--accent-pink), 0 0 24px rgba(247, 37, 133, 0.35);
+    border-color: var(--accent-soft);
+    box-shadow: 0 0 0 1px var(--accent-soft), 0 0 24px rgba(96, 181, 255, 0.3);
     transform: translateY(-1px);
   }
 
