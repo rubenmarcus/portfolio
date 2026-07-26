@@ -116,7 +116,7 @@ export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [mouse, setMouse] = useState({ x: 0, y: 0 })
   const [isHovering, setIsHovering] = useState(false)
-  const [zoom, setZoom] = useState(VIDEO_ZOOM.default)
+  const [zoom, setZoom] = useState<number>(VIDEO_ZOOM.default)
   const [musicPlaying, setMusicPlaying] = useState(false)
   const [trackIndex, setTrackIndex] = useState(() => Math.floor(Math.random() * YT_TRACKS.length))
   const [contactOpen, setContactOpen] = useState(false)
