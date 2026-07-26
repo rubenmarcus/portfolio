@@ -65,4 +65,4 @@ Create a perfectly looping video. SUBJECT: A centered human head and upper neck 
 
 ## License
 
-MIT
+[MIT](LICENSE)
