@@ -11,9 +11,13 @@
     "@astrojs/react": "^4",
     "@astrojs/sitemap": "^3",
     "@astrojs/tailwind": "^6",
+    "@astrojs/vercel": "^8.2.11",
     "@react-three/fiber": "^9.6.1",
     "@react-three/postprocessing": "^3.0.4",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
     "@vercel/analytics": "^1.6.1",
+    "age-encryption": "^0.3.0",
     "astro": "^5",
     "lucide-react": "^0.454.0",
     "motion": "^12.33.0",
@@ -21,6 +25,7 @@
     "react": "^19",
     "react-dom": "^19",
     "react-use-measure": "^2.1.7",
+    "resend": "^6.18.0",
     "three": "^0.185.1"
   },
   "devDependencies": {

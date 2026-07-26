@@ -10,6 +10,10 @@ export const site = {
   locationLine: "Colombian builder between Cartagena and Medellín.",
   githubUser: "jseramn",
   email: "contacto@jseramn.tech",
+  contactEmail: {
+    from: "jseramn <contacto@jseramn.tech>",
+    to: "contacto@jseramn.tech",
+  },
   socials: [
     { id: "github", href: "https://github.com/jseramn", icon: "Github" },
     { id: "x", href: "https://x.com/jseramn_", icon: "Twitter" },
@@ -37,6 +41,15 @@ export const site = {
   },
   videoSrcWebm: "/videobg.webm",
   videoSrcMp4: "/videobg.mp4",
+  contactCrypto: {
+    ageRepo: "https://github.com/FiloSottile/age",
+    typageRepo: "https://github.com/FiloSottile/typage",
+    /** Social profiles where visitors should DM the decryption key */
+    keyDeliverySocials: [
+      { id: "x", label: "X", href: "https://x.com/jseramn_" },
+      { id: "instagram", label: "Instagram", href: "https://instagram.com/jseramn" },
+    ] as const,
+  },
 } as const
 
 export type Site = typeof site

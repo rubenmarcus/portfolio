@@ -1,34 +1,42 @@
 # dependencies
-/node_modules
+node_modules/
 
 # build output
-/dist
-/.astro
+dist/
+.astro/
 
-# debug
+# debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# secrets (keep .env.example committable)
 .env*
+!.env.example
 
-# vercel
-.vercel
+# deploy / platform
+.vercel/
 
 # typescript
 *.tsbuildinfo
 
 # OS
 .DS_Store
+Thumbs.db
 
-# SDD / agent local artifacts
+# editor / local IDE (optional personal settings)
+.vscode/
+
+# agent / local tooling (never ship)
 .atl/
-
-# Local tooling / package cache (never ship)
 .codegraph/
 .pnpm-store/
+.pnpm-workspace-state.json
 
-# Local video backups (keep canonical videobg.* only)
+# accidental scratch files
+Untitled
+Untitled.*
+
+# local video backups (canonical assets: public/videobg.webm / .mp4)
 public/videobg__*

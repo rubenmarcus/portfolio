@@ -1,9 +1,25 @@
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../assets/fonts/Geist-Variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../assets/fonts/GeistMono-Variable.woff2") format("woff2");
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-geist-sans: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-geist-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-geist-mono: "Geist Mono", ui-monospace, monospace;
   --vesper-bg: #0A0B12;
   --vesper-bg-elevated: #1C1F2E;

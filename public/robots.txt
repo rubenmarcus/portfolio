@@ -2,3 +2,6 @@ User-agent: *
 Allow: /
 
 Sitemap: https://jseramn.tech/sitemap-index.xml
+
+# Optional context for AI crawlers (see also https://llmstxt.org/)
+# LLM summary: https://jseramn.tech/llms.txt
