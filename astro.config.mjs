@@ -6,6 +6,7 @@ import vercel from "@astrojs/vercel"
 
 export default defineConfig({
   site: "https://jseramn.tech",
+  compressHTML: false,
   output: "static",
   adapter: vercel(),
   integrations: [react(), tailwind({ applyBaseStyles: false }), sitemap()],
