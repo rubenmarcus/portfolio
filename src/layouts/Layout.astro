@@ -2,6 +2,8 @@
 import "../styles/globals.css"
 import Analytics from "@vercel/analytics/astro"
 import { site } from "../config/site"
+import geistSansWoff2 from "../assets/fonts/Geist-Variable.woff2?url"
+import geistMonoWoff2 from "../assets/fonts/GeistMono-Variable.woff2?url"
 
 interface Props {
   title?: string
@@ -16,6 +18,23 @@ const {
 const sameAs = site.socials
   .filter((s) => !s.href.startsWith("mailto:"))
   .map((s) => s.href)
+
+const geistFontFace = `
+@font-face {
+  font-family: "Geist Sans";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("${geistSansWoff2}") format("woff2");
+}
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("${geistMonoWoff2}") format("woff2");
+}
+`
 ---
 
 <!doctype html>
@@ -50,9 +69,7 @@ const sameAs = site.socials
     <meta name="twitter:creator" content={site.seo.twitter} />
     <meta name="twitter:image" content={site.seo.ogImage} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100..800&display=swap" rel="stylesheet" />
+    <style is:global set:html={geistFontFace} />
 
     <Analytics />
 
@@ -73,7 +90,7 @@ const sameAs = site.socials
       })}
     />
   </head>
-  <body class="font-mono bg-black text-vesper-accent">
+  <body class="font-sans bg-black text-vesper-accent antialiased">
     <slot />
   </body>
 </html>

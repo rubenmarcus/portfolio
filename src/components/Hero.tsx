@@ -384,7 +384,7 @@ export default function Hero() {
         </div>
       </div>
       <div className="absolute inset-x-0 bottom-0 flex flex-col md:flex-row md:items-end md:justify-between px-4 md:px-16 pb-8 md:pb-12 gap-4 md:gap-0">
-        <div className={`font-mono text-2xl md:text-3xl font-normal text-vesper-accent tracking-tight text-left cursor-default ${GLOW} md:w-[30%]`}>
+        <div className={`font-sans text-2xl md:text-3xl font-semibold text-vesper-accent tracking-tight text-left cursor-default ${GLOW} md:w-[30%]`}>
           <TextLoop interval={2.5} transition={{ duration: 0.4 }}>
             {PROFESSIONS.map((p) => (
               <span key={p}>{p}</span>
@@ -392,7 +392,7 @@ export default function Hero() {
           </TextLoop>
         </div>
         <p
-          className={`font-mono text-base md:text-xl text-vesper-accent/80 md:max-w-md text-left md:text-right cursor-default ${GLOW} whitespace-pre-line`}
+          className={`font-sans text-base md:text-xl font-normal leading-relaxed text-vesper-accent/85 md:max-w-md text-left md:text-right cursor-default ${GLOW} whitespace-pre-line`}
           onMouseEnter={desc.start}
           onMouseLeave={desc.stop}
         >

@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --font-mono: "Martian Mono", monospace;
+  --font-geist-sans: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-geist-mono: "Geist Mono", ui-monospace, monospace;
   --vesper-bg: #0A0B12;
   --vesper-bg-elevated: #1C1F2E;
   --vesper-accent: #00F0FF;
