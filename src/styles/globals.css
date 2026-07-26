@@ -4,11 +4,16 @@
 
 :root {
   --font-mono: "Martian Mono", monospace;
+  --vesper-bg: #0A0B12;
+  --vesper-bg-elevated: #1C1F2E;
+  --vesper-accent: #00F0FF;
+  --vesper-purple: #B026FF;
+  --vesper-pink: #FF2A9E;
 }
 
 body {
   background-color: #000;
-  color: #4ade80;
+  color: var(--vesper-accent);
 }
 
 ::-webkit-scrollbar {
@@ -17,16 +22,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #000;
+  background: var(--vesper-bg-elevated);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #22c55e33;
+  background: #00f0ff33;
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #22c55e66;
+  background: #00f0ff66;
 }
 
 /* Sound bars animation */
@@ -57,8 +62,8 @@ body {
   50% { transform: scaleY(1); }
 }
 
-/* Glow pulse */
+/* Glow pulse — Vesper cyan */
 @keyframes glow-pulse {
-  0%, 100% { text-shadow: 0 0 4px rgba(74, 222, 128, 0.4); }
-  50% { text-shadow: 0 0 16px rgba(74, 222, 128, 0.8), 0 0 32px rgba(74, 222, 128, 0.4); }
+  0%, 100% { text-shadow: 0 0 4px rgba(0, 240, 255, 0.4); }
+  50% { text-shadow: 0 0 16px rgba(0, 240, 255, 0.8), 0 0 32px rgba(0, 240, 255, 0.4); }
 }

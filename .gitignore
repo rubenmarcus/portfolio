@@ -22,3 +22,13 @@ yarn-error.log*
 
 # OS
 .DS_Store
+
+# SDD / agent local artifacts
+.atl/
+
+# Local tooling / package cache (never ship)
+.codegraph/
+.pnpm-store/
+
+# Local video backups (keep canonical videobg.* only)
+public/videobg__*

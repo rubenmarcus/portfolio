@@ -48,6 +48,13 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        vesper: {
+          bg: "#0A0B12",
+          elevated: "#1C1F2E",
+          accent: "#00F0FF",
+          purple: "#B026FF",
+          pink: "#FF2A9E",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

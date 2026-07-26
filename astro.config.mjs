@@ -4,6 +4,6 @@ import tailwind from "@astrojs/tailwind"
 import sitemap from "@astrojs/sitemap"
 
 export default defineConfig({
-  site: "https://rubenmarcus.dev",
+  site: "https://jseramn.tech",
   integrations: [react(), tailwind({ applyBaseStyles: false }), sitemap()],
 })
