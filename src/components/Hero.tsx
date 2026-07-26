@@ -13,6 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import { TextLoop } from "./TextLoop"
+import { ContactModal } from "./ContactModal"
 import { InfiniteSlider } from "./InfiniteSlider"
 import { site } from "../config/site"
 
@@ -152,6 +153,9 @@ export default function Hero() {
   const [zoom, setZoom] = useState(VIDEO_ZOOM.default)
   const [musicPlaying, setMusicPlaying] = useState(false)
   const [trackIndex, setTrackIndex] = useState(() => Math.floor(Math.random() * YT_TRACKS.length))
+  const [contactOpen, setContactOpen] = useState(false)
+  const [roleIndex, setRoleIndex] = useState(0)
+  const activeRole = PROFESSIONS[roleIndex] ?? PROFESSIONS[0]
   const playerRef = useRef<any>(null)
   const playerContainerRef = useRef<HTMLDivElement>(null)
 
@@ -384,13 +388,25 @@ export default function Hero() {
         </div>
       </div>
       <div className="absolute inset-x-0 bottom-0 flex flex-col md:flex-row md:items-end md:justify-between px-4 md:px-16 pb-8 md:pb-12 gap-4 md:gap-0">
-        <div className={`font-sans text-2xl md:text-3xl font-semibold text-vesper-accent tracking-tight text-left cursor-default ${GLOW} md:w-[30%]`}>
-          <TextLoop interval={2.5} transition={{ duration: 0.4 }}>
+        <button
+          type="button"
+          onClick={() => setContactOpen(true)}
+          className={`group font-sans text-2xl md:text-3xl font-semibold text-vesper-accent tracking-tight text-left cursor-pointer md:w-[30%] ${GLOW} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-vesper-accent`}
+          aria-label={`Open contact form — current role: ${activeRole}`}
+        >
+          <TextLoop
+            interval={2.5}
+            transition={{ duration: 0.4 }}
+            onIndexChange={setRoleIndex}
+            paused={contactOpen}
+          >
             {PROFESSIONS.map((p) => (
-              <span key={p}>{p}</span>
+              <span key={p} className="underline decoration-vesper-accent/0 underline-offset-4 transition-[text-decoration-color] group-hover:decoration-vesper-accent/50">
+                {p}
+              </span>
             ))}
           </TextLoop>
-        </div>
+        </button>
         <p
           className={`font-sans text-base md:text-xl font-normal leading-relaxed text-vesper-accent/85 md:max-w-md text-left md:text-right cursor-default ${GLOW} whitespace-pre-line`}
           onMouseEnter={desc.start}
@@ -422,6 +438,11 @@ export default function Hero() {
         })}
       </div>
       </div>
+      <ContactModal
+        open={contactOpen}
+        onClose={() => setContactOpen(false)}
+        contextRole={activeRole}
+      />
     </>
   )
 }

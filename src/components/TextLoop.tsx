@@ -9,6 +9,8 @@ type TextLoopProps = {
   transition?: Transition
   variants?: Variants
   mode?: AnimatePresenceProps["mode"]
+  onIndexChange?: (index: number) => void
+  paused?: boolean
 }
 
 export function TextLoop({
@@ -18,16 +20,23 @@ export function TextLoop({
   transition = { duration: 0.3 },
   variants,
   mode = "popLayout",
+  onIndexChange,
+  paused = false,
 }: TextLoopProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const items = Children.toArray(children)
 
   useEffect(() => {
+    onIndexChange?.(currentIndex)
+  }, [currentIndex, onIndexChange])
+
+  useEffect(() => {
+    if (paused) return
     const timer = setInterval(() => {
       setCurrentIndex((current) => (current + 1) % items.length)
     }, interval * 1000)
     return () => clearInterval(timer)
-  }, [items.length, interval])
+  }, [items.length, interval, paused])
 
   const defaultVariants: Variants = {
     initial: { y: 20, opacity: 0 },
