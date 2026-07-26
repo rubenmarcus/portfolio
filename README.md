@@ -59,7 +59,8 @@ src/
 public/
   llms.txt                # Machine-readable site & profile summary
   videobg.webm, videobg.mp4, thumbnail.png, favicons
-vercel.json               # API cache / noindex headers
+vercel.json               # Security headers on static assets + API cache / noindex
+scripts/sync-vercel-security-headers.mjs  # Regenerates vercel.json header block at build
 ```
 
 Canonical copy and links for humans and SEO live in `src/config/site.ts`.
@@ -90,7 +91,7 @@ Domain `jseramn.tech` must stay verified in Resend for the `from` address in `si
 
 | Control | Location |
 |---------|----------|
-| CSP, HSTS, COOP, CORP, frame deny | `src/middleware.ts`, `src/lib/security/headers.ts` |
+| CSP, HSTS, COOP, CORP, frame deny | `vercel.json` (static CDN) + `src/middleware.ts` (API/middleware path) |
 | API `no-store` / noindex | `vercel.json` |
 | Same-origin `POST /api/contact` | `src/lib/security/contactApi.ts` |
 | Honeypot | `ContactModal.tsx` |
@@ -106,6 +107,21 @@ Domain `jseramn.tech` must stay verified in Resend for the `from` address in `si
 3. (Recommended) Upstash Redis for distributed rate limiting.
 4. Enable GitHub secret scanning; never commit `.env` or scratch files with keys.
 5. Review Resend bounces / suppressions periodically.
+
+### HTTP headers (static on Vercel)
+
+Astro middleware only runs on server-rendered paths. Static HTML and `/_astro/*` are served from the Vercel CDN **without** middleware, so production security headers are applied via `vercel.json`. The policy lives in `src/lib/security/siteSecurityHeaders.mjs` and is synced into `vercel.json` on every `pnpm build`.
+
+### DNS / email (operator — not in this repo)
+
+| Item | Action |
+|------|--------|
+| DKIM | Configure in GoDaddy / Secureserver |
+| DMARC | Move `p=quarantine` → `p=reject` after DKIM works |
+| DNSSEC | Enable in GoDaddy |
+| CAA | e.g. `0 issue "letsencrypt.org"` |
+| MTA-STS | Publish policy when ready |
+| HSTS preload | Submit at [hstspreload.org](https://hstspreload.org) after deploy |
 
 The repo is **public by design**. Security does not rely on hiding client-side encryption; protect **secrets** and **per-message passphrases**.
 

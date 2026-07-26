@@ -10,4 +10,9 @@ export default defineConfig({
   output: "static",
   adapter: vercel(),
   integrations: [react(), tailwind({ applyBaseStyles: false }), sitemap()],
+  vite: {
+    build: {
+      sourcemap: false,
+    },
+  },
 })
