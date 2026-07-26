@@ -11,6 +11,32 @@ export type GitHubStats = {
 const CONTRIB_API = "https://github-contributions-api.jogruber.de/v4"
 const GITHUB_API = "https://api.github.com"
 
+function calendarDayKey(date: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date)
+}
+
+function calendarYearMonth(date: Date, timeZone: string): { year: number; month: number } {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "numeric",
+  }).formatToParts(date)
+  return {
+    year: Number(parts.find((p) => p.type === "year")?.value),
+    month: Number(parts.find((p) => p.type === "month")?.value),
+  }
+}
+
+function parseContributionDate(date: string): { year: number; month: number } {
+  const [year, month] = date.split("-").map(Number)
+  return { year, month }
+}
+
 function githubHeaders(token?: string): HeadersInit {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
@@ -19,6 +45,26 @@ function githubHeaders(token?: string): HeadersInit {
   }
   if (token) headers.Authorization = `Bearer ${token}`
   return headers
+}
+
+/** Authenticated `/users/{user}/events` includes private activity for the token owner. */
+async function fetchUserEvents(username: string, token?: string): Promise<unknown> {
+  const headers = githubHeaders(token)
+
+  if (token) {
+    const authed = await fetch(
+      `${GITHUB_API}/users/${username}/events?per_page=30`,
+      { headers },
+    )
+    if (authed.ok) return authed.json()
+  }
+
+  const pub = await fetch(
+    `${GITHUB_API}/users/${username}/events/public?per_page=30`,
+    { headers },
+  )
+  if (!pub.ok) throw new Error("github_events_failed")
+  return pub.json()
 }
 
 async function fetchLastCommitFromEvents(
@@ -61,37 +107,31 @@ export async function fetchGitHubStats(
   token?: string,
 ): Promise<GitHubStats> {
   const now = new Date()
-  const todayStr = now.toISOString().slice(0, 10)
-  const currentMonth = now.getMonth()
-  const currentYear = now.getFullYear()
+  const timeZone = site.activityTimeZone
+  const todayStr = calendarDayKey(now, timeZone)
+  const { year: currentYear, month: currentMonth } = calendarYearMonth(now, timeZone)
 
-  const ghHeaders = githubHeaders(token)
-
-  const [contribRes, eventsRes, allRes] = await Promise.all([
+  const [contribRes, allRes, events] = await Promise.all([
     fetch(`${CONTRIB_API}/${username}?y=last`),
-    fetch(`${GITHUB_API}/users/${username}/events/public?per_page=30`, { headers: ghHeaders }),
     fetch(`${CONTRIB_API}/${username}`),
+    fetchUserEvents(username, token),
   ])
 
-  if (!contribRes.ok || !eventsRes.ok || !allRes.ok) {
+  if (!contribRes.ok || !allRes.ok) {
     throw new Error("github_stats_upstream_failed")
   }
 
-  const [contribData, events, allData] = await Promise.all([
-    contribRes.json(),
-    eventsRes.json(),
-    allRes.json(),
-  ])
+  const [contribData, allData] = await Promise.all([contribRes.json(), allRes.json()])
 
   const contributions: { date: string; count: number }[] = contribData.contributions || []
   let today = 0
   let month = 0
   let year = 0
   for (const c of contributions) {
-    const d = new Date(c.date)
+    const { year: y, month: m } = parseContributionDate(c.date)
     if (c.date === todayStr) today = c.count
-    if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) month += c.count
-    if (d.getFullYear() === currentYear) year += c.count
+    if (y === currentYear && m === currentMonth) month += c.count
+    if (y === currentYear) year += c.count
   }
 
   const totalByYear: Record<string, number> = allData.total || {}

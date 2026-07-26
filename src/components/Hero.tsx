@@ -300,7 +300,7 @@ export default function Hero() {
           ])}
           {ghStats && (
             <span className="font-mono text-xs md:text-base text-vesper-accent/70 whitespace-nowrap">
-              {ghStats.today} commits today · {ghStats.month} this month · {ghStats.year} this year · {ghStats.total} total
+              {ghStats.today} contributions today · {ghStats.month} this month · {ghStats.year} this year · {ghStats.total} all-time
             </span>
           )}
           {ghStats && <span className="text-vesper-purple/40 font-mono">·</span>}
