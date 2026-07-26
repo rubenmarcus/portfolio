@@ -16,12 +16,12 @@ import { TextLoop } from "./TextLoop"
 import { ContactModal } from "./ContactModal"
 import { InfiniteSlider } from "./InfiniteSlider"
 import { site } from "../config/site"
+import type { GitHubStats } from "../lib/githubStats"
 
 const YT_TRACKS = site.tracks
 const PROFESSIONS = site.roles
 const DESC = site.tagline.en
 const CHARS = "!@#$%^&*()_+-=[]{}|;:,./<>?`~abcdefghijklmnopqrstuvwxyz0123456789"
-const GH_USER = site.githubUser
 const GLOW =
   "transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(0,240,255,0.6)] hover:text-[#A8E0E0]"
 
@@ -89,56 +89,22 @@ function useScramble(text: string, { autoStart = false }: { autoStart?: boolean 
   return { display, start, stop }
 }
 
-type GitHubStats = {
-  today: number; month: number; year: number; total: number
-  lastCommit: { message: string; repo: string; url: string } | null
-}
-
 function useGitHubStats() {
   const [stats, setStats] = useState<GitHubStats | null>(null)
 
   useEffect(() => {
-    const now = new Date()
-    const todayStr = now.toISOString().slice(0, 10)
-    const currentMonth = now.getMonth()
-    const currentYear = now.getFullYear()
+    let cancelled = false
 
-    Promise.all([
-      fetch(`https://github-contributions-api.jogruber.de/v4/${GH_USER}?y=last`).then(r => r.json()),
-      fetch(`https://api.github.com/users/${GH_USER}/events/public?per_page=30`).then(r => r.json()),
-      fetch(`https://github-contributions-api.jogruber.de/v4/${GH_USER}`).then(r => r.json()),
-    ])
-      .then(([contribData, events, allData]) => {
-        const contributions: { date: string; count: number }[] = contribData.contributions || []
-        let today = 0, month = 0, year = 0
-        for (const c of contributions) {
-          const d = new Date(c.date)
-          if (c.date === todayStr) today = c.count
-          if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) month += c.count
-          if (d.getFullYear() === currentYear) year += c.count
-        }
-        const totalByYear: Record<string, number> = allData.total || {}
-        const total = Object.values(totalByYear).reduce((sum: number, n) => sum + (n as number), 0)
-
-        let lastCommit: GitHubStats["lastCommit"] = null
-        if (Array.isArray(events)) {
-          for (const event of events) {
-            if (event.type === "PushEvent" && event.payload?.commits?.length) {
-              const commit = event.payload.commits[event.payload.commits.length - 1]
-              const repo = event.repo?.name?.replace(`${GH_USER}/`, "") || ""
-              lastCommit = {
-                message: commit.message.split("\n")[0],
-                repo,
-                url: `https://github.com/${event.repo?.name}/commit/${commit.sha}`,
-              }
-              break
-            }
-          }
-        }
-
-        setStats({ today, month, year, total, lastCommit })
+    fetch("/api/github-stats")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: GitHubStats | null) => {
+        if (!cancelled && data) setStats(data)
       })
       .catch(() => {})
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   return stats
