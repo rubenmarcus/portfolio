@@ -87,6 +87,9 @@
     padding-block: 3rem 1.75rem;
     position: relative;
     z-index: 2;
+    /* Opaque ground — the animated shader bg shows through otherwise and
+       swallows the small mono links (REACH column was unreadable). */
+    background: var(--bg-0);
   }
 
   .footer__inner {

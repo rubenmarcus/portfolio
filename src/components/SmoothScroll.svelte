@@ -24,8 +24,15 @@
     };
     rafId = requestAnimationFrame(raf);
 
+    // This island is persisted across view transitions, so Lenis keeps its
+    // internal scroll position after a route change — the new page then
+    // renders scrolled into empty space. Snap back to top on every swap.
+    const resetScroll = () => lenis.scrollTo(0, { immediate: true, force: true });
+    document.addEventListener("astro:after-swap", resetScroll);
+
     return () => {
       cancelAnimationFrame(rafId);
+      document.removeEventListener("astro:after-swap", resetScroll);
       lenis.destroy();
     };
   });
