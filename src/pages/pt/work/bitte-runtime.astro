@@ -1,0 +1,205 @@
+---
+import CaseShell from "../../../components/work/CaseShell.astro";
+import Section from "../../../components/Section.astro";
+import Divider from "../../../components/Divider.astro";
+import AnnoBlock from "../../../components/work/AnnoBlock.astro";
+import BigStat from "../../../components/work/BigStat.astro";
+---
+
+<CaseShell
+  lang="pt-br"
+  title="Bitte AI Runtime · Estudo de caso"
+  description="Top human committer (104 commits) no runtime de IA em produção da Bitte Protocol: streaming LLM agent loops, conversão OpenAPI→tool, ~20 primitivas on-chain em NEAR/EVM/SUI/Cardano."
+  index="02"
+  overline="Estudo de caso: infra de IA em produção"
+  heading="O runtime por trás dos agents on-chain da Bitte."
+  meta={[
+    { label: "Papel", value: "Top human committer" },
+    { label: "Org", value: "Bitte Protocol" },
+    { label: "Stack", value: "Express · TypeScript · Cloud Run" },
+    { label: "Chains", value: "NEAR · EVM · SUI · Cardano" },
+  ]}
+  prev={{ href: "/pt/work/ecdsa-fail", label: "ECDSA.fail" }}
+>
+  <Fragment slot="lede">
+    <p>
+      O runtime de IA em produção da Bitte transforma linguagem natural em
+      transações on-chain assinadas. Fui o top human committer dele: streaming
+      LLM agent loops, conversão OpenAPI→tool e cerca de vinte primitivas
+      on-chain em quatro chains, servindo usuários reais no Google Cloud Run.
+    </p>
+  </Fragment>
+
+  <Fragment slot="stats">
+    <BigStat value="104" label="Commits" sub="Top human committer no runtime em produção" />
+    <BigStat value="~20" label="Primitivas on-chain" sub="Em NEAR, EVM, SUI e Cardano" />
+    <BigStat value="4" label="Chains" sub="Uma superfície de agent, quatro ambientes de execução" />
+    <BigStat value="135/343" label="Agent SDK" sub="#1 committer no monorepo do agent SDK" />
+  </Fragment>
+
+  <Divider index="02.1" label="O runtime" />
+
+  <Section id="runtime" tight>
+    <div class="spec-stack">
+      <p class="spec-copy" data-reveal>
+        Um serviço Express/TypeScript no Google Cloud Run rodando streaming LLM
+        agent loops: o modelo planeja, chama tools e faz streaming do estado
+        intermediário pro cliente enquanto as transações são preparadas,
+        simuladas e assinadas.
+      </p>
+
+      <AnnoBlock label="fig. 01 · agent loop" index="a" note="streaming, guiado por tools">
+        <pre class="spec-diagram">{`
+  user intent ──▶ LLM loop ──▶ tool call ──▶ on-chain primitive
+                      ▲              │              │
+                      └──────── stream ◀────────────┘
+                    tokens + tx state, live to the client
+
+   tools: OpenAPI specs ──▶ converted to function-calling schemas`}</pre>
+      </AnnoBlock>
+
+      <AnnoBlock label="fig. 02 · capacidades" index="b" note="~20 primitivas, 4 chains">
+        <ul class="spec-list">
+          <li><span class="spec-key">streaming agent loops</span> o LLM planeja e age com estado intermediário ao vivo pro cliente</li>
+          <li><span class="spec-key">conversão OpenAPI→tool</span> qualquer spec vira uma tool chamável pelo agent, automaticamente</li>
+          <li><span class="spec-key">primitivas on-chain</span> ~20 transaction builders em NEAR, EVM, SUI e Cardano</li>
+          <li><span class="spec-key">NEAR Intents</span> swaps cross-chain roteados pelo protocolo Intents</li>
+          <li><span class="spec-key">production ops</span> Express + TypeScript, deploy no Google Cloud Run</li>
+        </ul>
+      </AnnoBlock>
+    </div>
+  </Section>
+
+  <Divider index="02.2" label="O entorno" />
+
+  <Section id="surface" tight>
+    <div class="spec-stack">
+      <div class="spec-pair">
+        <AnnoBlock label="fig. 03 · agent SDK monorepo" index="c" note="#1 committer · 135 de 343">
+          <p class="spec-note">
+            <strong>#1 committer (135 de 343 commits)</strong> no monorepo do agent SDK:
+            <strong>@bitte-ai/chat</strong>, a CLI <strong>make-agent</strong> e os
+            manifests de function-calling OpenAPI que permitem a qualquer um
+            levantar um agent on-chain.
+          </p>
+        </AnnoBlock>
+
+        <AnnoBlock label="fig. 04 · Bitte Wallet" index="d" note="#3 committer · 249 commits">
+          <p class="spec-note">
+            <strong>#3 committer (249 commits)</strong> na Bitte Wallet: a wallet
+            de AI agents em produção na qual esses agents do SDK se conectam.
+          </p>
+        </AnnoBlock>
+      </div>
+    </div>
+  </Section>
+
+  <Divider index="02.3" label="Resultado" />
+
+  <Section id="outcome" tight>
+    <div class="spec-outcome" data-reveal>
+      <span class="spec-outcome__value" data-reveal-item>#1</span>
+      <p class="spec-outcome__copy" data-reveal-item>
+        Top human committer no runtime que move a economia de agents da Bitte,
+        e #1 committer no SDK que permite a builders externos se conectarem a ele.
+      </p>
+    </div>
+  </Section>
+</CaseShell>
+
+<style>
+  .spec-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .spec-copy {
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.7;
+    max-width: 62ch;
+  }
+
+  .spec-diagram {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    line-height: 1.65;
+    color: var(--accent-soft);
+    white-space: pre;
+  }
+
+  .spec-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .spec-list li {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.75rem;
+    align-items: baseline;
+  }
+  .spec-key {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent-soft);
+    white-space: nowrap;
+  }
+  .spec-key::after {
+    content: "—";
+    margin-left: 0.75rem;
+    color: var(--muted-soft);
+  }
+
+  .spec-pair {
+    display: grid;
+    gap: 3rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 880px) {
+    .spec-pair { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+  }
+
+  .spec-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+  .spec-note strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .spec-outcome {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+    padding-block: 2rem;
+  }
+  .spec-outcome__value {
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 16vw, 11rem);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    color: var(--accent);
+    text-shadow: 0 0 60px rgba(0, 255, 65, 0.35);
+  }
+  .spec-outcome__copy {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 56ch;
+  }
+</style>

@@ -1,0 +1,170 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/Section.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
+import DitherBg from "../../components/DitherBg.svelte";
+import DitherCover from "../../components/DitherCover.svelte";
+import WireCard from "../../components/WireCard.astro";
+
+const posts = (await getCollection("blogPt", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+---
+
+<BaseLayout
+  lang="pt-br"
+  title="Blog — Ruben Marcus"
+  description="Artigos sobre AI tooling, agents autônomos e a stack moderna de frontend."
+  image="/og/pt-blog.png"
+>
+  <!-- Ordered-dither atmosphere — the blog page's generative identity -->
+  <DitherBg client:load />
+
+  <Section id="intro">
+    <SectionHeader
+      index="03"
+      overline="Escritos"
+      title="Notas de dentro do loop."
+      description="Posts sobre as ferramentas que eu entrego e os padrões por baixo delas."
+    />
+
+    <ul class="article-list" data-reveal>
+      {posts.map((post, i) => (
+        <li data-reveal-item>
+          <WireCard class="article-card" glyph={String(i + 1).padStart(2, "0")}>
+            <a class="article-link" href={`/pt/blog/${post.id}`}>
+              <DitherCover
+                client:visible
+                src={post.data.cover ?? ""}
+                seed={post.data.title}
+                alt={`Capa — ${post.data.title}`}
+                class="article-cover"
+                invert
+              />
+              <div class="article-body">
+                <span class="article-title">{post.data.title}</span>
+                <p class="article-desc">{post.data.description}</p>
+                <div class="article-meta">
+                  <span>{post.data.date.toLocaleDateString("pt-BR", { year: "numeric", month: "short", day: "numeric" })}</span>
+                  <span class="sep">·</span>
+                  <span>{post.data.readTime}</span>
+                  <span class="sep">·</span>
+                  <span>{post.data.tags.map((t: string) => `#${t}`).join(" ")}</span>
+                  {post.data.reactions ? (
+                    <>
+                      <span class="sep">·</span>
+                      <span>{post.data.reactions} reações</span>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+              <span class="article-arrow" aria-hidden="true">→</span>
+            </a>
+          </WireCard>
+        </li>
+      ))}
+    </ul>
+
+    <div class="more" data-reveal>
+      <span class="bracket" data-reveal-item>Mais a caminho</span>
+      <p class="more__desc" data-reveal-item>
+        Rascunhos em andamento: um deep-dive no auto-mode do Ralph Starter e um ensaio
+        sobre o que AEO realmente move depois do deploy.
+      </p>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .article-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .article-link {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    color: var(--text);
+  }
+  @media (min-width: 720px) {
+    .article-link {
+      grid-template-columns: 250px 1fr auto;
+      gap: 1.6rem;
+      align-items: stretch;
+    }
+  }
+
+  /* Dithered cover — full-width strip on mobile, fixed column on desktop */
+  :global(.article-cover) {
+    aspect-ratio: 1000 / 420;
+  }
+  @media (min-width: 720px) {
+    :global(.article-cover) {
+      aspect-ratio: auto;
+      min-height: 140px;
+      height: 100%;
+    }
+  }
+  /* Card-wide hover washes the dots over the real cover (invert mode) */
+  .article-link:hover :global(.dither-cover__dither) {
+    opacity: 1;
+  }
+
+  .article-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    justify-content: center;
+  }
+
+  .article-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+    line-height: 1.1;
+  }
+
+  .article-desc { color: var(--muted); max-width: 70ch; }
+
+  .article-meta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted-soft);
+  }
+  .sep { color: var(--muted-soft); opacity: 0.55; }
+
+  .article-arrow {
+    display: none;
+    color: var(--muted-soft);
+    align-self: center;
+    transition: transform var(--duration-hover) var(--ease-default), color var(--duration-hover) var(--ease-default);
+  }
+  @media (min-width: 720px) {
+    .article-arrow { display: block; }
+  }
+  .article-link:hover .article-arrow {
+    transform: translateX(3px);
+    color: var(--accent-soft);
+  }
+
+  .more {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--bg-1);
+  }
+
+  .more__desc { color: var(--muted); max-width: 64ch; }
+
+</style>

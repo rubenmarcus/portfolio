@@ -1,0 +1,543 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/Section.astro";
+import DitherBg from "../../components/DitherBg.svelte";
+import ShareLinks from "../../components/blog/ShareLinks.svelte";
+import ViewCounter from "../../components/blog/ViewCounter.svelte";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const allPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+
+const currentIndex = allPosts.findIndex((p) => p.id === post.id);
+const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+const nextPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+
+// Related writing: tag overlap, most-shared first, recency breaks ties.
+// This is what links the series together (CS Brasil, agents, ECDSA.fail).
+const related = allPosts
+  .filter((p) => p.id !== post.id)
+  .map((p) => ({ p, shared: p.data.tags.filter((t) => post.data.tags.includes(t)).length }))
+  .filter(({ shared }) => shared > 0)
+  .sort((a, b) => b.shared - a.shared || b.p.data.date.getTime() - a.p.data.date.getTime())
+  .slice(0, 3)
+  .map(({ p }) => p);
+
+const formattedDate = post.data.date.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+const postUrl = new URL(`/blog/${post.id}/`, Astro.site).href;
+
+// View counter only mounts when the Supabase public env vars are configured;
+// the component also self-guards and renders nothing without them.
+const viewsEnabled = Boolean(
+  import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+);
+
+// "Originally published on …" label derived from the canonical host.
+const canonicalHost = post.data.canonical
+  ? new URL(post.data.canonical).hostname.replace(/^www\./, "")
+  : null;
+
+const blogPostingLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.date.toISOString(),
+  ...(post.data.updated && { dateModified: post.data.updated.toISOString() }),
+  author: {
+    "@type": "Person",
+    name: "Ruben Marcus",
+    url: "https://rubenmarcus.dev",
+  },
+  ...(post.data.cover && { image: new URL(post.data.cover, Astro.site).href }),
+  mainEntityOfPage: postUrl,
+  inLanguage: "en",
+};
+---
+
+<BaseLayout
+  title={`${post.data.title} — Ruben Marcus`}
+  description={post.data.description}
+  image={`/og/blog/${post.id}.png`}
+  type="article"
+  publishedTime={post.data.date}
+  modifiedTime={post.data.updated}
+  canonicalUrl={post.data.canonical}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(blogPostingLd)} slot="head" />
+  <article class="post">
+    <DitherBg client:load opacity={0.35} />
+    <Section id="post-head">
+      <header class="post-head">
+        <a class="post-back" href="/blog">← All writing</a>
+
+        <div class="post-meta">
+          <span class="bracket">{post.data.tags[0] ?? "Writing"}</span>
+          <span class="post-meta__sep">·</span>
+          <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
+          <span class="post-meta__sep">·</span>
+          <span>{post.data.readTime}</span>
+          {viewsEnabled && (
+            <>
+              <span class="post-meta__sep">·</span>
+              <ViewCounter client:load slug={post.id} />
+            </>
+          )}
+          {post.data.reactions ? (
+            <>
+              <span class="post-meta__sep">·</span>
+              <span>{post.data.reactions} reactions</span>
+            </>
+          ) : null}
+        </div>
+
+        <h1 class="post-title">{post.data.title}</h1>
+
+        <p class="post-description">{post.data.description}</p>
+
+        <div class="post-tags">
+          {post.data.tags.map((t: string) => <span class="post-tag">#{t}</span>)}
+        </div>
+
+        <ShareLinks client:load url={postUrl} title={post.data.title} />
+
+        {post.data.canonical && (
+          <p class="post-canonical">
+            Originally published on
+            <a href={post.data.canonical} target="_blank" rel="noopener noreferrer canonical" class="link-inline">
+              {canonicalHost} ↗
+            </a>
+          </p>
+        )}
+      </header>
+    </Section>
+
+    {post.data.cover && (
+      <div class="container-x">
+        <img class="post-cover" src={post.data.cover} alt={`Cover image for ${post.data.title}`} loading="eager" />
+      </div>
+    )}
+
+    <Section id="post-body" tight>
+      <div class="prose">
+        <Content />
+      </div>
+    </Section>
+
+    <Section id="post-nav" tight>
+      {related.length > 0 && (
+        <div class="post-related">
+          <span class="overline">Related writing</span>
+          <div class="post-related__grid">
+            {related.map((r) => (
+              <a href={`/blog/${r.id}`} class="post-nav__card">
+                <span class="post-related__tag">#{r.data.tags[0]}</span>
+                <span class="post-nav__title">{r.data.title}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+      <nav class="post-nav" aria-label="Other posts">
+        {prevPost ? (
+          <a href={`/blog/${prevPost.id}`} class="post-nav__card">
+            <span class="overline">Older</span>
+            <span class="post-nav__title">{prevPost.data.title}</span>
+          </a>
+        ) : <span></span>}
+
+        {nextPost ? (
+          <a href={`/blog/${nextPost.id}`} class="post-nav__card post-nav__card--right">
+            <span class="overline">Newer</span>
+            <span class="post-nav__title">{nextPost.data.title}</span>
+          </a>
+        ) : <span></span>}
+      </nav>
+
+      <div class="post-foot">
+        <a href="/blog" class="btn btn-secondary" data-magnetic>← All writing</a>
+        <a href="/contact" class="btn btn-ghost" data-magnetic>Reach out about this →</a>
+      </div>
+    </Section>
+  </article>
+</BaseLayout>
+
+<script>
+  // Copy button on every fenced code block. Runs on first load and after
+  // every ClientRouter swap (astro:page-load).
+  function mountCodeCopy() {
+    document.querySelectorAll<HTMLElement>(".prose pre").forEach((pre) => {
+      if (pre.querySelector(".code-copy")) return;
+      const btn = document.createElement("button");
+      btn.className = "code-copy";
+      btn.type = "button";
+      btn.setAttribute("aria-label", "Copiar código");
+      btn.innerHTML =
+        '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>copy</span>';
+      btn.addEventListener("click", async () => {
+        const text = pre.querySelector("code")?.innerText ?? pre.innerText;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        btn.classList.add("code-copy--done");
+        btn.querySelector("span")!.textContent = "copied";
+        setTimeout(() => {
+          btn.classList.remove("code-copy--done");
+          btn.querySelector("span")!.textContent = "copy";
+        }, 1500);
+      });
+      pre.appendChild(btn);
+    });
+  }
+  mountCodeCopy();
+  document.addEventListener("astro:page-load", mountCodeCopy);
+</script>
+
+<style>
+  .post {
+    padding-top: 5rem;
+  }
+
+  .post-head {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    max-width: 760px;
+  }
+
+  .post-back {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    width: max-content;
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .post-back:hover { color: var(--accent-soft); }
+
+  .post-meta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .post-meta__sep { color: var(--muted-soft); opacity: 0.6; }
+
+  .post-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    line-height: 1.08;
+    letter-spacing: -0.012em;
+    color: var(--text);
+    text-wrap: balance;
+  }
+
+  .post-description {
+    color: var(--muted);
+    font-size: 1.1rem;
+    line-height: 1.55;
+    max-width: 60ch;
+  }
+
+  .post-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .post-tag {
+    padding: 0.22rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .post-canonical {
+    margin-top: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted-soft);
+  }
+
+  .post-cover {
+    display: block;
+    width: 100%;
+    max-width: 1080px;
+    /* Wide cinematic crop — the generated art is square, full-bleed was huge */
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    margin: 2rem auto 0;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--line);
+  }
+
+  /* Related writing */
+  .post-related {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .post-related__grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .post-related__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .post-related__tag {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--accent-soft);
+  }
+
+  /* Footer nav */
+  .post-nav {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    margin-bottom: 2.5rem;
+  }
+  @media (min-width: 720px) {
+    .post-nav { grid-template-columns: 1fr 1fr; }
+  }
+
+  .post-nav__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.2rem 1.3rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-1);
+    color: var(--text);
+    transition: border-color var(--duration-hover) var(--ease-default), background-color var(--duration-hover) var(--ease-default);
+  }
+  .post-nav__card:hover { border-color: var(--line-bright); background: var(--bg-2); }
+  .post-nav__card--right { text-align: right; align-items: flex-end; }
+
+  .post-nav__title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  .post-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    justify-content: space-between;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+</style>
+
+<!-- Prose / markdown body styling — global so :global() isn't needed -->
+<style is:global>
+  .prose {
+    max-width: 720px;
+    margin: 0 auto;
+    color: var(--text);
+    font-size: 1.05rem;
+    line-height: 1.75;
+  }
+
+  .prose > * + * {
+    margin-top: 1.5em;
+  }
+
+  .prose h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin-top: 3rem !important;
+    margin-bottom: 0.4em;
+    text-wrap: balance;
+  }
+
+  .prose h3 {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    line-height: 1.25;
+    color: var(--text);
+    margin-top: 2.2rem !important;
+    margin-bottom: 0.3em;
+  }
+
+  .prose h2 + p,
+  .prose h3 + p {
+    margin-top: 0.4em;
+  }
+
+  .prose p {
+    color: var(--muted);
+    line-height: 1.78;
+    text-wrap: pretty;
+  }
+
+  .prose strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .prose em {
+    color: var(--accent-soft);
+    font-style: italic;
+  }
+
+  .prose a {
+    color: var(--text);
+    border-bottom: 1px solid rgba(245, 241, 234, 0.22);
+    transition: color var(--duration-hover) var(--ease-default), border-color var(--duration-hover) var(--ease-default);
+  }
+  .prose a:hover {
+    color: var(--accent-soft);
+    border-bottom-color: var(--accent-soft);
+  }
+
+  .prose ul,
+  .prose ol {
+    color: var(--muted);
+    padding-left: 1.3rem;
+    line-height: 1.75;
+  }
+  .prose ul { list-style: none; }
+  .prose ul li { position: relative; padding-left: 0.4rem; }
+  .prose ul li::before {
+    content: "→";
+    position: absolute;
+    left: -1rem;
+    color: var(--accent-soft);
+  }
+  .prose ol { list-style: decimal; }
+  .prose li + li { margin-top: 0.5em; }
+
+  .prose blockquote {
+    margin: 0;
+    padding: 0.6rem 1.2rem;
+    border-left: 2px solid var(--accent);
+    background: rgba(0, 255, 65, 0.04);
+    border-radius: 4px;
+    color: var(--text);
+    font-style: italic;
+  }
+  .prose blockquote p {
+    color: var(--text);
+  }
+  .prose blockquote + blockquote {
+    margin-top: 0.5em;
+  }
+
+  .prose code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    padding: 0.12em 0.42em;
+    border-radius: 4px;
+    background: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.22);
+    color: var(--accent-soft);
+  }
+
+  .prose pre {
+    overflow-x: auto;
+    padding: 1.1rem 1.2rem;
+    border-radius: 10px;
+    background: #15181d;
+    border: 1px solid rgba(245, 241, 234, 0.12);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: #d4dce6;
+    position: relative;
+  }
+
+  .code-copy {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.28rem 0.55rem;
+    border: 1px solid rgba(245, 241, 234, 0.14);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.55);
+    color: var(--muted-soft);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    cursor: pointer;
+    opacity: 0;
+    transition:
+      opacity var(--duration-hover) var(--ease-default),
+      color var(--duration-hover) var(--ease-default),
+      border-color var(--duration-hover) var(--ease-default);
+  }
+  .prose pre:hover .code-copy,
+  .code-copy:focus-visible {
+    opacity: 1;
+  }
+  .code-copy:hover {
+    color: var(--accent-soft);
+    border-color: rgba(0, 255, 65, 0.32);
+  }
+  .code-copy--done {
+    color: var(--accent);
+    border-color: rgba(0, 255, 65, 0.45);
+    opacity: 1;
+  }
+  .prose pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .prose img {
+    display: block;
+    margin: 1.5rem auto;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  .prose hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 2.5rem 0;
+  }
+</style>

@@ -1,0 +1,209 @@
+---
+import CaseShell from "../../../components/work/CaseShell.astro";
+import Section from "../../../components/Section.astro";
+import Divider from "../../../components/Divider.astro";
+import AnnoBlock from "../../../components/work/AnnoBlock.astro";
+import BigStat from "../../../components/work/BigStat.astro";
+---
+
+<CaseShell
+  lang="pt-br"
+  title="ECDSA.fail: #1 · Estudo de caso"
+  description="Harness de pesquisa multi-agent autônomo: 9 papéis de LLM agents especialistas, 7+ providers, roteamento role→model com fallbacks testados por health probe, dispatch fail-closed. #1 no ECDSA.fail."
+  index="01"
+  overline="Estudo de caso: pesquisa autônoma"
+  heading="ECDSA.fail, tomado por uma máquina que roda sozinha."
+  meta={[
+    { label: "Papel", value: "Líder de engenharia de IA" },
+    { label: "Org", value: "Quantum" },
+    { label: "Período", value: "2025 a 2026" },
+    { label: "Resultado", value: "#1 no ECDSA.fail" },
+  ]}
+  next={{ href: "/pt/work/bitte-runtime", label: "Bitte AI runtime" }}
+>
+  <Fragment slot="lede">
+    <p>
+      Um harness de pesquisa multi-agent autônomo que ataca o benchmark
+      ECDSA.fail 24 horas por dia. Nove papéis de LLM agents especialistas
+      roteados em mais de sete providers, dispatch via filesystem com
+      isolamento de lanes, presos atrás de spend gates e aprovações humanas,
+      e ligados a um dashboard público de telemetria onde cada token é
+      contabilizado.
+    </p>
+  </Fragment>
+
+  <Fragment slot="stats">
+    <BigStat value="9" label="Papéis de agents" sub="Papéis especialistas de LLM, cada um com seu prompt, sua lane e seu roteamento de modelo" />
+    <BigStat value="7+" label="Providers" sub="Claude · Kimi · DeepSeek · Gemini · GLM · Codex · Amp" />
+    <BigStat value="30m" label="Período do loop" sub="launchd discovery → validate → submit, 24 horas por dia" />
+    <BigStat value="#1" label="Resultado" sub="Topo do ECDSA.fail: contribuidor de pesquisa na publicação" />
+  </Fragment>
+
+  <Divider index="01.1" label="O harness" />
+
+  <Section id="harness" tight>
+    <div class="spec-stack">
+      <p class="spec-copy" data-reveal>
+        Um router role→model atribui a cada papel especialista um modelo
+        primário e uma cadeia de fallback testada por health probes entre
+        providers. Quando um provider degrada, a cadeia degrada com
+        elegância. A campanha, não.
+      </p>
+
+      <AnnoBlock label="fig. 01 · malha de roteamento" index="a" note="cadeias de fallback com health probe">
+        <pre class="spec-diagram">{`
+  discover ──▶ route(role) ──▶ ┌ claude ──┐
+      ▲                        ├ kimi      ├─▶ dispatch ──▶ validate ──▶ submit
+      │                        ├ deepseek  │        ▲
+      └────────── 30 min ◀─────┤ gemini    ├────────┘
+                               ├ glm       │   worker envelope
+                               ├ codex     │   (strict JSON)
+                               └ amp      ─┘
+        probe: provider instável ⇒ próximo da cadeia`}</pre>
+      </AnnoBlock>
+
+      <AnnoBlock label="fig. 02 · disciplina de dispatch" index="b" note="fail-closed por padrão">
+        <ul class="spec-list">
+          <li><span class="spec-key">dispatch via filesystem</span> unidades de trabalho se movem pelo filesystem: sem broker, sem estado oculto</li>
+          <li><span class="spec-key">lane isolation + PID locks</span> agents não colidem; um lock velho é evidência, não risco</li>
+          <li><span class="spec-key">adapters fail-closed</span> qualquer resposta malformada de provider fecha a lane em vez de corromper o run</li>
+          <li><span class="spec-key">validação de worker envelope</span> schema JSON estrito em todo resultado de worker antes de tocar o estado</li>
+          <li><span class="spec-key">detecção de tampering</span> snapshots de git-status sinalizam qualquer divergência entre o que rodou e o que está no disco</li>
+        </ul>
+      </AnnoBlock>
+    </div>
+  </Section>
+
+  <Divider index="01.2" label="Segurança & telemetria" />
+
+  <Section id="gates" tight>
+    <div class="spec-stack">
+      <div class="spec-pair">
+        <AnnoBlock label="fig. 03 · spend gate" index="c" note="teto rígido">
+          <p class="spec-note">
+            Um <strong>spend gate de $200</strong> limita o gasto autônomo; etapas
+            pesadas de GPU exigem <strong>aprovação humana</strong> antes de rodar.
+            O harness é autônomo dentro do envelope, obediente nas bordas.
+          </p>
+        </AnnoBlock>
+
+        <AnnoBlock label="fig. 04 · telemetria pública" index="d" note="cada token contabilizado">
+          <ul class="spec-list">
+            <li><span class="spec-key">gasto de tokens</span> por provider, ao vivo</li>
+            <li><span class="spec-key">fronteira multi-objetivo</span> qualidade vs. custo do candidato, plotada</li>
+            <li><span class="spec-key">fila de falsificação</span> candidatos agendados para tentativa de refutação</li>
+          </ul>
+        </AnnoBlock>
+      </div>
+    </div>
+  </Section>
+
+  <Divider index="01.3" label="Resultado" />
+
+  <Section id="outcome" tight>
+    <div class="spec-outcome" data-reveal>
+      <span class="spec-outcome__value" data-reveal-item>#1</span>
+      <p class="spec-outcome__copy" data-reveal-item>
+        A campanha tomou o topo do ECDSA.fail, e o próprio harness virou parte
+        do resultado: contribuidor de pesquisa na publicação resultante.
+      </p>
+    </div>
+  </Section>
+</CaseShell>
+
+<style>
+  .spec-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .spec-copy {
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.7;
+    max-width: 62ch;
+  }
+
+  .spec-diagram {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    line-height: 1.65;
+    color: var(--accent-soft);
+    white-space: pre;
+  }
+
+  .spec-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .spec-list li {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.75rem;
+    align-items: baseline;
+  }
+  .spec-key {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent-soft);
+    white-space: nowrap;
+  }
+  .spec-key::after {
+    content: "—";
+    margin-left: 0.75rem;
+    color: var(--muted-soft);
+  }
+
+  .spec-pair {
+    display: grid;
+    gap: 3rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 880px) {
+    .spec-pair { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+  }
+
+  .spec-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+  .spec-note strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .spec-outcome {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+    padding-block: 2rem;
+  }
+  .spec-outcome__value {
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 16vw, 11rem);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    color: var(--accent);
+    text-shadow: 0 0 60px rgba(0, 255, 65, 0.35);
+  }
+  .spec-outcome__copy {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 56ch;
+  }
+</style>

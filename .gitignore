@@ -22,3 +22,11 @@ yarn-error.log*
 
 # OS
 .DS_Store
+
+# visual gauntlet screenshots (keep the log, drop the shots)
+/qa/shots
+
+# internal-only (not for the public repo)
+/ref/
+/launch/
+/.claude/

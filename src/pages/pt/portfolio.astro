@@ -1,0 +1,206 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import DitherBg from "../../components/DitherBg.svelte";
+import Section from "../../components/Section.astro";
+import PortfolioGrid from "../../components/portfolio/PortfolioGrid.svelte";
+import { projects, groupOrder } from "../../lib/data/projects";
+
+/** pt-BR era labels — the shared dataset stays EN by default. */
+const groupLabelsPt: Record<string, string> = {
+  ai: "AI & sistemas de agents",
+  bitte: "Bitte Protocol — AI agents & infraestrutura de wallet",
+  grover: "Grover",
+  "zup-fiap": "Zup Innovation · FIAP · Itaú",
+  "freelance-modern": "Freelance · web moderna",
+  agency: "Era agências — e-commerce & varejo",
+  early: "Começo de carreira — WordPress, .NET, agências",
+};
+
+const caseStudies: Record<string, string> = {
+  "ecdsa-fail": "/pt/work/ecdsa-fail",
+  "bitte-ai-runtime": "/pt/work/bitte-runtime",
+};
+
+/** Slugs with generated cover art at /art/covers/<slug>.png — the rest fall
+ *  back to the seeded DitherCover inside the grid. */
+const COVERS = new Set([
+  "ralph-starter",
+  "autoresearcher",
+  "aeojs",
+  "ecdsa-fail",
+  "qec-decoder",
+  "mirofish",
+  "bitte-agent-sdk",
+  "bitte-ai-runtime",
+]);
+
+/** Brand cards get the green wireframe logo renders at /art/logos/<brand>.png */
+const LOGO_COVERS: Record<string, string> = {
+  "quantum-website": "/art/logos/quantum.png",
+  "quantum-scan": "/art/logos/quantum.png",
+  "pq-smart-wallet": "/art/logos/quantum.png",
+  "bitte-wallet": "/art/logos/bitte.png",
+  "chain-agents": "/art/logos/bitte.png",
+  "mintbase-marketplace": "/art/logos/mintbase.png",
+  grover: "/art/logos/grover.png",
+  "cs-brasil": "/art/covers/corosolto.png",
+  "itau-dev-portal": "/art/logos/itau.png",
+  "santander-cartoes": "/art/logos/santander.png",
+  "under-armour": "/art/logos/under-armour.png",
+  "flamengo-loja": "/art/logos/flamengo.png",
+  centauro: "/art/logos/centauro.png",
+  printi: "/art/logos/printi.png",
+  "clicca-jsl": "/art/logos/jsl.png",
+  "orange-stack": "/art/logos/stackspot.png",
+  panalink: "/art/logos/panasonic.png",
+  "samsung-training": "/art/logos/samsung.png",
+  roundup: "/art/logos/monsanto.png",
+  "thera-faria-lima": "/art/logos/cyrela.png",
+  "portal-assinante-estadao": "/art/logos/estadao.png",
+  "top-imobiliario-estadao": "/art/logos/estadao.png",
+};
+
+// Recent eras first, newest projects first within each era. Only the curated
+// cut (featured) shows — the full list stays in the data as the archive.
+const ordered = groupOrder.flatMap((g) =>
+  projects.filter((p) => p.group === g && p.featured).sort((a, b) => b.year - a.year),
+);
+
+/** pt-BR descriptions keyed by slug — EN stays the data default. */
+const DESC_PT: Record<string, string> = {
+  "ralph-starter": "Plataforma open-source de orquestração de AI coding. Modo swarm multi-agent (race / consensus / pipeline sobre git worktrees isoladas), um MCP server e um pipeline de validação visual Figma→código. 100+ downloads diários no npm.",
+  autoresearcher: "CLI de pesquisa autônoma guiada por benchmark. Co-evolução multi-agent: populações divergentes de agents em git worktrees isoladas, merge do campeão, Pareto frontier de candidatos e gate de validade keep/reject.",
+  aeojs: "Framework open-source de Answer Engine Optimization. Análise de robots policy para AI crawlers e exports prontos pra LLM (llms.txt, ai-index.json). 100+ downloads diários no npm.",
+  "ecdsa-fail": "Liderei a engenharia de IA de um harness de pesquisa multi-agent autônomo: 9 papéis de LLM agents especialistas, 7+ providers, roteamento role→model, adapters fail-closed, spend gates. Chegou ao #1 no ECDSA.fail. Contribuidor de pesquisa na publicação resultante.",
+  "qec-decoder": "#1 no leaderboard de quantum error-correction decoder da Optimization Arena (2.642 EPM, perto do Bayes-optimal) via uma campanha multi-agent com protocolo de avaliação anti-overfitting.",
+  "cs-brasil": "FPS no browser. WebGL, sem install, sem netcode: partidas simuladas localmente, Supabase como scoreboard. 2.191 jogadores, 154K+ kills, 27 países no alpha.",
+  mirofish: "Produtizei um engine open-source de simulação social multi-agent (GraphRAG/Zep, OASIS) como SaaS hospedado: auth, storage Supabase, deploy Railway/Vercel e a plataforma web.",
+  "pq-smart-wallet": "Wallet pós-quântica ML-DSA. Verifier ML-DSA-65 compilado pra WASM via Arbitrum Stylus (~374K gas vs ~1.57M em EVM puro), com UserOps ERC-4337 feitas na mão.",
+  "quantum-website": "Site principal da Quantum L1: design e frontend, com direção de arte 3D gerada.",
+  "quantum-scan": "Block explorer da Quantum L1.",
+  "bitte-ai-runtime": "Top human committer (104 commits) no runtime de IA em produção da Bitte Protocol: streaming LLM agent loops, conversão OpenAPI→tool, ~20 primitivas on-chain em NEAR/EVM/SUI/Cardano e swaps via NEAR Intents.",
+  "bitte-agent-sdk": "#1 committer (135 de 343 commits) no monorepo do agent SDK: @bitte-ai/chat, a CLI make-agent e os manifests de function-calling OpenAPI.",
+  "bitte-wallet": "#3 committer (249 commits) na wallet de AI agents em produção: Smart Actions.",
+  "chain-agents": "Autor único de 5 chain agents deployados: Solana assistant, Aerodrome (Base, ~25 tools), Morpho (Ethereum), meme.cooking (NEAR) e um explorer da Sui.",
+  "mintbase-marketplace": "Marketplace de NFT na NEAR.",
+  grover: "Novas features, documentação e bug fixes no marketplace de aluguel de tech.",
+  "orange-stack": "A primeira versão do que virou StackSpot. Squad lead definindo arquitetura de frontend e guidelines de código, adotando micro-frontends (Webpack Module Federation) numa aplicação complexa multi-time.",
+  "itau-dev-portal": "Liderei arquitetura de front e backend, benchmarking contínuo e uma nova jornada do desenvolvedor no portal de open banking do Itaú: a cara do Open Banking no maior banco da América Latina.",
+  "santander-cartoes": "Portal de cartões do Banco Santander.",
+  "clicca-jsl": "Projeto em Angular + RxJS para a JSL.",
+  printi: "Nova versão do site da Printi.",
+  centauro: "Novas features e bug fixes no e-commerce da Centauro.",
+  "under-armour": "Features, bug fixes e melhorias de performance.",
+  "flamengo-loja": "Features e bug fixes na loja oficial do Flamengo.",
+  "samsung-training": "Sistema de treinamento de funcionários da Samsung: ASP.NET C#, HTML/CSS, jQuery.",
+  roundup: "Projeto RoundUp para a Monsanto: HTML + CSS + PHP.",
+  "thera-faria-lima": "Site dos apartamentos Thera Faria Lima da Cyrela, via Agência Ole: WordPress / PHP / MySQL.",
+  "portal-assinante-estadao": "Portal do Assinante Estadão: HTML/CSS + PHP.",
+  "top-imobiliario-estadao": "Prêmio Top Imobiliário Estadão: PHP + HTML/CSS.",
+  panalink: "UI Design + Frontend (ASP.NET C# Razor / HTML / CSS) para o Panalink da Panasonic.",
+};
+
+const items = ordered.map((p) => ({
+  ...p,
+  description: DESC_PT[p.slug] ?? p.description,
+  cover: COVERS.has(p.slug) ? `/art/covers/${p.slug}.png` : LOGO_COVERS[p.slug],
+  caseStudy: caseStudies[p.slug],
+}));
+---
+
+<BaseLayout
+  lang="pt-br"
+  title="Portfólio — Ruben Marcus"
+  description="Uma seleção filtrável de 14 anos de projetos. Filtre por era, empresa e tecnologia — de AI tooling e infraestrutura NFT a portais de banco e e-commerce."
+  image="/og/pt-portfolio.png"
+>
+  <DitherBg client:load opacity={0.55} />
+  <!-- Wireframe atmosphere — thin green perspective grid, the page's identity -->
+  <div class="wire-bg" aria-hidden="true">
+    <div class="wire-bg__field"></div>
+    <div class="wire-bg__floor"></div>
+  </div>
+
+  <Section id="archive" tight>
+    <p class="see-also">
+      <span class="see-also__label">veja também:</span>
+      <a href="/pt/agents">AI Agents →</a> a frota por trás do trabalho recente
+    </p>
+    <PortfolioGrid
+      client:load
+      projects={items}
+      groupLabels={groupLabelsPt}
+      groupOrder={groupOrder}
+      lang="pt"
+    />
+  </Section>
+</BaseLayout>
+
+<style>
+  /* Cross-link hint above the grid — replaces the old page header */
+  .see-also {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted-soft);
+    /* the removed intro header used to provide this top breathing room */
+    margin: 5.5rem 0 1.4rem;
+  }
+  .see-also__label { color: var(--muted); }
+  .see-also a {
+    color: var(--accent-soft);
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .see-also a:hover { color: var(--accent); }
+
+  /* Wireframe atmosphere — a faint flat grid over the whole viewport plus a
+     perspective "floor" grid scrolling toward the viewer. Terminal-green
+     hairlines only, masked so content stays readable. */
+  .wire-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    perspective: 55vh;
+    perspective-origin: 50% 42%;
+  }
+
+  /* Flat faint grid across the upper field */
+  .wire-bg__field {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0, 255, 65, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.045) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse at 50% 30%, #000 0%, transparent 62%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 30%, #000 0%, transparent 62%);
+  }
+
+  /* Perspective floor — rotates away from the viewer, scrolls forward */
+  .wire-bg__floor {
+    position: absolute;
+    left: -60%;
+    right: -60%;
+    bottom: -10%;
+    height: 78%;
+    transform: rotateX(63deg);
+    transform-origin: bottom center;
+    background-image:
+      linear-gradient(rgba(0, 255, 65, 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.16) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.25) 45%, transparent 78%);
+    -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.25) 45%, transparent 78%);
+    animation: wire-floor-scroll 9s linear infinite;
+  }
+
+  @keyframes wire-floor-scroll {
+    from { background-position-y: 0; }
+    to   { background-position-y: 72px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wire-bg__floor { animation: none; }
+  }
+</style>

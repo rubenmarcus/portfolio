@@ -1,0 +1,235 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DitherBg from "../components/DitherBg.svelte";
+import Section from "../components/Section.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import DitherCover from "../components/DitherCover.svelte";
+import WireCard from "../components/WireCard.astro";
+import { aiAgents, type AgentGroup } from "../lib/data/aiAgents";
+
+// Fleet groups, in display order — subheadings per origin.
+const GROUPS: { id: AgentGroup; overline: string; title: string; blurb?: string }[] = [
+  { id: "bitte", overline: "Bitte Protocol", title: "Bitte Protocol — the production fleet" },
+  {
+    id: "ecdsa",
+    overline: "ECDSA.fail",
+    title: "ECDSA.fail — the command center roles",
+    blurb:
+      "Not daemons — role prompts and spend-gated contracts in a file-based orchestration layer, dispatched to whichever coding-agent CLI fits the job: Codex, Claude, Amp, Kimi. The discipline is the product.",
+  },
+  {
+    id: "game",
+    overline: "CS Brasil",
+    title: "CS Brasil — the Gauntlet loop roles",
+    blurb:
+      "The roles inside the Gauntlet loop that iterates on my browser FPS — adversarial critics, parallel builders, and the regression hunter that pays for the whole loop.",
+  },
+];
+const grouped = GROUPS.map((g) => ({ ...g, agents: aiAgents.filter((a) => a.group === g.id) }));
+---
+
+<BaseLayout
+  title="AI Agents | Ruben Marcus"
+  description="A fleet of web3 AI agents built at Bitte Protocol: one agent pattern and runtime, shipped as chain-specific agents that actually transact across EVM, NEAR, Sui, Cardano, and Midnight, plus the orchestration roles behind the ECDSA.fail and Gauntlet loops."
+  image="/og/agents.png"
+>
+  <DitherBg client:load />
+
+  <Section id="intro">
+    <SectionHeader
+      index="08"
+      overline="The fleet"
+      title="A fleet of AI agents that actually transact."
+      description="13 production agents at Bitte, plus the orchestration roles that run my research and game loops. Not from-scratch builds one by one: at Bitte I designed the agent pattern and the runtime (an OpenAPI spec becomes a tool-calling agent with in-chat wallet signing), then shipped chain-specific agents on top of it. The same pattern-thinking drives the command-center and Gauntlet roles below."
+    />
+  </Section>
+
+  {grouped.map((g) => (
+    <Section id={`group-${g.id}`} tight>
+      <header class="group-head" data-reveal>
+        <span class="bracket" data-reveal-item>{g.overline}</span>
+        <h2 class="group-title" data-reveal-item>{g.title}</h2>
+        {g.blurb && <p class="group-blurb" data-reveal-item>{g.blurb}</p>}
+      </header>
+      <ul class="agent-list" data-reveal>
+        {g.agents.map((agent, i) => (
+          <li data-reveal-item>
+            <WireCard class="agent-card" glyph={String(i + 1).padStart(2, "0")}>
+              <div class="agent-inner">
+                <DitherCover
+                  client:visible
+                  src={agent.cover}
+                  seed={agent.name}
+                  alt={`Cover: ${agent.name}`}
+                  class="agent-cover"
+                  invert
+                />
+                <div class="agent-body">
+                  <span class="agent-category">{agent.category} · {agent.chain}</span>
+                  <span class="agent-name">{agent.name}</span>
+                  <p class="agent-tagline">{agent.tagline}</p>
+                  <p class="agent-desc">{agent.description}</p>
+                  <div class="agent-tags">
+                    {agent.tags.map((t) => <span class="agent-tag">{t}</span>)}
+                  </div>
+                  {agent.link && (
+                    <a class="agent-link" href={agent.link.href}>{agent.link.label}</a>
+                  )}
+                </div>
+              </div>
+            </WireCard>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  ))}
+
+  <Section id="outro" tight>
+    <div class="more" data-reveal>
+      <div class="more__actions" data-reveal-item>
+        <a href="/ai" class="btn btn-secondary" data-magnetic>The open-source tools →</a>
+        <a href="/portfolio" class="btn btn-ghost" data-magnetic>Full portfolio</a>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .group-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-bottom: 2rem;
+  }
+  .group-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .group-blurb {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 68ch;
+  }
+
+  .agent-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .agent-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    color: var(--text);
+  }
+  @media (min-width: 720px) {
+    .agent-inner {
+      grid-template-columns: 280px 1fr;
+      gap: 1.6rem;
+      align-items: stretch;
+    }
+  }
+
+  /* Dithered cover — full-width strip on mobile, fixed column on desktop */
+  :global(.agent-cover) {
+    aspect-ratio: 1000 / 420;
+  }
+  @media (min-width: 720px) {
+    :global(.agent-cover) {
+      aspect-ratio: auto;
+      min-height: 180px;
+      height: 100%;
+    }
+  }
+  /* Card-wide hover washes the dots over the real cover (invert mode) */
+  .agent-inner:hover :global(.dither-cover__dither) {
+    opacity: 1;
+  }
+
+  .agent-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    justify-content: center;
+  }
+
+  .agent-category {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+  }
+
+  .agent-name {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+    line-height: 1.1;
+  }
+
+  .agent-tagline {
+    font-family: var(--font-display);
+    color: var(--accent-soft);
+    font-size: 1.02rem;
+    line-height: 1.25;
+  }
+
+  .agent-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 70ch;
+  }
+
+  .agent-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+  }
+
+  .agent-tag {
+    padding: 0.22rem 0.6rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .more {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--bg-1);
+  }
+
+  .more__desc { color: var(--muted); max-width: 64ch; }
+  .more__actions { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+
+  .agent-link {
+    align-self: flex-start;
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--accent-soft);
+    border-bottom: 1px solid rgba(74, 222, 128, 0.35);
+    transition:
+      color var(--duration-hover) var(--ease-default),
+      border-color var(--duration-hover) var(--ease-default);
+  }
+  .agent-link:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+</style>

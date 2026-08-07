@@ -1,8 +1,241 @@
 ---
-import Layout from "../layouts/Layout.astro"
-import Hero from "../components/Hero"
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DitherBg from "../components/DitherBg.svelte";
+import HeroScene from "../components/HeroScene.svelte";
+import HeroStack from "../components/HeroStack.astro";
+import HireMeFor from "../components/HireMeFor.svelte";
+import StatsGrid from "../components/StatsGrid.svelte";
+import AsciiField from "../components/AsciiField.svelte";
+import Section from "../components/Section.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import GlitchDivider from "../components/GlitchDivider.svelte";
+import DitherCover from "../components/DitherCover.svelte";
+import HireAgent from "../components/HireAgent.svelte";
+import { fetchGithubStars, fetchNpmDownloads } from "../lib/stats-live";
+import { NPM_PACKAGES } from "../lib/data/stats";
+
+// Live stats resolved at build time — visitors get exact numbers without
+// hitting the GitHub/npm rate limits. Null on failure → client-side fetch.
+const [initialStars, initialNpm] = await Promise.all([
+  fetchGithubStars().catch(() => null),
+  fetchNpmDownloads(NPM_PACKAGES).catch(() => null),
+]);
+
+const allPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const featuredArticles = allPosts.slice(0, 3);
 ---
 
-<Layout>
-  <Hero client:load />
-</Layout>
+<BaseLayout
+  title="Ruben Marcus — AI Fullstack & Web3 Engineer"
+  description="Senior AI Fullstack Engineer building autonomous AI tooling, agents, and on-chain product surfaces. Based in Lisbon."
+  image="/og/index.png"
+>
+  <DitherBg client:load opacity={0.55} />
+  <HeroScene client:load />
+
+  <!-- Hire me — commercial services strip -->
+  <HireMeFor client:visible />
+
+  <GlitchDivider client:visible />
+
+  <!-- Stats — proof in numbers -->
+  <StatsGrid client:visible {initialStars} {initialNpm} />
+
+  <!-- Tech stack pills widget -->
+  <HeroStack />
+
+  <GlitchDivider client:visible />
+
+  <!-- Articles -->
+  <Section id="writing" tight>
+    <SectionHeader
+      index="03"
+      overline="Blog"
+      title="Notes on agents, automation, and the stack."
+      description="Articles on AI agents, orchestration, and the stack. Packages live on npm."
+    />
+
+    <ul class="article-list">
+      {featuredArticles.map((post, i) => (
+        <li class="article-row" data-reveal>
+          <a class="article-link" href={`/blog/${post.id}`}>
+            <span class="article-index">{String(i + 1).padStart(2, "0")}</span>
+            <DitherCover
+              client:visible
+              src={post.data.cover ?? ""}
+              seed={post.data.title}
+              alt={`Cover — ${post.data.title}`}
+              class="article-thumb"
+              invert
+            />
+            <div class="article-body">
+              <span class="article-title">{post.data.title}</span>
+              <p class="article-desc">{post.data.description}</p>
+              <div class="article-meta">
+                <span>{post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short" })}</span>
+                <span class="hero__sep">·</span>
+                <span>{post.data.readTime}</span>
+                <span class="hero__sep">·</span>
+                <span>{post.data.tags.map((t: string) => `#${t}`).join(" ")}</span>
+              </div>
+            </div>
+            <span class="work-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <p class="work-more">
+      <a href="/blog" class="link-inline">All writing →</a>
+    </p>
+  </Section>
+
+  <!-- Hire via agent — AGENTS.md snippet + /api/hire -->
+  <Section id="agent-hire" tight>
+    <HireAgent client:visible />
+  </Section>
+
+  <!-- Contact CTA -->
+  <Section id="contact-cta" tight>
+    <div class="cta-band" data-reveal>
+      <AsciiField client:visible cell={20} density={0.18} morphRate={1.1} opacity={0.35} class="cta-ascii" />
+      <div class="cta-band__inner">
+        <span class="bracket" data-reveal-item>04 / Contact</span>
+        <h2 class="cta-title" data-reveal-item>
+          Need an engineer who can ship from spec to PR?
+        </h2>
+        <p class="cta-desc" data-reveal-item>
+          I'm selectively available for AI tooling, agents, and Web3 product work.
+        </p>
+        <div class="cta-actions" data-reveal-item>
+          <a href="mailto:ruben@rubenmarcus.dev" class="btn btn-primary" data-magnetic>ruben@rubenmarcus.dev</a>
+          <a href="/contact" class="btn btn-secondary" data-magnetic>All contact channels</a>
+        </div>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .work-more {
+    margin-top: 2rem;
+  }
+
+  /* Articles */
+  .article-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .article-row { border-top: 1px solid var(--line); }
+  .article-row:last-child { border-bottom: 1px solid var(--line); }
+
+  .article-link {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: 1.2rem;
+    padding: 1.6rem 0;
+    color: var(--text);
+    transition: background-color var(--duration-hover) var(--ease-default);
+    align-items: center;
+  }
+  .article-link:hover { background: rgba(245, 241, 234, 0.02); }
+
+  /* Post thumbnail — the generated cover at rest, dither dots on hover */
+  :global(.article-thumb) {
+    display: none;
+  }
+  @media (min-width: 880px) {
+    .article-link {
+      grid-template-columns: 32px 168px 1fr auto;
+    }
+    :global(.article-thumb) {
+      display: block;
+      width: 168px;
+      aspect-ratio: 16 / 10;
+      min-height: 0;
+      border: 1px solid var(--line);
+    }
+  }
+  .article-link:hover :global(.dither-cover__dither) {
+    opacity: 1;
+  }
+
+  .article-index {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--muted-soft);
+    padding-top: 0.3rem;
+  }
+
+  .article-body { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .article-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+    line-height: 1.15;
+  }
+
+  .article-desc { color: var(--muted); max-width: 70ch; font-size: 0.95rem; }
+
+  .article-meta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted-soft);
+  }
+
+  /* CTA band */
+  .cta-band {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0, 255, 65, 0.22);
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(0, 255, 65, 0.1), transparent 50%),
+      linear-gradient(180deg, rgba(134, 239, 172, 0.04), rgba(134, 239, 172, 0.015));
+    padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3rem);
+    text-align: center;
+  }
+
+  .cta-band__inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  :global(.cta-ascii) {
+    mask-image: radial-gradient(ellipse at center, #000 25%, transparent 75%);
+  }
+
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.04;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+
+  .cta-desc { max-width: 50ch; color: var(--muted); }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 0.6rem;
+  }
+
+  /* Helper used in article-meta */
+  :global(.hero__sep) { color: var(--muted-soft); opacity: 0.6; }
+</style>

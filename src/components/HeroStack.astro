@@ -1,0 +1,92 @@
+---
+// Tech stack pill row — its own widget under the hero.
+// Text-only pills: the solid brand marks fought the site's wireframe/dots
+// visual language, so the strip stays pure terminal type.
+
+interface Props {
+  lang?: string;
+}
+const { lang = "en" } = Astro.props;
+const pt = lang.startsWith("pt");
+
+const STACK: string[] = [
+  "TypeScript", "Node.js", "Bun", "React", "Next.js", "Svelte", "Vue.js",
+  "Angular", "Rust", "Python", "GraphQL", "TanStack", "Redux", "Socket.io",
+  "EVM / Ethereum", "Wagmi", "Viem", "NEAR", "SUI", "Solana", "Cardano",
+  "Claude", "MCP", "OpenAI", "Vercel AI SDK", "Mastra", "LangChain",
+  "LangGraph", "OpenRouter", "Tailwind", "Turborepo", "Docker",
+  "GitHub Actions", "Terraform", "AWS", "GCP", "Firebase", "Supabase",
+  "pgvector", "Playwright", "Jest", "Cypress", "Strapi",
+];
+---
+
+<section class="stack-section" aria-label="Tech stack">
+  <header class="stack-section__head">
+    <span class="bracket">Stack</span>
+    <h2 class="stack-section__title">{pt ? "Ferramentas que eu uso pra entregar, todo dia." : "Tools I ship with, daily."}</h2>
+  </header>
+  <div class="stack-section__inner">
+    {STACK.map((label) => (
+      <span class="stack-section__item">{label}</span>
+    ))}
+  </div>
+</section>
+
+<style>
+  .stack-section {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--gutter-x);
+    padding-block: 3.5rem 4rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .stack-section__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .stack-section__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .stack-section__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .stack-section__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(245, 241, 234, 0.1);
+    background: rgba(134, 239, 172, 0.05);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    transition:
+      color var(--duration-hover) var(--ease-default),
+      border-color var(--duration-hover) var(--ease-default),
+      background-color var(--duration-hover) var(--ease-default);
+  }
+  .stack-section__item:hover {
+    color: var(--accent-soft);
+    border-color: rgba(74, 222, 128, 0.45);
+    background: rgba(74, 222, 128, 0.09);
+  }
+</style>

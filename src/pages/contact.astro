@@ -1,0 +1,727 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DitherBg from "../components/DitherBg.svelte";
+import Section from "../components/Section.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import AsciiField from "../components/AsciiField.svelte";
+import CardAscii from "../components/CardAscii.svelte";
+import SvgIcon from "../lib/assets/SvgIcon.svelte";
+import HireAgent from "../components/HireAgent.svelte";
+import type { SvgIconName } from "../lib/assets";
+import { socialLinks } from "../lib/navigation";
+
+const iconMap: Record<string, SvgIconName> = {
+  GitHub: "github",
+  X: "xTwitter",
+  LinkedIn: "linkedin",
+  Email: "mail",
+  Telegram: "telegram",
+  npm: "npm",
+};
+
+// Freelance packages — clicking a card pre-selects the matching interest in
+// the form below and scrolls to it.
+const offers = [
+  {
+    interest: "Sprint AI",
+    name: "Sprint AI",
+    price: "€4-8k",
+    term: "2-4 weeks",
+    desc: "Your AI feature, shipped end to end: agent workflows, tool-calling pipelines, RAG, structured outputs, evals. From fuzzy idea to production: the interface, the service, and the AI in between.",
+  },
+  {
+    interest: "Retainer",
+    name: "Retainer",
+    price: "€3-5k/mo",
+    term: "a few days a week",
+    desc: "A senior product engineer embedded in your team: product judgment, full-stack delivery, and agentic AI, fractionally.",
+  },
+  {
+    interest: "AEO",
+    name: "AEO Sprint",
+    price: "€1.5-3k",
+    term: "1-2 weeks",
+    desc: "I built aeo.js (2,200+ sites scanned). I fix your site's AI-search visibility: llms.txt, structured data, AI-crawler access, citability, with a before/after score report.",
+  },
+];
+---
+
+<BaseLayout
+  title="Contact — Ruben Marcus"
+  description="Get in touch with Ruben Marcus. Selectively available for AI tooling, agents, and Web3 work."
+  image="/og/contact.png"
+>
+  <DitherBg client:load opacity={0.55} />
+  <!-- Atmospheric ASCII field -->
+  <div class="contact-atmos" aria-hidden="true">
+    <AsciiField client:load cell={22} density={0.12} morphRate={1.0} opacity={0.24} reactive={true} />
+  </div>
+
+  <Section id="intro">
+    <SectionHeader
+      index="05"
+      overline="Contact"
+      title="Let's talk."
+      description="Selectively available for AI tooling, agents, and Web3 product work. The form below is the fastest route to a scoped reply. Direct channels work too. I usually answer within a day or two."
+    />
+
+    <div class="offers" data-reveal>
+      {offers.map((o) => (
+        <a href="#contact-form" class="offer" data-offer={o.interest} data-reveal-item>
+          <div class="offer__head">
+            <span class="offer__name">{o.name}</span>
+            <span class="offer__price">{o.price}</span>
+          </div>
+          <span class="offer__term">{o.term}</span>
+          <p class="offer__desc">{o.desc}</p>
+          <span class="offer__cta">Start with this →</span>
+        </a>
+      ))}
+    </div>
+
+    <div class="form-shell" data-reveal>
+      <form id="contact-form" class="cform" novalidate data-reveal-item>
+        <div class="cform__head">
+          <span class="bracket">Start a project</span>
+          <p class="cform__hint">Fastest way to a scoped reply. * required.</p>
+        </div>
+
+        <div class="cform__grid">
+          <label class="cform__field">
+            <span class="cform__label">Name *</span>
+            <input class="cform__input" type="text" name="name" required autocomplete="name" placeholder="Ada Lovelace" />
+          </label>
+
+          <label class="cform__field">
+            <span class="cform__label">Email *</span>
+            <input class="cform__input" type="email" name="email" required autocomplete="email" placeholder="ada@company.com" />
+          </label>
+
+          <label class="cform__field">
+            <span class="cform__label">Company</span>
+            <input class="cform__input" type="text" name="company" autocomplete="organization" placeholder="Optional" />
+          </label>
+
+          <label class="cform__field">
+            <span class="cform__label">Budget</span>
+            <select class="cform__input" name="budget">
+              <option value="<3k">&lt; €3k</option>
+              <option value="3-6k" selected>€3–6k</option>
+              <option value="6k+">€6k+</option>
+            </select>
+          </label>
+        </div>
+
+        <fieldset class="cform__interest">
+          <legend class="cform__label">I'm interested in</legend>
+          <div class="cform__radios">
+            <label class="cform__radio"><input type="radio" name="interest" value="Full-time" /><span>Full-time</span></label>
+            <label class="cform__radio"><input type="radio" name="interest" value="Sprint AI" checked /><span>Sprint AI</span></label>
+            <label class="cform__radio"><input type="radio" name="interest" value="AEO" /><span>AEO</span></label>
+            <label class="cform__radio"><input type="radio" name="interest" value="Retainer" /><span>Retainer</span></label>
+          </div>
+        </fieldset>
+
+        <label class="cform__field">
+          <span class="cform__label">Message *</span>
+          <textarea class="cform__input cform__textarea" name="message" rows="5" required placeholder="What are you building, what does success look like, and when do you need it?"></textarea>
+        </label>
+
+        <p class="cform__error" role="alert" hidden></p>
+
+        <div class="cform__actions">
+          <button type="submit" class="btn btn-primary" data-magnetic>Send inquiry →</button>
+          <a class="btn btn-ghost cform__mailto" href="mailto:ruben@rubenmarcus.dev">or plain email</a>
+        </div>
+      </form>
+
+      <div class="cform-success" hidden>
+        <span class="bracket">Message sent</span>
+        <p class="cform-success__title">Thanks. I'll reply within a day or two.</p>
+        <p class="cform-success__desc">
+          Nothing landed? Email <a class="link-inline" href="mailto:ruben@rubenmarcus.dev">ruben@rubenmarcus.dev</a> directly.
+        </p>
+      </div>
+    </div>
+
+    <div class="contact-grid">
+      <a href="mailto:ruben@rubenmarcus.dev" class="contact-card contact-card--primary" data-reveal data-magnetic>
+        <CardAscii client:visible seed="contact-primary" variant="wave" cols={12} rows={5} />
+        <div class="contact-card__head">
+          <span class="bracket">Primary</span>
+          <SvgIcon name="arrowUpRight" size={18} class="contact-card__arrow" />
+        </div>
+        <div class="contact-card__valueRow">
+          <SvgIcon name="mail" size={22} class="contact-card__icon" />
+          <span class="contact-card__value">ruben@rubenmarcus.dev</span>
+        </div>
+        <span class="contact-card__note">Best for project inquiries, longer-form questions, or anything off-public. I usually reply within a day.</span>
+      </a>
+
+      <a href="tel:+351912892825" class="contact-card contact-card--phone" data-reveal>
+        <div class="contact-card__head">
+          <span class="bracket">Phone</span>
+          <SvgIcon name="arrowUpRight" size={18} class="contact-card__arrow" />
+        </div>
+        <div class="contact-card__valueRow">
+          <SvgIcon name="telegram" size={22} class="contact-card__icon" />
+          <span class="contact-card__value">+351 912 892 825</span>
+        </div>
+        <span class="contact-card__note">Lisbon, Portugal. WhatsApp / Telegram fine on this number.</span>
+      </a>
+
+      <div class="contact-card" data-reveal>
+        <CardAscii client:visible seed="contact-public" variant="block" cols={12} rows={5} />
+        <div class="contact-card__head">
+          <span class="bracket">Public channels</span>
+        </div>
+        <ul class="contact-socials">
+          {socialLinks.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener noreferrer" class="contact-social">
+                <span class="contact-social__icon">
+                  <SvgIcon name={iconMap[s.label] ?? "external"} size={16} />
+                </span>
+                <span>{s.label}</span>
+                <span class="contact-social__url">{s.href.replace("https://", "").replace("mailto:", "")}</span>
+                <SvgIcon name="arrowUpRight" size={14} class="contact-card__arrow" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Agent channel — AGENTS.md snippet + /api/hire -->
+  <Section id="agent-hire" tight>
+    <HireAgent client:visible />
+  </Section>
+</BaseLayout>
+
+<style>
+  /* ASCII atmosphere — fixed, masked to keep content readable */
+  .contact-atmos {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at 50% 35%, transparent 22%, #000 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 35%, transparent 22%, #000 75%);
+  }
+
+  .contact-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    margin-bottom: 2.5rem;
+  }
+  @media (min-width: 720px) { .contact-grid { grid-template-columns: 1fr 1fr; } }
+
+  .contact-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--bg-1);
+    color: var(--text);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      background-color var(--duration-hover) var(--ease-default),
+      transform var(--duration-hover) var(--ease-default);
+  }
+  .contact-card:hover {
+    border-color: var(--line-bright);
+    transform: translateY(-2px);
+    background: var(--bg-2);
+  }
+
+  .contact-card--primary { background: linear-gradient(180deg, rgba(0, 255, 65, 0.07), rgba(0, 255, 65, 0.02)); border-color: rgba(0, 255, 65, 0.26); }
+  .contact-card--primary:hover { border-color: rgba(0, 255, 65, 0.5); }
+
+  .contact-card--phone { background: linear-gradient(180deg, rgba(134, 239, 172, 0.045), rgba(134, 239, 172, 0.015)); }
+
+  .contact-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--muted);
+  }
+
+  .contact-card__valueRow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .contact-card__value {
+    font-family: var(--font-display);
+    /* Sized to keep the full email inside the card at both extremes of the
+       grid (1-col mobile → 2-col desktop); wrap as the last-resort guard. */
+    font-size: clamp(1rem, 2.6vw, 1.75rem);
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+
+  :global(.contact-card__icon) { color: var(--accent-soft); }
+
+  .contact-card__note {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  :global(.contact-card__arrow) {
+    color: var(--muted-soft);
+    transition: transform var(--duration-hover) var(--ease-default), color var(--duration-hover) var(--ease-default);
+  }
+  .contact-card:hover :global(.contact-card__arrow) {
+    transform: translate(2px, -2px);
+    color: var(--accent-soft);
+  }
+
+  .contact-socials {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .contact-social {
+    display: grid;
+    grid-template-columns: 24px 100px 1fr auto;
+    gap: 0.7rem;
+    align-items: center;
+    padding: 0.7rem 0;
+    border-top: 1px solid var(--line);
+    color: var(--text);
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .contact-social:hover { color: var(--accent-soft); }
+  .contact-socials li:first-child .contact-social { border-top: none; padding-top: 0; }
+
+  .contact-social__icon {
+    color: var(--accent-soft);
+    display: inline-grid;
+    place-items: center;
+  }
+
+  .contact-social__url {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  /* ── Offer cards ── */
+  .offers {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    margin-bottom: 2.2rem;
+  }
+  @media (min-width: 720px) { .offers { grid-template-columns: repeat(3, 1fr); } }
+
+  .offer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 1.3rem 1.4rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-1);
+    color: var(--text);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      background-color var(--duration-hover) var(--ease-default),
+      transform var(--duration-hover) var(--ease-default);
+  }
+  .offer:hover {
+    border-color: rgba(0, 255, 65, 0.45);
+    background: var(--bg-2);
+    transform: translateY(-2px);
+  }
+
+  .offer__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.8rem;
+  }
+  .offer__name {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--text);
+  }
+  .offer__price {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .offer__term {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted-soft);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .offer__desc {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .offer__cta {
+    margin-top: auto;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-soft);
+  }
+
+  /* ── Contact form ── */
+  .form-shell {
+    margin-bottom: 3rem;
+  }
+
+  .cform {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    padding: 1.8rem;
+    border: 1px solid rgba(0, 255, 65, 0.18);
+    border-radius: var(--radius-card);
+    background: rgba(3, 6, 5, 0.66);
+  }
+
+  .cform__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.4rem 1rem;
+  }
+  .cform__hint {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted-soft);
+  }
+
+  .cform__grid {
+    display: grid;
+    gap: 1.1rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .cform__grid { grid-template-columns: 1fr 1fr; gap: 1.1rem 1.4rem; }
+  }
+
+  .cform__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .cform__label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .cform__input {
+    appearance: none;
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid rgba(0, 255, 65, 0.22);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.55);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      box-shadow var(--duration-hover) var(--ease-default);
+  }
+  .cform__input::placeholder {
+    color: var(--muted-soft);
+    opacity: 0.6;
+  }
+  .cform__input:focus {
+    outline: none;
+    border-color: rgba(0, 255, 65, 0.6);
+    box-shadow: 0 0 0 1px rgba(0, 255, 65, 0.35), 0 0 18px rgba(0, 255, 65, 0.12);
+  }
+  .cform__input[aria-invalid="true"] {
+    border-color: rgba(255, 90, 90, 0.65);
+  }
+  select.cform__input {
+    background-image: linear-gradient(45deg, transparent 50%, var(--accent-soft) 50%), linear-gradient(135deg, var(--accent-soft) 50%, transparent 50%);
+    background-position: calc(100% - 18px) 55%, calc(100% - 13px) 55%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+  }
+
+  .cform__textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .cform__interest {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .cform__radios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
+  .cform__radio {
+    cursor: pointer;
+  }
+  .cform__radio input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .cform__radio span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid rgba(0, 255, 65, 0.22);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      color var(--duration-hover) var(--ease-default),
+      background-color var(--duration-hover) var(--ease-default);
+  }
+  .cform__radio:hover span {
+    border-color: rgba(0, 255, 65, 0.5);
+    color: var(--text);
+  }
+  .cform__radio input:checked + span {
+    border-color: var(--accent);
+    color: var(--accent-soft);
+    background: rgba(0, 255, 65, 0.08);
+    box-shadow: 0 0 14px rgba(0, 255, 65, 0.14);
+  }
+  .cform__radio input:focus-visible + span {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .cform__error {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: #ff7a7a;
+  }
+
+  .cform__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  /* `display: flex` would otherwise beat the UA's [hidden] rule — the
+     success card must stay invisible until the form actually submits. */
+  .cform-success[hidden] {
+    display: none;
+  }
+
+  .cform-success {
+    border: 1px solid rgba(0, 255, 65, 0.4);
+    border-radius: var(--radius-card);
+    background: linear-gradient(180deg, rgba(0, 255, 65, 0.08), rgba(0, 255, 65, 0.02));
+    padding: 2.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .cform-success__title {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--text);
+  }
+  .cform-success__desc {
+    color: var(--muted);
+  }
+
+  .contact-note {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-card);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .contact-note p {
+    color: var(--muted);
+    max-width: 68ch;
+    line-height: 1.65;
+  }
+</style>
+
+<script>
+  /**
+   * Contact form — client-side validation, formsubmit.co AJAX submit, mailto
+   * fallback. `?subject=<slug>` pre-selects a matching interest (hero/ai/services CTAs).
+   */
+  function initContactForm() {
+    const form = document.getElementById("contact-form");
+    if (!(form instanceof HTMLFormElement) || form.dataset.bound) return;
+    form.dataset.bound = "1";
+
+    const errorEl = form.querySelector(".cform__error");
+    const successEl = document.querySelector(".cform-success");
+    const mailto = "ruben@rubenmarcus.dev";
+
+    // Pre-select interest from the query string (e.g. /contact?subject=aeo)
+    const subject = new URLSearchParams(window.location.search).get("subject");
+    const subjectInterests = {
+      aeo: "AEO",
+      "ai-prototyping": "Sprint AI",
+      "agentic-workflows": "Sprint AI",
+    };
+    const interest = subject && subjectInterests[subject];
+    if (interest) {
+      const radio = form.querySelector(`input[name="interest"][value="${interest}"]`);
+      if (radio instanceof HTMLInputElement) radio.checked = true;
+    }
+
+    // Offer cards above the form pre-select their interest on click.
+    document.querySelectorAll("[data-offer]").forEach((el) => {
+      if (el instanceof HTMLElement && !el.dataset.bound) {
+        el.dataset.bound = "1";
+        el.addEventListener("click", () => {
+          const radio = form.querySelector(`input[name="interest"][value="${el.getAttribute("data-offer")}"]`);
+          if (radio instanceof HTMLInputElement) radio.checked = true;
+        });
+      }
+    });
+
+    const setError = (msg) => {
+      if (errorEl) {
+        errorEl.textContent = msg ?? "";
+        errorEl.hidden = !msg;
+      }
+    };
+
+    const validate = () => {
+      const name = form.elements.namedItem("name");
+      const email = form.elements.namedItem("email");
+      const message = form.elements.namedItem("message");
+      let ok = true;
+      for (const el of [name, email, message]) {
+        if (!(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement)) continue;
+        const valid =
+          el.name === "email"
+            ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim())
+            : el.value.trim().length > 0;
+        el.setAttribute("aria-invalid", valid ? "false" : "true");
+        if (!valid) ok = false;
+      }
+      return ok;
+    };
+
+    const mailtoHref = (data) => {
+      const subjectLine = `[${data.interest}] inquiry from ${data.name}`;
+      const body = [
+        `Name: ${data.name}`,
+        `Email: ${data.email}`,
+        `Company: ${data.company || "—"}`,
+        `Budget: ${data.budget}`,
+        `Interest: ${data.interest}`,
+        "",
+        data.message,
+      ].join("\n");
+      return `mailto:${mailto}?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(body)}`;
+    };
+
+    // Keep the "or plain email" fallback link in sync with the form contents.
+    const ghost = form.querySelector(".cform__mailto");
+    form.addEventListener("input", () => {
+      if (ghost instanceof HTMLAnchorElement) {
+        ghost.href = mailtoHref(readData());
+      }
+    });
+
+    const readData = () => {
+      const get = (n) => {
+        const el = form.elements.namedItem(n);
+        return el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement
+          ? el.value.trim()
+          : "";
+      };
+      const interest = form.querySelector('input[name="interest"]:checked');
+      return {
+        name: get("name"),
+        email: get("email"),
+        company: get("company"),
+        budget: get("budget"),
+        interest: interest instanceof HTMLInputElement ? interest.value : "Sprint AI",
+        message: get("message"),
+      };
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setError(null);
+      if (!validate()) {
+        setError("Name, a valid email, and a message are required.");
+        return;
+      }
+      const data = readData();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn instanceof HTMLButtonElement) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending…";
+      }
+      try {
+        const res = await fetch(`https://formsubmit.co/ajax/${mailto}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({
+            _subject: `[${data.interest}] inquiry from ${data.name}`,
+            _captcha: "false",
+            _template: "table",
+            ...data,
+          }),
+        });
+        if (!res.ok) throw new Error(`formsubmit ${res.status}`);
+        form.hidden = true;
+        if (successEl instanceof HTMLElement) successEl.hidden = false;
+      } catch {
+        // Fallback: open the visitor's email client with everything pre-filled.
+        window.location.href = mailtoHref(data);
+        setError("The form service didn't answer, so I'm opening your email client instead. Your message is pre-filled there.");
+        if (submitBtn instanceof HTMLButtonElement) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Send inquiry →";
+        }
+      }
+    });
+  }
+
+  if (document.readyState !== "loading") initContactForm();
+  else document.addEventListener("DOMContentLoaded", initContactForm);
+  document.addEventListener("astro:page-load", initContactForm);
+</script>

@@ -1,0 +1,158 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DitherBg from "../components/DitherBg.svelte";
+import Section from "../components/Section.astro";
+import PortfolioGrid from "../components/portfolio/PortfolioGrid.svelte";
+import { projects, groupLabels, groupOrder } from "../lib/data/projects";
+
+const caseStudies: Record<string, string> = {
+  "ecdsa-fail": "/work/ecdsa-fail",
+  "bitte-ai-runtime": "/work/bitte-runtime",
+};
+
+/** Slugs with generated cover art at /art/covers/<slug>.png — the rest fall
+ *  back to the seeded DitherCover inside the grid. */
+const COVERS = new Set([
+  "ralph-starter",
+  "autoresearcher",
+  "aeojs",
+  "ecdsa-fail",
+  "qec-decoder",
+  "mirofish",
+  "bitte-agent-sdk",
+  "bitte-ai-runtime",
+]);
+
+/** Brand cards get the green wireframe logo renders at /art/logos/<brand>.png */
+const LOGO_COVERS: Record<string, string> = {
+  "quantum-website": "/art/logos/quantum.png",
+  "quantum-scan": "/art/logos/quantum.png",
+  "pq-smart-wallet": "/art/logos/quantum.png",
+  "bitte-wallet": "/art/logos/bitte.png",
+  "chain-agents": "/art/logos/bitte.png",
+  "mintbase-marketplace": "/art/logos/mintbase.png",
+  grover: "/art/logos/grover.png",
+  "cs-brasil": "/art/covers/corosolto.png",
+  "itau-dev-portal": "/art/logos/itau.png",
+  "santander-cartoes": "/art/logos/santander.png",
+  "under-armour": "/art/logos/under-armour.png",
+  "flamengo-loja": "/art/logos/flamengo.png",
+  centauro: "/art/logos/centauro.png",
+  printi: "/art/logos/printi.png",
+  "clicca-jsl": "/art/logos/jsl.png",
+  "orange-stack": "/art/logos/stackspot.png",
+  panalink: "/art/logos/panasonic.png",
+  "samsung-training": "/art/logos/samsung.png",
+  roundup: "/art/logos/monsanto.png",
+  "thera-faria-lima": "/art/logos/cyrela.png",
+  "portal-assinante-estadao": "/art/logos/estadao.png",
+  "top-imobiliario-estadao": "/art/logos/estadao.png",
+};
+
+// Recent eras first, newest projects first within each era. Only the curated
+// cut (featured) shows — the full list stays in the data as the archive.
+const ordered = groupOrder.flatMap((g) =>
+  projects.filter((p) => p.group === g && p.featured).sort((a, b) => b.year - a.year),
+);
+
+const items = ordered.map((p) => ({
+  ...p,
+  cover: COVERS.has(p.slug) ? `/art/covers/${p.slug}.png` : LOGO_COVERS[p.slug],
+  caseStudy: caseStudies[p.slug],
+}));
+---
+
+<BaseLayout
+  title="Portfolio — Ruben Marcus"
+  description="A curated, filterable cut of 14 years of projects. Filter by era, company, and technology across AI tooling, NFT infrastructure, banking portals, and e-commerce."
+  image="/og/portfolio.png"
+>
+  <DitherBg client:load opacity={0.55} />
+  <!-- Wireframe atmosphere — thin green perspective grid, the page's identity -->
+  <div class="wire-bg" aria-hidden="true">
+    <div class="wire-bg__field"></div>
+    <div class="wire-bg__floor"></div>
+  </div>
+
+  <Section id="archive" tight>
+    <p class="see-also">
+      <span class="see-also__label">see also:</span>
+      <a href="/agents">AI Agents →</a> the fleet behind the recent work
+    </p>
+    <PortfolioGrid
+      client:load
+      projects={items}
+      groupLabels={groupLabels}
+      groupOrder={groupOrder}
+    />
+  </Section>
+</BaseLayout>
+
+<style>
+  /* Cross-link hint above the grid — replaces the old page header */
+  .see-also {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted-soft);
+    /* the removed intro header used to provide this top breathing room */
+    margin: 5.5rem 0 1.4rem;
+  }
+  .see-also__label { color: var(--muted); }
+  .see-also a {
+    color: var(--accent-soft);
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .see-also a:hover { color: var(--accent); }
+
+  /* Wireframe atmosphere — a faint flat grid over the whole viewport plus a
+     perspective "floor" grid scrolling toward the viewer. Terminal-green
+     hairlines only, masked so content stays readable. */
+  .wire-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    perspective: 55vh;
+    perspective-origin: 50% 42%;
+  }
+
+  /* Flat faint grid across the upper field */
+  .wire-bg__field {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0, 255, 65, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.045) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse at 50% 30%, #000 0%, transparent 62%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 30%, #000 0%, transparent 62%);
+  }
+
+  /* Perspective floor — rotates away from the viewer, scrolls forward */
+  .wire-bg__floor {
+    position: absolute;
+    left: -60%;
+    right: -60%;
+    bottom: -10%;
+    height: 78%;
+    transform: rotateX(63deg);
+    transform-origin: bottom center;
+    background-image:
+      linear-gradient(rgba(0, 255, 65, 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.16) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.25) 45%, transparent 78%);
+    -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.25) 45%, transparent 78%);
+    animation: wire-floor-scroll 9s linear infinite;
+  }
+
+  @keyframes wire-floor-scroll {
+    from { background-position-y: 0; }
+    to   { background-position-y: 72px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wire-bg__floor { animation: none; }
+  }
+</style>

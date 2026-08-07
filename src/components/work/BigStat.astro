@@ -1,0 +1,53 @@
+---
+/**
+ * BigStat — one oversized figure with a mono caption, for the case-study
+ * stat bands. Space Grotesk numeral, terminal-green glow, generous air.
+ */
+interface Props {
+  value: string;
+  label: string;
+  sub?: string;
+}
+
+const { value, label, sub } = Astro.props;
+---
+
+<div class="bigstat">
+  <span class="bigstat__value">{value}</span>
+  <span class="bigstat__label">{label}</span>
+  {sub && <span class="bigstat__sub">{sub}</span>}
+</div>
+
+<style>
+  .bigstat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1.4rem 0;
+    border-top: 1px solid rgba(0, 255, 65, 0.22);
+  }
+
+  .bigstat__value {
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-shadow: 0 0 26px rgba(0, 255, 65, 0.22);
+  }
+
+  .bigstat__label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-soft);
+  }
+
+  .bigstat__sub {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted-soft);
+    line-height: 1.5;
+  }
+</style>

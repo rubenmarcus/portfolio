@@ -1,0 +1,34 @@
+---
+interface Props {
+  id?: string;
+  class?: string;
+  /** Tighter top/bottom padding. */
+  tight?: boolean;
+}
+
+const { id, class: className = "", tight = false } = Astro.props;
+---
+
+<section
+  {id}
+  class:list={[
+    "section-y",
+    tight && "section-y--tight",
+    className,
+  ]}
+>
+  <div class="container-x">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section-y--tight {
+    padding-block: 3.5rem;
+  }
+  @media (min-width: 768px) {
+    .section-y--tight {
+      padding-block: 5rem;
+    }
+  }
+</style>

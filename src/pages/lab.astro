@@ -1,0 +1,247 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/Section.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import LabDemo from "../components/lab/LabDemo.svelte";
+import LabSource from "../components/lab/LabSource.svelte";
+import LabPrompt from "../components/lab/LabPrompt.svelte";
+
+/**
+ * Demo drops — weekly visual experiments. Adding a new demo is (nearly)
+ * data-entry only: add one entry here, plus one import + registry line in
+ * src/components/lab/LabDemo.svelte (Astro can't hydrate dynamic components,
+ * so the island resolves the slug).
+ */
+const demos = [
+  {
+    slug: "contour-scan",
+    title: "contour-scan-01",
+    description: "Dotted isolines of a drifting implicit field under a scanline sweep — move the pointer to warp the contours.",
+    date: "2026-07-29",
+  },
+  {
+    slug: "flow-field",
+    title: "flow-field-02",
+    description: "Thousands of particles advected through a time-drifting curl-noise field — flick the pointer through the canvas to inject a vortex scaled by pointer velocity; trails come from alpha-fade, not per-particle history.",
+    date: "2026-08-06",
+  },
+  {
+    slug: "glyph-rain",
+    title: "glyph-rain-03",
+    description: "Phosphor falling-glyph rain — columns of monospace glyphs with bright leading heads and fading tails. Hover a column to speed it up and flare it bright, with a small neighborhood boost.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "boids",
+    title: "boids-04",
+    description: "Reynolds flocking, ~150 boids: separation, alignment, cohesion, toroidal wrap. Move the pointer inside and the flock curves toward it.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "harmonograph",
+    title: "harmonograph-05",
+    description: "A harmonograph — x and y each a sum of damped sinusoids with slightly irrational ratios, so the Lissajous figure never closes. Move the pointer to morph the frequency and phase live; the trail accumulates and slowly fades.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "reaction-diffusion",
+    title: "reaction-diffusion-06",
+    description: "Gray-Scott reaction-diffusion on a 200×150 grid — moving spots that split and mitose. Move the pointer to paint activator and seed new patterns; rendered soft via upscaled ImageData.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "ripple",
+    title: "ripple-07",
+    description: "A 2D water surface on a 220×160 height-field grid — the classic double-buffered, damped wave equation. Click or drag to drop splashes and watch the wavefronts propagate as moving phosphor light.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "automaton",
+    title: "automaton-08",
+    description: "A 1D elementary cellular automaton (rule 30) grown from a single center cell into chaotic, Sierpinski-like fractal rows that scroll downward forever. Paint live cells with the pointer to perturb the evolution.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "circuit-trace",
+    title: "circuit-trace-09",
+    description: "PCB-style autorouting — glowing traces with 45-degree bends running between edge pads, pulsed by traveling bright packets. Move the pointer to bend traces around it; click to clear and re-route the board.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "voronoi-drift",
+    title: "voronoi-drift-10",
+    description: "A drifting Voronoi diagram drawn as dotted cell borders on a dot grid. Move the pointer inside and the nearest seed follows it, dragging its cell through the pattern.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "l-system",
+    title: "l-system-11",
+    description: "A bracketed L-system tree growing branch by branch in phosphor light, with a glowing frontier that dims behind it. Each cycle picks a new random rule set — click to fell the tree and regrow.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "maze-solver",
+    title: "maze-solver-12",
+    description: "A recursive-backtracker maze flooded by a BFS wavefront that leaves a dim phosphor wash, then the solution path traced back in bright green. Click for a fresh maze.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "warp-field",
+    title: "warp-field-13",
+    description: "Starfield warp — particles streaming from a vanishing point as speed lines, brightness and speed driven by depth. Move the pointer to steer the warp direction.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "orbital-bodies",
+    title: "orbital-bodies-14",
+    description: "A tiny n-body toy: one heavy center mass, thirteen orbiting particles, and long-exposure trails that close into rings. Click to drop a temporary gravity well and bend the orbits.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "wave-interference",
+    title: "wave-interference-15",
+    description: "Overlapping circular wave sources rendered as an interference moiré of dotted crest lines. Click to drop a new source and watch the pattern re-interfere around it.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "phosphor-fire",
+    title: "phosphor-fire-16",
+    description: "The classic Doom fire algorithm in phosphor green — a low-res heat grid stoked from below, rendered chunky with baked-in scanlines. Move the pointer to stir the embers.",
+    date: "2026-08-07",
+  },
+];
+---
+
+<BaseLayout
+  title="Lab — Ruben Marcus"
+  description="Demo drops: weekly visual experiments in canvas, shaders, and motion. Small, self-contained, and pointer-reactive."
+  image="/og/lab.png"
+>
+  <Section id="intro">
+    <SectionHeader
+      index="02.5"
+      overline="Lab"
+      title="Demo drops — small visual experiments."
+      description="Self-contained studies in canvas, shaders, and motion. New drops land as they're ready; each card runs live."
+    />
+  </Section>
+
+  <Section id="drops" tight>
+    <ol class="drop-grid">
+      {demos.map((d, i) => (
+        <li class="drop-card" data-reveal>
+          <div class="drop-card__stage">
+            <LabDemo client:visible slug={d.slug} />
+            <span class="drop-card__index" aria-hidden="true">{String(i + 1).padStart(3, "0")}</span>
+          </div>
+          <div class="drop-card__meta">
+            <div class="drop-card__row">
+              <span class="drop-card__title">{d.title}</span>
+              <time class="drop-card__date" datetime={d.date}>{d.date}</time>
+            </div>
+            <p class="drop-card__desc">{d.description}</p>
+            <div class="drop-card__foot">
+              <LabSource client:visible slug={d.slug} />
+              <LabPrompt client:visible slug={d.slug} />
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </Section>
+</BaseLayout>
+
+<style>
+  .drop-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .drop-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .drop-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    background: rgba(6, 8, 15, 0.5);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      box-shadow var(--duration-hover) var(--ease-default);
+  }
+  .drop-card:hover {
+    border-color: rgba(0, 255, 65, 0.4);
+    box-shadow: 0 0 0 1px rgba(0, 255, 65, 0.18), 0 10px 36px rgba(0, 255, 65, 0.08);
+  }
+
+  .drop-card__stage {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    /* Poster fallback — the stage must never read as a dead black box while
+       the canvas boots (or when motion is reduced). */
+    background:
+      radial-gradient(ellipse at 50% 45%, rgba(0, 255, 65, 0.09), transparent 68%),
+      repeating-linear-gradient(0deg, rgba(0, 255, 65, 0.05) 0 1px, transparent 1px 7px),
+      #030805;
+  }
+
+  .drop-card__index {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--muted-soft);
+    letter-spacing: 0.1em;
+    pointer-events: none;
+  }
+
+  .drop-card__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1rem 1.15rem 1.15rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .drop-card__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .drop-card__title {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--accent-soft);
+    letter-spacing: 0.04em;
+  }
+
+  .drop-card__date {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted-soft);
+  }
+
+  .drop-card__desc {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .drop-card__foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+  }
+</style>

@@ -1,0 +1,146 @@
+---
+// Dev-only authoring bench for the src/lib/assets icon library — NOT linked
+// from nav. Every voxel icon rendered three ways (raw grid, flat ASCII,
+// isometric VoxelIcon at 3 sizes) plus the SVG tier at its real use sizes.
+import { VOXEL_ICONS, SVG_ICONS } from "../lib/assets";
+import AsciiIcon from "../lib/assets/AsciiIcon.svelte";
+import VoxelIcon from "../lib/assets/VoxelIcon.svelte";
+import SvgIcon from "../lib/assets/SvgIcon.svelte";
+import type { SvgIconName, VoxelIconName } from "../lib/assets";
+import "../styles/global.css";
+
+const voxelNames = Object.keys(VOXEL_ICONS) as VoxelIconName[];
+const svgNames = Object.keys(SVG_ICONS) as SvgIconName[];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>icons-preview — asset lib bench</title>
+  </head>
+  <body>
+    <main class="bench">
+      <h1 class="bench__title">assets/icons — {voxelNames.length} voxel · {svgNames.length} svg</h1>
+
+      <section>
+        <h2 class="bracket">voxel tier</h2>
+        <div class="bench__grid">
+          {voxelNames.map((name) => (
+            <article class="bench__card">
+              <header class="bench__head">
+                <span class="bench__name">{name}</span>
+                <span class="bench__label">{VOXEL_ICONS[name].label}</span>
+              </header>
+              <div class="bench__renders">
+                <pre class="bench__raw" aria-hidden="true">{VOXEL_ICONS[name].grid.join("\n")}</pre>
+                <AsciiIcon name={name} />
+                <div class="bench__voxels">
+                  <VoxelIcon client:load name={name} size={32} />
+                  <VoxelIcon client:load name={name} size={48} />
+                  <VoxelIcon client:load name={name} size={96} />
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {svgNames.length > 0 && (
+        <section>
+          <h2 class="bracket">svg tier</h2>
+          <div class="bench__grid bench__grid--svg">
+            {svgNames.map((name) => (
+              <article class="bench__card bench__card--svg">
+                <span class="bench__name">{name}</span>
+                <div class="bench__svgs">
+                  <SvgIcon name={name} size={14} />
+                  <SvgIcon name={name} size={16} />
+                  <SvgIcon name={name} size={18} />
+                  <SvgIcon name={name} size={32} />
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+    </main>
+  </body>
+</html>
+
+<style>
+  body {
+    background: #000;
+    color: var(--text, #f5f1ea);
+    padding: 2rem;
+  }
+  .bench {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    max-width: 1400px;
+    margin-inline: auto;
+  }
+  .bench__title {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: #4ade80;
+  }
+  .bench__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .bench__card {
+    border: 1px solid rgba(134, 239, 172, 0.14);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .bench__head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+  .bench__name {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: #00ff41;
+  }
+  .bench__label {
+    font-size: 0.75rem;
+    color: rgba(245, 241, 234, 0.5);
+  }
+  .bench__renders {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+  }
+  .bench__raw {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    line-height: 1.1;
+    color: rgba(134, 239, 172, 0.4);
+  }
+  .bench__voxels {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.8rem;
+  }
+  .bench__card--svg {
+    color: #4ade80;
+  }
+  .bench__svgs {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-top: 0.5rem;
+  }
+</style>

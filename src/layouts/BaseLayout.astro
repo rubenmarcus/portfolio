@@ -1,0 +1,206 @@
+---
+import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
+import Header from "../components/Header.svelte";
+import Footer from "../components/Footer.svelte";
+import AudioPlayer from "../components/AudioPlayer.svelte";
+import AvailabilityMarquee from "../components/AvailabilityMarquee.svelte";
+import SmoothScroll from "../components/SmoothScroll.svelte";
+import ScrollFx from "../components/ScrollFx.svelte";
+import IceFlowBg from "../components/IceFlowBg.svelte";
+import Analytics from "@vercel/analytics/astro";
+import SpeedInsights from "@vercel/speed-insights/astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  lang?: string;
+  /** og:type — "article" for blog posts, "website" everywhere else. */
+  type?: "website" | "article";
+  /** ISO dates for article:* meta tags (only emitted when type="article"). */
+  publishedTime?: Date | string;
+  modifiedTime?: Date | string;
+  /** Canonical override — posts syndicated to dev.to/LinkedIn point there. */
+  canonicalUrl?: string;
+}
+
+const {
+  title = "Ruben Marcus — AI Fullstack & Web3 Engineer",
+  description = "Senior AI Fullstack Engineer building autonomous AI tooling, agents, and on-chain product surfaces. Based in Lisbon.",
+  image = "/og/index.png",
+  lang = "en",
+  type = "website",
+  publishedTime,
+  modifiedTime,
+  canonicalUrl,
+} = Astro.props;
+
+const canonicalURL = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
+
+// og:locale — only en_US / pt_BR exist on this site.
+const ogLocale = lang.startsWith("pt") ? "pt_BR" : "en_US";
+const ogLocaleAlternate = lang.startsWith("pt") ? "en_US" : "pt_BR";
+
+const toIso = (d: Date | string) => (d instanceof Date ? d.toISOString() : d);
+
+// hreflang pairs — /x ↔ /pt/x (home / ↔ /pt), x-default points at EN.
+const pathname = Astro.url.pathname;
+const isPt = pathname === "/pt" || pathname.startsWith("/pt/");
+const enPath = isPt ? pathname.replace(/^\/pt/, "") || "/" : pathname;
+const ptPath = isPt ? pathname : `/pt${pathname === "/" ? "" : pathname}`;
+
+/* Page transition — subtle cross-fade + 8px rise between route changes.
+   Keyframes live in the global style block below. */
+const pageTransition = {
+  forwards: {
+    old: { name: "pageOut", duration: "0.18s", easing: "ease-in", fillMode: "forwards" },
+    new: { name: "pageIn", duration: "0.3s", easing: "cubic-bezier(0.22, 1, 0.36, 1)", fillMode: "backwards" },
+  },
+  backwards: {
+    old: { name: "pageOut", duration: "0.18s", easing: "ease-in", fillMode: "forwards" },
+    new: { name: "pageIn", duration: "0.3s", easing: "cubic-bezier(0.22, 1, 0.36, 1)", fillMode: "backwards" },
+  },
+};
+---
+
+<!doctype html>
+<html lang={lang} class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0c0d10" />
+    <meta name="author" content="Ruben Marcus" />
+    <meta name="creator" content="Ruben Marcus" />
+    <meta name="robots" content="index, follow" />
+
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" hreflang="en" href={new URL(enPath, Astro.site)} />
+    <link rel="alternate" hreflang="pt-br" href={new URL(ptPath, Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(enPath, Astro.site)} />
+    <link rel="alternate" type="application/rss+xml" title="Ruben Marcus — Blog" href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Ruben Marcus — Blog (PT-BR)" href="/rss-pt.xml" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Ruben Marcus" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale:alternate" content={ogLocaleAlternate} />
+    {type === "article" && publishedTime && (
+      <meta property="article:published_time" content={toIso(publishedTime)} />
+    )}
+    {type === "article" && modifiedTime && (
+      <meta property="article:modified_time" content={toIso(modifiedTime)} />
+    )}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:creator" content="@rubenmarcus_dev" />
+    <meta name="twitter:image" content={new URL(image, Astro.site)} />
+
+    <link rel="preload" href="/fonts/gabarito-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/uncut-sans-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/uncut-sans-600.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
+
+    <ClientRouter />
+
+    <Analytics />
+    <SpeedInsights />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: "Ruben Marcus",
+        url: "https://rubenmarcus.dev",
+        jobTitle: "AI Fullstack & Web3 Engineer",
+        description,
+        sameAs: [
+          "https://github.com/rubenmarcus",
+          "https://x.com/rubenmarcus_dev",
+          "https://linkedin.com/in/rubenmarcus",
+          "https://www.npmjs.com/~rmarcus",
+          "https://t.me/rubenmarcus",
+        ],
+        knowsAbout: [
+          "AI Engineering",
+          "Autonomous Agents",
+          "Answer Engine Optimization",
+          "Web3",
+          "Blockchain",
+          "Frontend Engineering",
+          "TypeScript",
+          "Astro",
+          "Svelte",
+          "Next.js",
+        ],
+      })}
+    />
+
+    <!-- Pages can inject extra head tags (e.g. BlogPosting JSON-LD). -->
+    <slot name="head" />
+  </head>
+  <body>
+    <SmoothScroll client:load transition:persist />
+    <ScrollFx client:load />
+
+    <!-- Site-wide Three.js ice-flow shader bg (FBM noise + glacial palette) —
+         persisted across view transitions so the WebGL context survives. -->
+    <IceFlowBg client:load transition:persist />
+
+    <Header client:load currentPath={Astro.url.pathname} />
+
+    <!-- Availability strip — site-wide, scrolling above all content,
+         pinned to the very top edge over the header zone. -->
+    <AvailabilityMarquee lang={lang} />
+
+    <main transition:animate={pageTransition}>
+      <slot />
+    </main>
+
+    <Footer lang={lang} />
+
+    <!-- Bottom audio deck — persisted across view transitions so the
+         music keeps playing while navigating. -->
+    <AudioPlayer client:load transition:persist />
+  </body>
+</html>
+
+<style is:global>
+  /* View-transition keyframes — cross-fade + 8px rise on the swapped <main> */
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pageOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-4px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+      animation: none !important;
+    }
+  }
+</style>

@@ -1,26 +1,42 @@
 # rubenmarcus.dev
 
-Personal portfolio site. Cyberpunk terminal aesthetic with a looping video background, interactive parallax, text scramble effects, and a curated ambient music player.
+![rubenmarcus.dev — the first portfolio made for agents](public/art/social/readme-cover.png)
+
+Personal portfolio. Terminal-green, agent-first: a cinematic 3D hero, a blog
+written for humans and machines, and an MCP server so AI agents can read the
+resume and book a call without ever rendering the page.
 
 **Live:** [rubenmarcus.dev](https://rubenmarcus.dev)
 
 ## Stack
 
-- [Astro](https://astro.build) with React islands
-- [Tailwind CSS](https://tailwindcss.com)
-- [Motion](https://motion.dev) (animations)
-- [Lucide React](https://lucide.dev) (icons)
-- TypeScript
+- [Astro 5](https://astro.build) (islands, content collections, i18n EN/PT)
+- [Svelte 5](https://svelte.dev) (runes) for interactive components
+- [Three.js](https://threejs.org) — custom GLSL shaders (ice-flow background,
+  contour/wireframe/ASCII render states)
+- [GSAP](https://gsap.com) + [Lenis](https://lenis.darkroom.engineering) — scroll choreography
+- [Tailwind CSS 3](https://tailwindcss.com)
+- Vercel (adapter with edge middleware, Analytics)
 
 ## Features
 
-- Fullscreen video background with mouse-follow parallax and scroll zoom
-- Text scramble animation on load and hover (custom `useScramble` hook)
-- Rotating profession titles via `TextLoop`
-- Infinite marquee slider with links and now-playing info
-- Background music player with 10-track curated playlist (YouTube IFrame API), skip/prev/next controls, mute toggle
-- Responsive layout (mobile + desktop)
-- SEO: OpenGraph, Twitter Cards, JSON-LD structured data, sitemap, robots.txt
+- Hero with an AI-generated, auto-rigged 3D character that types at a desk and
+  dissolves through render states (contour isolines → wireframe → scanline
+  point cloud → ASCII) driven by scroll
+- Live HUD telemetry fed by GitHub/npм stats, degrading gracefully offline
+- Bilingual blog (EN + PT mirrors) with generated particle-art covers,
+  copy-button code blocks, view counter (optional Supabase)
+- `/api/mcp` — a hand-rolled JSON-RPC 2.0 MCP server (`tools/list`,
+  `tools/call`) exposing resume data and a `book_intro` tool
+- `/api/hire` — contact endpoint with field caps + honeypot, relayed via
+  formsubmit.co
+- `llms.txt`, `robots.txt` with AI-crawler rules, RSS (EN/PT), sitemap with
+  hreflang, JSON-LD — built for answer engines, not just search
+- Edge middleware easter egg: `curl rubenmarcus.dev` returns a plain-text resume
+- Bottom-right audio deck (YouTube IFrame API) persisted across page
+  transitions
+- Visual QA gauntlet (`scripts/visual-gauntlet.mjs`) that screenshots every
+  page on desktop + mobile and captures console errors
 
 ## Getting started
 
@@ -29,38 +45,43 @@ pnpm install
 pnpm dev
 ```
 
-Build for production:
+Production build:
 
 ```bash
 pnpm build
 pnpm preview
 ```
 
+Quality gates:
+
+```bash
+pnpm check       # astro check (types)
+pnpm text:gate   # prose lint for the blog voice (scripts/text-gate.mjs)
+```
+
+## Environment variables
+
+Everything degrades gracefully without env vars. Optional:
+
+- `PUBLIC_SUPABASE_URL` + `PUBLIC_SUPABASE_ANON_KEY` — blog view counter
+- `OPENROUTER_API_KEY` — only for the asset-generation scripts in `scripts/`
+
 ## Project structure
 
 ```
 src/
-  components/
-    Hero.tsx            # Main hero section (React island)
-    TextLoop.tsx        # Cycling text animation
-    InfiniteSlider.tsx  # Infinite marquee component
-  layouts/
-    Layout.astro        # HTML shell, SEO meta, fonts
+  components/        # Svelte/Astro components (hero, deck, cards, lab demos)
+  content/           # blog (EN) + blog-pt collections, zod-validated
+  layouts/           # BaseLayout: SEO, OG, JSON-LD, analytics, audio deck
+  lib/               # data (projects, agents, tools), three/, motion/, assets/
   pages/
-    index.astro         # Homepage
-  styles/
-    globals.css         # Tailwind + custom styles
-public/
-  videobg.webm         # Background video
-  thumbnai.png          # OG image
-  favicon.ico / .svg    # Favicons
-```
-
-
-## Video BG Prompt
-
-```
-Create a perfectly looping video. SUBJECT: A centered human head and upper neck (full bust portrait). The neck and lower head must remain visible and preserved at all times. The framing is locked and never changes. The subject is rendered entirely in an ASCII terminal style. The face and neck are composed of monospaced terminal characters. Character density is used to define shading and depth. CAMERA MOTION: The camera performs a smooth, continuous 360-degree orbit around the subject at a constant angular speed. The camera completes exactly one full rotation and returns to the identical starting viewpoint. The rotation passes smoothly through all angles, including the back of the head. No reversing direction. No oscillation. No back-and-forth motion. The subject remains perfectly still while the camera moves. LOOP CONSTRAINT (CRITICAL): The first frame and the last frame are visually and compositionally identical. No fade-in. No fade-out. No cross-dissolve. No interpolation at the loop seam. No flicker at the loop point. Time is treated as a closed loop where t=0 and t=end produce the same frame. ASCII STYLE: Use a rich and varied ASCII character set. Include letters, numbers, punctuation, and symbols. Examples include: A–Z, a–z, 0–9, @ # % & + = : ; < > / \ | _ - ( ) Character patterns are deterministic and stable over time. BACKGROUND: A black terminal background with vertical falling ASCII character columns. The background resembles real terminal output and system data. Use mixed ASCII characters, not binary-only characters. Do NOT use only 0 and 1. The background animation is loopable and independent from the camera motion. The background does not rotate, zoom, or parallax. COMPOSITION RULES: No cropping. No auto-centering. No zoom. No reframing. No camera shake. Lighting and contrast remain consistent throughout the entire loop. NEGATIVE CONSTRAINTS: no binary-only code rain no 0-and-1-only background no face-only crop no neck removal no torso removal no fade-in no fade-out no flicker no snap at loop no mirroring no extra rotations
+    api/             # hire.ts, mcp.ts, resume.json.ts, resume.txt.ts
+    pt/              # PT mirrors of every page
+    work/            # case studies
+  middleware.ts      # edge: curl user-agent → text resume
+scripts/             # asset generators (OpenRouter) + text-gate + visual gauntlet
+public/art/          # generated covers, logos, frames
+qa/                  # gauntlet shots + scoring log
 ```
 
 ## License
