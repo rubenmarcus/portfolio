@@ -30,7 +30,9 @@ const json = (body: unknown, status = 200) =>
     },
   });
 
-export const OPTIONS: APIRoute = () => json({}, 204);
+// 200, not 204: the edge middleware re-wraps responses and the Response
+// constructor rejects a non-null body on null-body statuses (204/304).
+export const OPTIONS: APIRoute = () => json({}, 200);
 
 export const POST: APIRoute = async ({ request }) => {
   let data: Record<string, unknown>;
