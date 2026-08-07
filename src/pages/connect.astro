@@ -49,10 +49,18 @@ const clients: { name: string; icon: SvgIconName; steps: string[] }[] = [
 ];
 
 const tools = [
-  { name: "get_resume", desc: "who I am, proof points, links" },
+  { name: "get_resume", desc: "full resume: experience, skills, proof points, links" },
   { name: "get_services", desc: "the six fixed-scope offers" },
   { name: "check_availability", desc: "current engagement status" },
   { name: "book_intro", desc: "posts a project brief to my inbox" },
+];
+
+const prompts = [
+  "What has Ruben shipped?",
+  "Summarize Ruben's experience with AI agents.",
+  "Is Ruben available for freelance work right now?",
+  "What services does Ruben offer?",
+  "Book an intro with Ruben — I want to build a trading bot.",
 ];
 ---
 
@@ -107,6 +115,17 @@ const tools = [
         CV, <code>POST /api/hire</code> takes a brief. Terminal people: <code>curl rubenmarcus.dev</code>.
       </p>
     </div>
+
+    <div class="prompts-block" data-reveal>
+      <span class="bracket" data-reveal-item>Try asking your agent</span>
+      <ul class="prompts-list">
+        {prompts.map((p) => (
+          <li class="prompts-list__item" data-reveal-item>
+            <button class="prompts-list__copy" data-copy={p} title="Copy prompt">{p}</button>
+          </li>
+        ))}
+      </ul>
+    </div>
   </Section>
 
   <Section id="agents-md" tight>
@@ -128,8 +147,9 @@ const tools = [
         document.execCommand("copy");
         ta.remove();
       }
+      const original = btn.textContent;
       btn.textContent = "copied ✓";
-      setTimeout(() => (btn.textContent = "copy"), 2000);
+      setTimeout(() => (btn.textContent = original), 2000);
     });
   });
 </script>
@@ -252,5 +272,40 @@ const tools = [
     font-family: var(--font-mono);
     font-size: 0.82em;
     color: var(--accent-soft);
+  }
+
+  .prompts-block {
+    margin-top: 2.5rem;
+  }
+  .prompts-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.2rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .prompts-list__copy {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--muted);
+    background: #06080c;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-button);
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    transition: border-color var(--duration-hover) var(--ease-default),
+      color var(--duration-hover) var(--ease-default);
+  }
+  .prompts-list__copy::before {
+    content: "→ ";
+    color: var(--accent-soft);
+  }
+  .prompts-list__copy:hover {
+    color: var(--text);
+    border-color: rgba(0, 255, 65, 0.4);
   }
 </style>

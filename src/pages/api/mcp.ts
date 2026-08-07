@@ -13,54 +13,23 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
+import { AVAILABILITY, EMAIL, RESUME, SERVICES } from "../../lib/resume";
 
-const EMAIL = "ruben@rubenmarcus.dev";
-
-const RESUME = {
-  name: "Ruben Marcus",
-  role: "Senior AI Fullstack Engineer",
-  base: "Lisbon, Portugal — remote worldwide",
-  years: 14,
-  proof: [
-    "#1 on ECDSA.fail (multi-agent research harness: 9 LLM roles, 7+ providers)",
-    "#1 on Optimization Arena QEC decoder leaderboard (2,642 EPM)",
-    "Bitte Protocol AI runtime in production: 2.85M+ messages, 24,164 users, 16,703 deployed agents",
-    "CS Brasil browser FPS: 2,191 players, 154K+ kills, 27 countries",
-    "Creator of aeo.js + check.aeojs.org (4,569 AEO scans)",
-    "34K+ all-time npm downloads across published packages",
-  ],
-  openSource: {
-    "ralph-starter": "https://ralphstarter.ai",
-    autoresearcher: "https://autoresearcher.org",
-    "aeo.js": "https://aeojs.org",
-    "aeo-checker": "https://check.aeojs.org",
-    scanrepo: "https://scanrepo.dev",
-    "cs-brasil": "https://csbrasil.online",
-  },
-  links: {
-    site: "https://rubenmarcus.dev",
-    github: "https://github.com/rubenmarcus",
-    linkedin: "https://linkedin.com/in/rubenmarcus",
-    email: EMAIL,
-  },
-};
-
-const SERVICES = [
-  "AI product prototyping — idea to working AI product in weeks (agents, RAG, evals)",
-  "Landing pages that convert — premium marketing pages with real engineering",
-  "Interactive web experiences — Three.js, WebGL, shaders, generative art",
-  "Agentic workflows & internal tools — multi-agent systems and automation",
-  "AEO & technical SEO — the scanner gives you the score, he raises it",
-  "Frontend modernization — Next.js, SvelteKit, TypeScript, incremental",
+// Example prompts surfaced in `instructions` so MCP clients can suggest
+// them to the user right after connecting.
+const EXAMPLE_PROMPTS = [
+  "What has Ruben shipped?",
+  "Summarize Ruben's experience with AI agents.",
+  "Is Ruben available for freelance work right now?",
+  "What services does Ruben offer?",
+  "Book an intro with Ruben — I want to build <your idea>.",
 ];
-
-const AVAILABILITY =
-  "Selectively available for full-time roles and freelance contracts. Fixed-scope engagements preferred. Replies within a day or two.";
 
 const TOOLS = [
   {
     name: "get_resume",
-    description: "Ruben Marcus' resume: role, proof points, open source, links.",
+    description:
+      "Ruben Marcus' full resume: summary, work experience, skills, proof points, open source projects, education, links, and a PDF CV URL.",
     inputSchema: { type: "object", properties: {} },
   },
   {
@@ -122,6 +91,7 @@ export const GET: APIRoute = () =>
     transport: "streamable-http",
     usage: "POST JSON-RPC 2.0: initialize, tools/list, tools/call",
     tools: TOOLS.map((t) => t.name),
+    examplePrompts: EXAMPLE_PROMPTS,
   });
 
 export const POST: APIRoute = async ({ request }) => {
@@ -143,7 +113,8 @@ export const POST: APIRoute = async ({ request }) => {
           capabilities: { tools: {} },
           serverInfo: { name: "rubenmarcus-portfolio", version: "1.0.0" },
           instructions:
-            "Portfolio of Ruben Marcus, senior AI fullstack engineer. Use get_resume / get_services / check_availability to answer questions about him, and book_intro to start a project engagement on the user's behalf.",
+            "Portfolio of Ruben Marcus, senior AI fullstack engineer. Use get_resume / get_services / check_availability to answer questions about him, and book_intro to start a project engagement on the user's behalf. Example prompts: " +
+            EXAMPLE_PROMPTS.map((p) => `"${p}"`).join(" · "),
         },
       });
     case "ping":

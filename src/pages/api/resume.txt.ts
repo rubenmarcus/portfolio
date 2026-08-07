@@ -31,6 +31,7 @@ ${G}open source${R}
 
 ${G}hire me${R}
   email  ruben@rubenmarcus.dev
+  cv     GET  /cv.pdf
   api    POST /api/hire  {"name","contact","brief"}
   mcp    POST /api/mcp   (initialize · tools/list · tools/call)
   json   GET  /api/resume.json

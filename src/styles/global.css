@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 :root {
+  /* Dark UA canvas — without this, Chromium paints the view-transition
+     canvas (and scrollbars/form controls) white, flashing white edges on
+     every ClientRouter swap. */
+  color-scheme: dark;
+
   /* Pure-black anchor — the live ice-flow Three.js shader provides all
      the colour atmosphere, so the static body bg can stay pitch-black. */
   --bg-0: #000000;
@@ -113,6 +118,12 @@
 
   html {
     scroll-behavior: smooth;
+    background: var(--bg-0);
+  }
+
+  /* Paint the view-transition viewport black behind the page snapshots —
+     kills the white flash at the edges while the old/new roots crossfade. */
+  ::view-transition {
     background: var(--bg-0);
   }
 

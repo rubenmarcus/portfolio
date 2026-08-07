@@ -137,24 +137,28 @@
     </div>
   </div>
 
-  {#if menuOpen}
-    <div class="header__overlay" role="dialog" aria-modal="true" aria-label="Site navigation">
-      <nav class="header__overlay-nav">
-        {#each items as item, i}
-          <a
-            href={item.href}
-            class="header__overlay-link"
-            style="--delay: {i * 40}ms"
-            aria-current={isCurrent(item.href) ? "page" : undefined}
-            onclick={() => (menuOpen = false)}
-          >
-            <span class="header__overlay-label">{item.label}</span>
-          </a>
-        {/each}
-      </nav>
-    </div>
-  {/if}
 </header>
+
+<!-- Kept OUTSIDE <header>: the scrolled header's backdrop-filter creates a
+     containing block for fixed descendants, which would trap this overlay
+     inside the header's 70px box instead of the viewport. -->
+{#if menuOpen}
+  <div class="header__overlay" role="dialog" aria-modal="true" aria-label="Site navigation">
+    <nav class="header__overlay-nav">
+      {#each items as item, i}
+        <a
+          href={item.href}
+          class="header__overlay-link"
+          style="--delay: {i * 40}ms"
+          aria-current={isCurrent(item.href) ? "page" : undefined}
+          onclick={() => (menuOpen = false)}
+        >
+          <span class="header__overlay-label">{item.label}</span>
+        </a>
+      {/each}
+    </nav>
+  </div>
+{/if}
 
 <style>
   .header {
@@ -377,9 +381,9 @@
   .header__overlay {
     position: fixed;
     inset: 0;
-    background: rgba(12, 13, 16, 0.96);
-    backdrop-filter: blur(var(--blur-lg));
-    -webkit-backdrop-filter: blur(var(--blur-lg));
+    /* Solid — this lives outside <header>, so there's no backdrop-filter
+       chain anymore; full opacity guarantees readability over the shader. */
+    background: #06080f;
     display: grid;
     place-items: center;
     padding: 5rem 1.5rem 3rem;
