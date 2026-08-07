@@ -50,18 +50,9 @@ const isPt = pathname === "/pt" || pathname.startsWith("/pt/");
 const enPath = isPt ? pathname.replace(/^\/pt/, "") || "/" : pathname;
 const ptPath = isPt ? pathname : `/pt${pathname === "/" ? "" : pathname}`;
 
-/* Page transition — subtle cross-fade + 8px rise between route changes.
-   Keyframes live in the global style block below. */
-const pageTransition = {
-  forwards: {
-    old: { name: "pageOut", duration: "0.18s", easing: "ease-in", fillMode: "forwards" },
-    new: { name: "pageIn", duration: "0.3s", easing: "cubic-bezier(0.22, 1, 0.36, 1)", fillMode: "backwards" },
-  },
-  backwards: {
-    old: { name: "pageOut", duration: "0.18s", easing: "ease-in", fillMode: "forwards" },
-    new: { name: "pageIn", duration: "0.3s", easing: "cubic-bezier(0.22, 1, 0.36, 1)", fillMode: "backwards" },
-  },
-};
+/* No custom view-transition animation: the cross-fade snapshots misbehave
+   across browsers (stuck overlays, old page bleeding into the new one).
+   ClientRouter still gives us instant swaps + persisted islands. */
 ---
 
 <!doctype html>
@@ -175,7 +166,7 @@ const pageTransition = {
          pinned to the very top edge over the header zone. -->
     <AvailabilityMarquee lang={lang} />
 
-    <main transition:animate={pageTransition}>
+    <main>
       <slot />
     </main>
 
@@ -188,15 +179,6 @@ const pageTransition = {
 </html>
 
 <style is:global>
-  /* View-transition keyframes — cross-fade + 8px rise on the swapped <main> */
-  @keyframes pageIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes pageOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-4px); }
-  }
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-old(*),
     ::view-transition-new(*) {

@@ -65,22 +65,33 @@ export function initScrollFx(root: ParentNode = document): () => void {
     const targets = revealTargets(container);
     gsap.set(targets, { opacity: 0, y: 22, willChange: "opacity, transform" });
 
+    const play = () => {
+      gsap.to(targets, {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        ease: "power3.out",
+        stagger: 0.07,
+        // Clear transform at rest so CSS hover transforms (card lifts)
+        // keep working after the reveal.
+        clearProps: "transform,willChange",
+      });
+    };
+
+    // Already inside the reveal zone (first paint, or right after a
+    // client-side navigation while measurements are still settling):
+    // play immediately instead of waiting for a scroll event that may
+    // never come — sections must never stay hidden until the user scrolls.
+    if (container.getBoundingClientRect().top < window.innerHeight * 0.88) {
+      play();
+      return;
+    }
+
     const st = ScrollTrigger.create({
       trigger: container,
       start: "top 88%",
       once: true,
-      onEnter: () => {
-        gsap.to(targets, {
-          opacity: 1,
-          y: 0,
-          duration: 0.55,
-          ease: "power3.out",
-          stagger: 0.07,
-          // Clear transform at rest so CSS hover transforms (card lifts)
-          // keep working after the reveal.
-          clearProps: "transform,willChange",
-        });
-      },
+      onEnter: play,
     });
     triggers.push(st);
   });
