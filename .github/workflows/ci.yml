@@ -1,7 +1,7 @@
 name: ci
 
-# Fast gate on every push/PR: prose lint + production build. Deploys happen
-# only in release.yml (GitHub Release published), never from here.
+# Fast gate on every push/PR: prose lint + production build. Production
+# deploys are handled by Vercel's git integration on merge to main.
 
 on:
   push:
