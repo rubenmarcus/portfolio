@@ -1,0 +1,114 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import MazeSolverDemo from "../components/lab/MazeSolverDemo.svelte";
+
+const pathname = Astro.url.pathname;
+const isPt = pathname === "/pt" || pathname.startsWith("/pt/");
+---
+
+<BaseLayout
+  title={isPt ? "404 — Página não encontrada" : "404 — Page not found"}
+  description={isPt
+    ? "Essa rota não existe. O lab resolve o labirinto; o link abaixo resolve o seu."
+    : "This route doesn't exist. The lab solves the maze; the link below solves yours."}
+>
+  <section class="nf" data-reveal>
+    <div class="nf__frame">
+      <MazeSolverDemo client:visible class="nf__maze" />
+      <div class="nf__overlay">
+        <p class="nf__code">404</p>
+        <p class="nf__msg">
+          {isPt
+            ? "Rota perdida no labirinto. A saída já foi traçada:"
+            : "Route lost in the maze. The way out is already traced:"}
+        </p>
+        <nav class="nf__links" aria-label="404">
+          <a href={isPt ? "/pt" : "/"}>{isPt ? "início" : "home"}</a>
+          <a href={isPt ? "/pt/blog" : "/blog"}>blog</a>
+          <a href={isPt ? "/pt/lab" : "/lab"}>lab</a>
+          <a href={isPt ? "/pt/contact" : "/contact"}>{isPt ? "contato" : "contact"}</a>
+        </nav>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    min-height: 72vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem 1rem 3rem;
+  }
+
+  .nf__frame {
+    position: relative;
+    width: min(880px, 100%);
+    aspect-ratio: 16 / 9;
+    max-height: 70vh;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card, 12px);
+    overflow: hidden;
+    background: rgb(2, 5, 3);
+  }
+
+  .nf__maze {
+    position: absolute;
+    inset: 0;
+    opacity: 0.55;
+  }
+
+  .nf__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    text-align: center;
+    padding: 1.5rem;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0.72) 0%,
+      rgba(0, 0, 0, 0.25) 60%,
+      transparent 100%
+    );
+  }
+
+  .nf__code {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 10vw, 6.5rem);
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .nf__msg {
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 34ch;
+  }
+
+  .nf__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1.4rem;
+    margin-top: 0.4rem;
+  }
+
+  .nf__links a {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent-soft);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(0, 255, 65, 0.35);
+    padding-bottom: 1px;
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+
+  .nf__links a:hover {
+    color: var(--text);
+  }
+</style>
