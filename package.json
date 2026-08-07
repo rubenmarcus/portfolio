@@ -16,7 +16,7 @@
     "@astrojs/sitemap": "^3",
     "@astrojs/svelte": "^7",
     "@astrojs/tailwind": "^6",
-    "@astrojs/vercel": "^8.2.11",
+    "@astrojs/vercel": "^9.0.5",
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^2.0.0",
     "astro": "^5",

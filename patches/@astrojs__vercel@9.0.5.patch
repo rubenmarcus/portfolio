@@ -1,0 +1,20 @@
+diff --git a/dist/serverless/middleware.js b/dist/serverless/middleware.js
+index 217ac823c66ad22c1ca1ed9bd0cc27bf7f6c5e22..ba764de131675764ccdfbe44d51427efe2a7ce2c 100644
+--- a/dist/serverless/middleware.js
++++ b/dist/serverless/middleware.js
+@@ -94,12 +94,14 @@ export default async function middleware(request, context) {
+ 	const next = async () => {
+ 		const { vercel, ...locals } = ctx.locals;
+ 		const response = await fetch(new URL('/${NODE_PATH}', request.url), {
++			method: request.method,
+ 			headers: {
+ 				...Object.fromEntries(request.headers.entries()),
+ 				'${ASTRO_MIDDLEWARE_SECRET_HEADER}': '${middlewareSecret}',
+ 				'${ASTRO_PATH_HEADER}': request.url.replace(origin, ''),
+ 				'${ASTRO_LOCALS_HEADER}': trySerializeLocals(locals)
+-			}
++			},
++			...(request.body ? { body: request.body, duplex: 'half' } : {}),
+ 		});
+ 		return new Response(response.body, {
+ 			status: response.status,

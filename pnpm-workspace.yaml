@@ -1,0 +1,2 @@
+patchedDependencies:
+  '@astrojs/vercel@9.0.5': patches/@astrojs__vercel@9.0.5.patch
