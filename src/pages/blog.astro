@@ -3,6 +3,9 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
+import DitherBg from "../components/DitherBg.svelte";
+import DitherCover from "../components/DitherCover.svelte";
+import WireCard from "../components/WireCard.astro";
 
 const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
@@ -11,40 +14,53 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
 
 <BaseLayout
   title="Blog — Ruben Marcus"
-  description="Articles on AI tooling, autonomous agents, post-quantum infrastructure, and the modern frontend stack."
+  description="Articles on AI tooling, autonomous agents, and the modern frontend stack."
+  image="/og/blog.png"
 >
+  <!-- Ordered-dither atmosphere — the blog page's generative identity -->
+  <DitherBg client:load />
+
   <Section id="intro">
     <SectionHeader
       index="03"
       overline="Writing"
       title="Notes from the loop."
-      description="Posts about the tools I ship and the patterns underneath them. Output here is sparse and deliberate — I'd rather write one good piece than ten throwaway ones."
+      description="Posts about the tools I ship and the patterns underneath them."
     />
 
     <ul class="article-list" data-reveal>
       {posts.map((post, i) => (
-        <li class="article-row" data-reveal-item>
-          <a class="article-link" href={`/blog/${post.id}`}>
-            <span class="article-index">{String(i + 1).padStart(2, "0")}</span>
-            <div class="article-body">
-              <span class="article-title">{post.data.title}</span>
-              <p class="article-desc">{post.data.description}</p>
-              <div class="article-meta">
-                <span>{post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</span>
-                <span class="sep">·</span>
-                <span>{post.data.readTime}</span>
-                <span class="sep">·</span>
-                <span>{post.data.tags.map((t: string) => `#${t}`).join(" ")}</span>
-                {post.data.reactions ? (
-                  <>
-                    <span class="sep">·</span>
-                    <span>{post.data.reactions} reactions</span>
-                  </>
-                ) : null}
+        <li data-reveal-item>
+          <WireCard class="article-card" glyph={String(i + 1).padStart(2, "0")}>
+            <a class="article-link" href={`/blog/${post.id}`}>
+              <DitherCover
+                client:visible
+                src={post.data.cover ?? ""}
+                seed={post.data.title}
+                alt={`Cover — ${post.data.title}`}
+                class="article-cover"
+                invert
+              />
+              <div class="article-body">
+                <span class="article-title">{post.data.title}</span>
+                <p class="article-desc">{post.data.description}</p>
+                <div class="article-meta">
+                  <span>{post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</span>
+                  <span class="sep">·</span>
+                  <span>{post.data.readTime}</span>
+                  <span class="sep">·</span>
+                  <span>{post.data.tags.map((t: string) => `#${t}`).join(" ")}</span>
+                  {post.data.reactions ? (
+                    <>
+                      <span class="sep">·</span>
+                      <span>{post.data.reactions} reactions</span>
+                    </>
+                  ) : null}
+                </div>
               </div>
-            </div>
-            <span class="article-arrow" aria-hidden="true">→</span>
-          </a>
+              <span class="article-arrow" aria-hidden="true">→</span>
+            </a>
+          </WireCard>
         </li>
       ))}
     </ul>
@@ -52,15 +68,9 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
     <div class="more" data-reveal>
       <span class="bracket" data-reveal-item>More on the way</span>
       <p class="more__desc" data-reveal-item>
-        Drafts in flight: a deep-dive on Ralph Starter's auto-mode, a teardown of Autoresearcher's
-        accept/reject loop, and an essay on what AEO actually moves once you ship it.
+        Drafts in flight: a deep-dive on Ralph Starter's auto-mode and an essay on what AEO
+        actually moves once you ship it.
       </p>
-      <div class="more__actions" data-reveal-item>
-        <a href="/contact" class="btn btn-secondary">Suggest a topic →</a>
-        <a href="https://dev.to/rubenmarcus" target="_blank" rel="noopener" class="btn btn-ghost">
-          Also on dev.to ↗
-        </a>
-      </div>
     </div>
   </Section>
 </BaseLayout>
@@ -70,35 +80,51 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
     list-style: none;
     padding: 0;
     margin: 0 0 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
-
-  .article-row {
-    border-top: 1px solid var(--line);
-  }
-  .article-row:last-child { border-bottom: 1px solid var(--line); }
 
   .article-link {
     display: grid;
-    grid-template-columns: 38px 1fr auto;
-    gap: 1rem;
-    padding: 1.6rem 0;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
     color: var(--text);
-    transition: background-color var(--duration-hover) var(--ease-default);
   }
-  .article-link:hover { background: rgba(245, 241, 234, 0.02); }
-
-  .article-index {
-    font-family: var(--font-mono);
-    font-size: 0.76rem;
-    color: var(--muted-soft);
-    padding-top: 0.35rem;
+  @media (min-width: 720px) {
+    .article-link {
+      grid-template-columns: 250px 1fr auto;
+      gap: 1.6rem;
+      align-items: stretch;
+    }
   }
 
-  .article-body { display: flex; flex-direction: column; gap: 0.4rem; }
+  /* Dithered cover — full-width strip on mobile, fixed column on desktop */
+  :global(.article-cover) {
+    aspect-ratio: 1000 / 420;
+  }
+  @media (min-width: 720px) {
+    :global(.article-cover) {
+      aspect-ratio: auto;
+      min-height: 140px;
+      height: 100%;
+    }
+  }
+  /* Card-wide hover washes the dots over the real cover (invert mode) */
+  .article-link:hover :global(.dither-cover__dither) {
+    opacity: 1;
+  }
+
+  .article-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    justify-content: center;
+  }
 
   .article-title {
     font-family: var(--font-display);
-    font-size: clamp(1.4rem, 2.6vw, 1.95rem);
+    font-size: clamp(1.4rem, 2.6vw, 1.85rem);
     line-height: 1.1;
   }
 
@@ -115,9 +141,13 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   .sep { color: var(--muted-soft); opacity: 0.55; }
 
   .article-arrow {
+    display: none;
     color: var(--muted-soft);
     align-self: center;
     transition: transform var(--duration-hover) var(--ease-default), color var(--duration-hover) var(--ease-default);
+  }
+  @media (min-width: 720px) {
+    .article-arrow { display: block; }
   }
   .article-link:hover .article-arrow {
     transform: translateX(3px);
@@ -135,24 +165,5 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   }
 
   .more__desc { color: var(--muted); max-width: 64ch; }
-  .more__actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 0.4rem; }
-</style>
 
-<script>
-  import { reveal } from "../lib/motion/reveal";
-  const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            reveal(e.target as HTMLElement, { stagger: 70 });
-            io.unobserve(e.target);
-          }
-        }
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
-    );
-    targets.forEach((t) => io.observe(t));
-  }
-</script>
+</style>

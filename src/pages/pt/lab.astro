@@ -1,0 +1,264 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/Section.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
+import LabDemo from "../../components/lab/LabDemo.svelte";
+import LabSource from "../../components/lab/LabSource.svelte";
+import LabPrompt from "../../components/lab/LabPrompt.svelte";
+
+/**
+ * Demo drops — weekly visual experiments. Adding a new demo is (nearly)
+ * data-entry only: add one entry here, plus one import + registry line in
+ * src/components/lab/LabDemo.svelte (Astro can't hydrate dynamic components,
+ * so the island resolves the slug).
+ */
+const demos = [
+  {
+    slug: "contour-scan",
+    title: "contour-scan-01",
+    description: "Isolinhas pontilhadas de um campo implícito à deriva sob uma varredura de scanline — mova o cursor para deformar os contornos.",
+    date: "2026-07-29",
+  },
+  {
+    slug: "flow-field",
+    title: "flow-field-02",
+    description: "Milhares de partículas advectadas por um campo de curl-noise à deriva no tempo — passe o cursor pelo canvas pra injetar um vórtice escalado pela velocidade do cursor; os rastros vêm de alpha-fade, não de histórico por partícula.",
+    date: "2026-08-06",
+  },
+  {
+    slug: "glyph-rain",
+    title: "glyph-rain-03",
+    description: "Chuva de glifos fósforo — colunas de glifos monoespaçados com cabeças brilhantes e caudas que apagam. Passe o mouse numa coluna pra acelerá-la e flareá brilhante, com um pequeno boost na vizinhança.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "boids",
+    title: "boids-04",
+    description: "Flocking de Reynolds, ~150 boids: separação, alinhamento, coesão, wrap toroidal. Mova o cursor pra dentro e o bando curva em direção a ele.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "harmonograph",
+    title: "harmonograph-05",
+    description: "Um harmógrafo — x e y cada um a soma de sinusoides amortecidas com razões ligeiramente irracionais, então a figura de Lissajous nunca fecha. Mova o cursor pra deformar a frequência e a fase ao vivo; o rastro se acumula e apaga devagar.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "reaction-diffusion",
+    title: "reaction-diffusion-06",
+    description: "Reação-difusão de Gray-Scott numa grade 200×150 — manchas que se movem, se dividem e mitoseiam. Mova o cursor pra pintar ativador e criar novos padrões; renderizado suave via ImageData upscale.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "ripple",
+    title: "ripple-07",
+    description: "Uma superfície de água 2D numa grade height-field de 220×160 — a equação de onda clássica, double-buffered e amortecida. Clique ou arraste pra soltar splashes e ver as frentes de onda se propagarem como luz fósforo em movimento.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "automaton",
+    title: "automaton-08",
+    description: "Um autômato celular elementar 1D (regra 30) crescido de uma única célula central em linhas fractais caóticas estilo Sierpinski que descem pra sempre. Pinte células vivas com o cursor pra perturbar a evolução.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "circuit-trace",
+    title: "circuit-trace-09",
+    description: "Autorouting estilo PCB — trilhas brilhantes com dobras de 45 graus correndo entre pads nas bordas, pulsadas por pacotes de luz viajando. Mova o cursor pra curvar as trilhas em volta dele; clique pra limpar e re-rotear a placa.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "voronoi-drift",
+    title: "voronoi-drift-10",
+    description: "Um diagrama de Voronoi à deriva desenhado como bordas de célula pontilhadas numa grade de pontos. Mova o cursor pra dentro e a semente mais próxima o segue, arrastando a célula pelo padrão.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "l-system",
+    title: "l-system-11",
+    description: "Uma árvore de L-system crescendo galho a galho em luz fósforo, com uma fronteira brilhante que apaga atrás dela. Cada ciclo sorteia um novo conjunto de regras — clique pra derrubar a árvore e rebrotar.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "maze-solver",
+    title: "maze-solver-12",
+    description: "Um labirinto de recursive backtracker inundado por uma frente de onda BFS que deixa um rastro fósforo difuso, e depois o caminho da solução traçado em verde brilhante. Clique pra um labirinto novo.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "warp-field",
+    title: "warp-field-13",
+    description: "Warp de estrelas — partículas fluindo de um ponto de fuga como linhas de velocidade, com brilho e velocidade dados pela profundidade. Mova o cursor pra pilotar a direção do warp.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "orbital-bodies",
+    title: "orbital-bodies-14",
+    description: "Um mini n-body: uma massa central pesada, treze partículas em órbita e rastros de longa exposição que se fecham em anéis. Clique pra soltar um poço de gravidade temporário e entortar as órbitas.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "wave-interference",
+    title: "wave-interference-15",
+    description: "Fontes de ondas circulares sobrepostas renderizadas como um moiré de interferência de cristas pontilhadas. Clique pra soltar uma nova fonte e ver o padrão se reorganizar em volta dela.",
+    date: "2026-08-07",
+  },
+  {
+    slug: "phosphor-fire",
+    title: "phosphor-fire-16",
+    description: "O clássico algoritmo de fogo do Doom em verde fósforo — uma grade de calor em baixa resolução alimentada por baixo, renderizada em pixels grossos com scanlines embutidas. Mova o cursor pra mexer nas brasas.",
+    date: "2026-08-07",
+  },
+];
+---
+
+<BaseLayout
+  lang="pt-br"
+  title="Lab — Ruben Marcus"
+  description="Demo drops: experimentos visuais semanais em canvas, shaders e motion. Pequenos, autocontidos e reativos ao cursor."
+  image="/og/pt-lab.png"
+>
+  <Section id="intro">
+    <SectionHeader
+      index="02.5"
+      overline="Lab"
+      title="Demo drops — pequenos experimentos visuais."
+      description="Estudos autocontidos em canvas, shaders e motion. Novos drops chegam conforme ficam prontos; cada card roda ao vivo."
+    />
+  </Section>
+
+  <Section id="drops" tight>
+    <ol class="drop-grid">
+      {demos.map((d, i) => (
+        <li class="drop-card" data-reveal>
+          <div class="drop-card__stage">
+            <LabDemo client:visible slug={d.slug} />
+            <span class="drop-card__index" aria-hidden="true">{String(i + 1).padStart(3, "0")}</span>
+          </div>
+          <div class="drop-card__meta">
+            <div class="drop-card__row">
+              <span class="drop-card__title">{d.title}</span>
+              <time class="drop-card__date" datetime={d.date}>{d.date}</time>
+            </div>
+            <p class="drop-card__desc">{d.description}</p>
+            <div class="drop-card__foot">
+              <LabSource
+                client:visible
+                slug={d.slug}
+                label="código"
+                copyLabel="copiar"
+                copiedLabel="copiado"
+                closeLabel="fechar"
+                linesLabel="linhas"
+              />
+              <LabPrompt
+                client:visible
+                slug={d.slug}
+                label="prompt"
+                copyLabel="copiar"
+                copiedLabel="copiado"
+                closeLabel="fechar"
+                wordsLabel="palavras"
+              />
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </Section>
+</BaseLayout>
+
+<style>
+  .drop-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .drop-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .drop-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    background: rgba(6, 8, 15, 0.5);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      box-shadow var(--duration-hover) var(--ease-default);
+  }
+  .drop-card:hover {
+    border-color: rgba(0, 255, 65, 0.4);
+    box-shadow: 0 0 0 1px rgba(0, 255, 65, 0.18), 0 10px 36px rgba(0, 255, 65, 0.08);
+  }
+
+  .drop-card__stage {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    /* Poster fallback — the stage must never read as a dead black box while
+       the canvas boots (or when motion is reduced). */
+    background:
+      radial-gradient(ellipse at 50% 45%, rgba(0, 255, 65, 0.09), transparent 68%),
+      repeating-linear-gradient(0deg, rgba(0, 255, 65, 0.05) 0 1px, transparent 1px 7px),
+      #030805;
+  }
+
+  .drop-card__index {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--muted-soft);
+    letter-spacing: 0.1em;
+    pointer-events: none;
+  }
+
+  .drop-card__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1rem 1.15rem 1.15rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .drop-card__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .drop-card__title {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--accent-soft);
+    letter-spacing: 0.04em;
+  }
+
+  .drop-card__date {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted-soft);
+  }
+
+  .drop-card__desc {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .drop-card__foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+  }
+</style>

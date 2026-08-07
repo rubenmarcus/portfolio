@@ -1,0 +1,365 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import DitherBg from "../../components/DitherBg.svelte";
+import Section from "../../components/Section.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
+import DitherCover from "../../components/DitherCover.svelte";
+import WireCard from "../../components/WireCard.astro";
+import { aiAgents, type AgentGroup } from "../../lib/data/aiAgents";
+
+// Fleet groups, in display order — subheadings per origin.
+const GROUPS: { id: AgentGroup; overline: string; title: string; blurb?: string }[] = [
+  { id: "bitte", overline: "Bitte Protocol", title: "Bitte Protocol — a frota de produção" },
+  {
+    id: "ecdsa",
+    overline: "ECDSA.fail",
+    title: "ECDSA.fail — os papéis do centro de comando",
+    blurb:
+      "Não são daemons — são role prompts e contratos com spend gates numa camada de orquestração baseada em arquivos, despachados pro CLI de coding agent que couber melhor no trabalho: Codex, Claude, Amp, Kimi. A disciplina é o produto.",
+  },
+  {
+    id: "game",
+    overline: "CS Brasil",
+    title: "CS Brasil — os papéis do Gauntlet loop",
+    blurb:
+      "Os papéis dentro do Gauntlet loop que itera no meu FPS de browser — críticos adversariais, builders em paralelo e o caçador de regressão que paga o loop inteiro.",
+  },
+];
+const grouped = GROUPS.map((g) => ({ ...g, agents: aiAgents.filter((a) => a.group === g.id) }));
+
+// pt-BR copy for the agent cards — the data source stays EN for the EN pages.
+const AGENTS_PT: Record<string, { tagline: string; description: string }> = {
+  "agent-ai-runtime": {
+    tagline: "Entra linguagem natural, sai transação assinada.",
+    description:
+      "Framework de orquestração multi-modelo de LLMs — Express, Vercel AI SDK e Mastra com memória pgvector — que transforma linguagem natural em transações assinadas em EVM, NEAR, Sui, Cardano e Midnight. ~20 primitivas cross-chain, com MCP pra handoff entre agents. A plataforma onde rodam todos os agents abaixo.",
+  },
+  "agent-sdk": {
+    tagline: "Um spec OpenAPI é o agent.",
+    description:
+      "SDK open-source do monorepo BitteProtocol/ai. Publica um manifest em /api/ai-plugin e você ganha um agent de LLM com tool calling e assinatura de carteira dentro do chat — sem escrever código de agent bespoke. O padrão do qual a frota inteira nasce.",
+  },
+  "agent-uniswap": {
+    tagline: "Swaps cross-chain sem chave, direto do chat.",
+    description:
+      "Quotes e execução de swaps roteados por uma Safe smart account controlada por chain signatures MPC da NEAR — custódia cross-chain sem chave — com integrações Zerion e 1inch pra contexto de portfólio e liquidez.",
+  },
+  "agent-gnosis-pilot": {
+    tagline: "Um copiloto de yield DeFi com dados ao vivo.",
+    description:
+      "Copiloto de yield que lê dados ao vivo da DefiLlama e monta transações de estratégia codificadas pra Aave e Balancer na Gnosis Chain — o usuário revisa e assina, o agent faz a matemática do roteamento.",
+  },
+  "agent-polymarket": {
+    tagline: "Um analista de prediction markets que também aposta.",
+    description:
+      "Funde a CLOB API, a Gamma API e o subgraph num analista só: sentimento de mercado, PnL de portfólio e execução de apostas na mesma conversa.",
+  },
+  "agent-meme-cooking": {
+    tagline: "Um prompt, um memecoin.",
+    description:
+      "Lance um memecoin a partir de um único prompt de chat na NEAR — arte gerada por IA inclusa. A demo mais doida da frota, e o jeito mais fácil de mostrar como é um deploy executado por agent.",
+  },
+  "agent-solana-assistant": {
+    tagline: "Dados da Solana, prontos pra agent.",
+    description:
+      "Nove endpoints de tools sobre o @solana/web3.js: portfólio, holders de token paginados, metadata Metaplex, info de endereço, stats da rede, top wallets — mais geração de transação pra transferências de SOL e SPL com memo. Testado com Jest.",
+  },
+  "agent-jupiter": {
+    tagline: "Quote e swap na Solana, um endpoint só.",
+    description:
+      "Quote mais transação de swap serializada via Jupiter v6 (@jup-ag/api), com resolução de tokens a partir de um registry de 53 tokens e wrap/unwrap de SOL. Bun-first, com suíte bun:test que roda quote→swap de ponta a ponta.",
+  },
+  "agent-morpho": {
+    tagline: "Lending e borrowing, explicados pra um LLM.",
+    description:
+      "Treze endpoints cobrindo vaults (Earn) e markets (Borrow) da Morpho na Ethereum: depósitos, saques, claim de rewards via Merkle proofs, supply-collateral / borrow / repay, além de queries de APY, posições e métricas de mercado. viem, testado com Vitest.",
+  },
+  "agent-aerodrome": {
+    tagline: "A máquina veAERO inteira como tools de agent.",
+    description:
+      "O agent mais completo da frota: 44 endpoints de tools sobre a Aerodrome na Base — analytics de pools e gauges, ROI e estratégia de bribes, voting power e gestão de locks veAERO, roteamento ótimo multi-pool e geração de transações de LP, de add-liquidity a depósito de bribe. viem + The Graph.",
+  },
+  "agent-walrus": {
+    tagline: "Storage descentralizado pelo chat.",
+    description:
+      "Guarda e lê blobs na Walrus falando REST direto com publishers e aggregators públicos — sem SDK — com failover entre publishers, cálculo de custo, info de blob e status de certificação. Cinco tools, mainnet.",
+  },
+  "agent-sui-assistant": {
+    tagline: "Um explorer da Sui que conversa de volta.",
+    description:
+      "Info de endereço, objetos owned, portfólio denominado em SUI, stats da rede e geração de transação via @mysten/sui — seis tools, no ar no bitte.ai.",
+  },
+  "agent-ens": {
+    tagline: "Nomes, records, registros — como tools.",
+    description:
+      "Resolve nomes, faz reverse lookup de endereços, checa disponibilidade, prepara registros com estimativa de custo e define address e reverse records. viem por baixo, execução pela tool compartilhada generate-evm-tx.",
+  },
+  "agent-frontier-dissector": {
+    tagline: "Desmonta a melhor solução pra achar a próxima alavanca.",
+    description:
+      "Reage a cada submission promovida: atualiza a frontier via CLI do ecdsafail, classifica o movimento (UNCHANGED / NONCE_ONLY / STRUCTURAL / MIXED / BLOCKED) e só escreve route slates quando a estrutura realmente mudou — interrompendo hunts pagas no momento em que ficam obsoletas. Read-only no código.",
+  },
+  "agent-circuit-engineer": {
+    tagline: "Avança uma rota estrutural por vez.",
+    description:
+      "Trabalha uma única rota estrutural CPU-safe numa worktree isolada — fixtures de largura reduzida, route packets, notas de exatidão de valor — e para no momento em que o falsificador mais barato tem um veredito. PROCEED_CPU / KILL / PARK; sem gasto de GPU.",
+  },
+  "agent-density-analyst": {
+    tagline: "Decide se uma rota passa na economia.",
+    description:
+      "Transforma um candidato dirty-positive num relatório de hunt economics: nonces esperados até o clean, histogramas de near-miss e thresholds duros — até 500M de scan esperado é huntable, a partir de 2.5B é stop por padrão. Proibido de declarar 'huntable' sem a matemática.",
+  },
+  "agent-cuda-engineer": {
+    tagline: "Sem claim de velocidade sem paridade.",
+    description:
+      "Trabalho de throughput de filtros e evaluators confinado ao caminho CUDA de eval, com gate de paridade contra fixtures: PARITY_PASS / PARITY_FAIL / SPEED_PASS — qualquer mismatch de fixture para a linha. O harness só confia no que o evaluator confiável confirma.",
+  },
+  "agent-pod-manager": {
+    tagline: "Nenhum pod roda sem contrato escrito.",
+    description:
+      "Computação paga de GPU só depois de um HUNT_READY aprovado: escreve contratos pods/<id>.json com teto de gasto, teto de wall-clock, ranges de nonce sem sobreposição, heartbeat logs e condições de kill — e para no teto ou no primeiro winner verificado.",
+  },
+  "agent-research-scout": {
+    tagline: "Um route seed inédito por run.",
+    description:
+      "A lane de leads read-only: varre papers, repos e pistas da branch library e converte em route packet limitado — hipótese, falsificador mais barato, comando validador, custo máximo, condição de kill. Roteado pela cadeia de modelos GLM → Kimi → OpenRouter → Amp.",
+  },
+  "agent-orchestrator-reviewer": {
+    tagline: "Output do eval confiável é a única evidência aceita.",
+    description:
+      "O meta-papel dispatch-only: decompõe trabalho em tickets limitados pra workers (~2h, teto de 5 arquivos), sintetiza resultados e audita claims dos workers contra artefatos — medições alucinadas são flagadas, e nenhum gasto de GPU acontece sem budget explícito.",
+  },
+  "agent-combinator": {
+    tagline: "Duas falhas, uma vitória.",
+    description:
+      "Lê os resultados e insights de todos os sub-agents e pergunta se esforços que falharam separadamente se compõem — um corte que colapsa densidade mais um reparo estrutural, dois knobs NOOP que só disparam juntos. Evidência rotulada CONFIRMED / INFERRED / UNKNOWN; ele propõe, nunca aplica.",
+  },
+  "agent-gauntlet-critics": {
+    tagline: "Quem constrói nunca dá a nota.",
+    description:
+      "Sete críticos adversariais em paralelo — gráficos, mapas, armas-visual, armas-feel, UI-menu, UI-HUD, jogabilidade — cada um em contexto limpo, vendo os screenshots e o código, mas nunca o relatório do builder. 'Melhorar a iluminação' é resposta inválida: todo gap carrega arquivo:linha e uma correção numérica.",
+  },
+  "agent-gauntlet-builders": {
+    tagline: "Edições em paralelo num arquivo de 6.543 linhas.",
+    description:
+      "Os builders se dividem pelo mesmo game.js em faixas de símbolos disjuntas a partir de uma tabela de conflitos gerada — só ferramenta Edit, nunca Write — com zonas vermelhas (constructor / update / _dom) append-only. Medido, não torcido: três agents editaram faixas disjuntas ao mesmo tempo com zero conflito de conteúdo.",
+  },
+  "agent-regression-hunter": {
+    tagline: "O agente que paga o loop inteiro.",
+    description:
+      "Um crítico de contexto limpo com uma única missão: achar o que PIOROU — comparando screenshots antes/depois e o git diff, isolando o viewmodel da arma pelos pixels invariantes entre os ângulos de câmera. Ordem permanente: se não houver regressão, diga isso — não invente.",
+  },
+  "agent-bug-hunter": {
+    tagline: "A régua vem antes do conserto.",
+    description:
+      "A skill de bug-hunt: escreva a medição primeiro e veja ela ficar vermelha, entregue todo conserto com a mutação que prova que a régua pode falhar, refute o palpite óbvio com um negativo medido — e lembre que o sintoma é onde o usuário estava, não onde mora o defeito.",
+  },
+};
+---
+
+<BaseLayout
+  lang="pt-br"
+  title="Agentes de IA | Ruben Marcus"
+  description="Uma frota de agents de IA web3 construída na Bitte Protocol: um padrão de agent e um runtime, entregues como agents chain-specific que transacionam de verdade em EVM, NEAR, Sui, Cardano e Midnight, mais os papéis de orquestração por trás do ECDSA.fail e do Gauntlet loop."
+  image="/og/pt-agents.png"
+>
+  <DitherBg client:load />
+
+  <Section id="intro">
+    <SectionHeader
+      index="08"
+      overline="A frota"
+      title="Uma frota de agentes de IA que transacionam de verdade."
+      description="13 agents em produção na Bitte, mais os papéis de orquestração que rodam meus loops de pesquisa e de jogo. Não foram builds do zero um a um: na Bitte eu desenhei o padrão de agent e o runtime (um spec OpenAPI vira um agent com tool calling e assinatura de carteira no chat) e depois entreguei agents chain-specific em cima dele. O mesmo jeito de pensar em padrões guia os papéis do centro de comando e do Gauntlet abaixo."
+    />
+  </Section>
+
+  {grouped.map((g) => (
+    <Section id={`group-${g.id}`} tight>
+      <header class="group-head" data-reveal>
+        <span class="bracket" data-reveal-item>{g.overline}</span>
+        <h2 class="group-title" data-reveal-item>{g.title}</h2>
+        {g.blurb && <p class="group-blurb" data-reveal-item>{g.blurb}</p>}
+      </header>
+      <ul class="agent-list" data-reveal>
+        {g.agents.map((agent, i) => (
+          <li data-reveal-item>
+            <WireCard class="agent-card" glyph={String(i + 1).padStart(2, "0")}>
+              <div class="agent-inner">
+                <DitherCover
+                  client:visible
+                  src={agent.cover}
+                  seed={agent.name}
+                  alt={`Capa: ${agent.name}`}
+                  class="agent-cover"
+                  invert
+                />
+                <div class="agent-body">
+                  <span class="agent-category">{agent.category} · {agent.chain}</span>
+                  <span class="agent-name">{agent.name}</span>
+                  <p class="agent-tagline">{AGENTS_PT[agent.slug]?.tagline ?? agent.tagline}</p>
+                  <p class="agent-desc">{AGENTS_PT[agent.slug]?.description ?? agent.description}</p>
+                  <div class="agent-tags">
+                    {agent.tags.map((t) => <span class="agent-tag">{t}</span>)}
+                  </div>
+                  {agent.link && (
+                    <a class="agent-link" href={`/pt${agent.link.href}`}>Leia a história →</a>
+                  )}
+                </div>
+              </div>
+            </WireCard>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  ))}
+
+  <Section id="outro" tight>
+    <div class="more" data-reveal>
+      <div class="more__actions" data-reveal-item>
+        <a href="/pt/ai" class="btn btn-secondary" data-magnetic>As ferramentas open-source →</a>
+        <a href="/pt/portfolio" class="btn btn-ghost" data-magnetic>Portfólio completo</a>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .group-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-bottom: 2rem;
+  }
+  .group-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .group-blurb {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 68ch;
+  }
+
+  .agent-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .agent-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    color: var(--text);
+  }
+  @media (min-width: 720px) {
+    .agent-inner {
+      grid-template-columns: 280px 1fr;
+      gap: 1.6rem;
+      align-items: stretch;
+    }
+  }
+
+  /* Dithered cover — full-width strip on mobile, fixed column on desktop */
+  :global(.agent-cover) {
+    aspect-ratio: 1000 / 420;
+  }
+  @media (min-width: 720px) {
+    :global(.agent-cover) {
+      aspect-ratio: auto;
+      min-height: 180px;
+      height: 100%;
+    }
+  }
+  /* Card-wide hover washes the dots over the real cover (invert mode) */
+  .agent-inner:hover :global(.dither-cover__dither) {
+    opacity: 1;
+  }
+
+  .agent-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    justify-content: center;
+  }
+
+  .agent-category {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+  }
+
+  .agent-name {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+    line-height: 1.1;
+  }
+
+  .agent-tagline {
+    font-family: var(--font-display);
+    color: var(--accent-soft);
+    font-size: 1.02rem;
+    line-height: 1.25;
+  }
+
+  .agent-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 70ch;
+  }
+
+  .agent-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+  }
+
+  .agent-tag {
+    padding: 0.22rem 0.6rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .more {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--bg-1);
+  }
+
+  .more__desc { color: var(--muted); max-width: 64ch; }
+  .more__actions { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+
+  .agent-link {
+    align-self: flex-start;
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--accent-soft);
+    border-bottom: 1px solid rgba(74, 222, 128, 0.35);
+    transition:
+      color var(--duration-hover) var(--ease-default),
+      border-color var(--duration-hover) var(--ease-default);
+  }
+  .agent-link:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+</style>

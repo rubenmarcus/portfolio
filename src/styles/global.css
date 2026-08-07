@@ -6,28 +6,31 @@
   /* Pure-black anchor — the live ice-flow Three.js shader provides all
      the colour atmosphere, so the static body bg can stay pitch-black. */
   --bg-0: #000000;
-  --bg-1: rgba(180, 200, 255, 0.035);
-  --bg-2: rgba(180, 200, 255, 0.055);
-  --line: rgba(180, 200, 255, 0.09);
-  --line-strong: rgba(180, 200, 255, 0.16);
-  --line-bright: rgba(180, 200, 255, 0.3);
+  --bg-1: rgba(134, 239, 172, 0.035);
+  --bg-2: rgba(134, 239, 172, 0.055);
+  --line: rgba(134, 239, 172, 0.1);
+  --line-strong: rgba(134, 239, 172, 0.18);
+  --line-bright: rgba(134, 239, 172, 0.32);
 
   --text: #f5f1ea;
   --cream: #f5f1ea;
   --muted: rgba(245, 241, 234, 0.82);
   --muted-soft: rgba(245, 241, 234, 0.55);
 
-  /* Primary accent — ice blue (single accent, no cyberpunk pink) */
-  --accent: #60b5ff;
-  --accent-soft: #a8d4ff;
-  --accent-deep: #1e6a9e;
-  --focus: rgba(96, 181, 255, 0.72);
+  /* Primary accent — terminal green (single accent, no cyberpunk pink) */
+  --accent: #00ff41;
+  --accent-soft: #4ade80;
+  --accent-deep: #15803d;
+  --focus: rgba(0, 255, 65, 0.72);
 
-  --section-y-mobile: 96px;
-  --section-y-desktop: 176px;
+  /* Vertical rhythm — 8pt-grid aligned. Generous but never empty: two
+     adjacent sections share ~320px of air on desktop, not 640px. Every
+     scroll position should show content. */
+  --section-y-mobile: 88px;
+  --section-y-desktop: 160px;
   --content-max: 1200px;
-  --text-max: 700px;
-  --gutter-x: clamp(1.25rem, 4vw, 2.75rem);
+  --text-max: 68ch;
+  --gutter-x: clamp(1.5rem, 5vw, 3.5rem);
 
   --radius-card: 16px;
   --radius-button: 12px;
@@ -43,13 +46,64 @@
   --duration-default: 220ms;
   --duration-reveal: 640ms;
 
-  --font-display: "Inter Tight", "Geist", system-ui, -apple-system, sans-serif;
-  --font-serif: "Instrument Serif", Georgia, serif;
-  --font-sans: "Geist", "Inter", system-ui, -apple-system, sans-serif;
-  --font-rounded: "Manrope", "Geist", system-ui, -apple-system, sans-serif;
+  --font-display: "Uncut Sans", "Space Grotesk", system-ui, -apple-system, sans-serif;
+  --font-sans: "Gabarito", "Inter", system-ui, -apple-system, sans-serif;
+  --font-rounded: "Uncut Sans", "Space Grotesk", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
 
   --z-nav: 1000;
+
+  /* Shiki css-variables theme (Astro renames it to --astro-code-*) —
+     gray base on a gray block, highlights in green shades */
+  --astro-code-foreground: #b8c2cc;
+  --astro-code-background: #15181d;
+  --astro-code-token-constant: #a3e635;
+  --astro-code-token-string: #86efac;
+  --astro-code-token-comment: rgba(184, 194, 204, 0.5);
+  --astro-code-token-keyword: #00ff41;
+  --astro-code-token-parameter: #d3dbe4;
+  --astro-code-token-function: #4ade80;
+  --astro-code-token-string-expression: #86efac;
+  --astro-code-token-punctuation: rgba(184, 194, 204, 0.65);
+  --astro-code-token-link: #4ade80;
+}
+
+/* Self-hosted faces — Gabarito (display, variable 400–700) and Uncut Sans
+   (body, 4 static weights). Only JetBrains Mono still comes from Google. */
+@font-face {
+  font-family: "Gabarito";
+  src: url("/fonts/gabarito-var.woff2") format("woff2-variations");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Uncut Sans";
+  src: url("/fonts/uncut-sans-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Uncut Sans";
+  src: url("/fonts/uncut-sans-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Uncut Sans";
+  src: url("/fonts/uncut-sans-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Uncut Sans";
+  src: url("/fonts/uncut-sans-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 @layer base {
@@ -92,6 +146,29 @@
     background-size: 320px 320px;
   }
 
+  /* Ambient dot-crosspoint grid — fixed above all sections via screen blend.
+     screen blend on black = dot color shows through; on bright text = invisible. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: screen;
+    background-image: radial-gradient(circle, rgba(74, 222, 128, 0.16) 1px, transparent 1px);
+    background-size: 26px 26px;
+    animation: dot-cascade 32s linear infinite;
+  }
+
+  @keyframes dot-cascade {
+    from { background-position: 0 0; }
+    to   { background-position: 0 26px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body::after { animation: none; }
+  }
+
   main {
     overflow-x: clip;
     position: relative;
@@ -127,6 +204,8 @@
     color: var(--muted);
     line-height: 1.7;
     text-wrap: pretty;
+    /* No line of body copy exceeds ~68ch anywhere on the site */
+    max-width: 68ch;
   }
 
   a {
@@ -146,7 +225,7 @@
   }
 
   ::selection {
-    background: rgba(96, 181, 255, 0.35);
+    background: rgba(0, 255, 65, 0.35);
     color: #ffffff;
   }
 
@@ -160,12 +239,12 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(160, 195, 255, 0.14);
+    background: rgba(134, 239, 172, 0.14);
     border-radius: 999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(160, 195, 255, 0.26);
+    background: rgba(134, 239, 172, 0.26);
   }
 
   /* Hide reveal targets until JS hydrates */
@@ -256,7 +335,7 @@
   .btn-primary:hover {
     background: #ffffff;
     border-color: var(--accent-soft);
-    box-shadow: 0 0 0 1px var(--accent-soft), 0 0 24px rgba(96, 181, 255, 0.3);
+    box-shadow: 0 0 0 1px var(--accent-soft), 0 0 24px rgba(0, 255, 65, 0.3);
     transform: translateY(-1px);
   }
 
@@ -304,8 +383,22 @@
   }
   .card:hover {
     background: var(--bg-2);
-    border-color: var(--line-strong);
-    transform: translateY(-2px);
+    border-color: var(--line-bright);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.48), 0 0 0 1px rgba(0, 255, 65, 0.1);
+  }
+
+  /* Halo — reusable glow-lift hover for any bordered element */
+  .halo {
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      transform var(--duration-hover) var(--ease-default),
+      box-shadow var(--duration-hover) var(--ease-default);
+  }
+  .halo:hover {
+    border-color: var(--line-bright);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.48), 0 0 0 1px rgba(0, 255, 65, 0.1);
   }
 
   /* Borderless card — Nillion-style, just a hairline at top */
@@ -340,6 +433,66 @@
   .nav-link:hover,
   .nav-link[aria-current="page"] {
     color: var(--text);
+  }
+
+  /* ── Card sheen — a green glow sweep that travels across the card on
+     hover. Shared by all bordered card patterns site-wide. ── */
+  .ai-card,
+  .support-card,
+  .contact-card,
+  .post-nav__card,
+  .tools__card,
+  .wire-card,
+  .card {
+    position: relative;
+  }
+  .ai-card::after,
+  .support-card::after,
+  .contact-card::after,
+  .post-nav__card::after,
+  .tools__card::after,
+  .wire-card::after,
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(
+      115deg,
+      transparent 32%,
+      rgba(0, 255, 65, 0.05) 46%,
+      rgba(0, 255, 65, 0.14) 50%,
+      rgba(0, 255, 65, 0.05) 54%,
+      transparent 68%
+    );
+    background-size: 260% 100%;
+    background-position: 125% 0;
+    opacity: 0;
+    transition:
+      background-position 720ms var(--ease-default),
+      opacity var(--duration-hover) var(--ease-default);
+  }
+  .ai-card:hover::after,
+  .support-card:hover::after,
+  .contact-card:hover::after,
+  .post-nav__card:hover::after,
+  .tools__card:hover::after,
+  .wire-card:hover::after,
+  .card:hover::after {
+    opacity: 1;
+    background-position: -25% 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ai-card::after,
+    .support-card::after,
+    .contact-card::after,
+    .post-nav__card::after,
+    .tools__card::after,
+    .wire-card::after,
+    .card::after {
+      transition: none;
+    }
   }
 
   /* Hairline divider */

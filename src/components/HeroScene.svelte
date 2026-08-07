@@ -1,115 +1,96 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import RotatingVerb from "./RotatingVerb.svelte";
-  import AsciiField from "./AsciiField.svelte";
-  import CodeStream from "./CodeStream.svelte";
+  import HeroScan from "./HeroScan.svelte";
+  import HeroTerminal from "./HeroTerminal.svelte";
+  import GradientGridBg from "./GradientGridBg.svelte";
 
-  const verbs = [
+  interface Props {
+    lang?: string;
+  }
+  let { lang = "en" }: Props = $props();
+  const pt = lang.startsWith("pt");
+  // Internal links keep the visitor inside the PT tree.
+  const base = pt ? "/pt" : "";
+
+  const VERBS_EN = [
     "autonomous AI agents",
-    "post-quantum tools",
-    "DeFi trading bots",
-    "AI frameworks",
-    "landing pages",
-    "NFT marketplaces",
-    "e-commerce platforms",
-    "developer portals",
-    "spec-driven coding loops",
-    "wallet UX",
-    "banking portals",
-    "AI search infra",
+    "multi-agent systems",
+    "AI dev tools",
+    "LLM pipelines",
+    "products end-to-end",
     "open-source libraries",
   ];
 
-  let video: HTMLVideoElement | null = $state(null);
-  let hero: HTMLElement | null = $state(null);
+  const VERBS_PT = [
+    "agentes de IA autônomos",
+    "sistemas multi-agent",
+    "AI dev tools",
+    "pipelines de LLM",
+    "produtos end-to-end",
+    "bibliotecas open-source",
+  ];
 
-  $effect(() => {
-    if (video) {
-      try { video.playbackRate = 1.15; } catch {}
-    }
-  });
+  const verbs = $derived(pt ? VERBS_PT : VERBS_EN);
 
-  // Scroll-driven zoom. Updates a single CSS variable on the hero element via
-  // a passive listener — no Svelte reactive state involved, so no re-renders.
-  onMount(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
-
-    let ticking = false;
-    const update = () => {
-      if (!hero) return;
-      const y = window.scrollY;
-      // 1.15 base, up to ~1.55 after 600px of scroll
-      const zoom = 1.15 + Math.min(y * 0.00065, 0.4);
-      hero.style.setProperty("--scroll-zoom", zoom.toFixed(3));
-      // ASCII digit layer brightens as the user scrolls past it
-      // (0.15 base → 0.9 after 700px of scroll)
-      const light = 0.15 + Math.min(y / 700, 1) * 0.75;
-      hero.style.setProperty("--scroll-light", light.toFixed(3));
-      ticking = false;
-    };
-    const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(update);
-        ticking = true;
-      }
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  });
+  const copy = $derived(
+    pt
+      ? {
+          hello: "Olá, eu sou",
+          build: "e eu",
+          buildVerb: "construo",
+          sub: "Senior Product Engineer. Produtos AI-native, experiências web premium e protótipos prontos pra startup. 13 anos de Next.js, TypeScript, sistemas de IA e developer tooling.",
+          ctaPrimary: "Agendar um projeto",
+          ctaSecondary: "Melhore o AEO da sua empresa",
+          ctaAgent: "contrate via agente ↗",
+        }
+      : {
+          hello: "Hello, I'm",
+          build: "and I",
+          buildVerb: "Build",
+          sub: "Senior Product Engineer. AI-native products, premium web experiences, and startup-ready prototypes. 13 years across Next.js, TypeScript, AI systems and developer tooling.",
+          ctaPrimary: "Book a project",
+          ctaSecondary: "Fix the AEO of your company",
+          ctaAgent: "hire me via your agent ↗",
+        },
+  );
 </script>
 
-<section bind:this={hero} class="hero" aria-label="Intro">
+<section class="hero" aria-label="Intro">
   <div class="hero__bg">
-    <video
-      bind:this={video}
-      autoplay
-      loop
-      muted
-      playsinline
-      preload="auto"
-      class="hero__video"
-    >
-      <source src="/videobg.webm" type="video/webm" />
-    </video>
+    <!-- Animated gradient-grid backdrop at very low intensity — felt, not seen -->
+    <GradientGridBg />
 
-    <!-- Blue tint masked to the head only -->
-    <div class="hero__iceTint" aria-hidden="true"></div>
+    <!-- Background terminal — the code the portrait is "writing", typed live
+         across the whole hero at low opacity, behind everything. -->
+    <HeroTerminal class="hero__terminal" />
 
-    <!-- Static-feeling ASCII overlay: sparse, slow, no cursor reactivity -->
-    <AsciiField
-      client:load
-      cell={16}
-      density={0.07}
-      morphRate={0.35}
-      opacity={0.16}
-      reactive={false}
-      color="rgba(200, 230, 255, 1)"
-      class="hero__asciiOverlay"
-    />
-
-    <!-- Calm code snippet drift — 3 at a time, long lifespans -->
-    <CodeStream client:load count={3} class="hero__code" />
+    <!-- Scanline portrait — the hero subject: Ruben at the laptop, rendered
+         live in WebGL with cursor-reactive scanline warp. Lazily boots
+         three.js; static <img> / single frame on mobile & reduced motion. -->
+    <HeroScan class="hero__desk3d" />
 
     <div class="hero__vignette" aria-hidden="true"></div>
-    <div class="hero__grid" aria-hidden="true"></div>
     <div class="hero__fadeBottom" aria-hidden="true"></div>
   </div>
 
   <div class="hero__lede">
     <p class="hero__intro">
-      Hello, I'm <span class="hero__introName">Ruben Marcus</span>
-      and I <span class="hero__introVerb">Build</span>
+      {copy.hello} <span class="hero__introName">Ruben Marcus</span>
+      {copy.build} <span class="hero__introVerb">{copy.buildVerb}</span>
     </p>
 
     <h1 class="hero__title">
       <RotatingVerb words={verbs} interval={7000} morphMs={1800} class="hero__verb" />
     </h1>
 
+    <p class="hero__sub">
+      {copy.sub}
+    </p>
+
     <div class="hero__ctas">
-      <a href="/portfolio" class="btn btn-primary">See the work</a>
-      <a href="/ai" class="btn btn-secondary">AI tools I ship</a>
+      <a href="{base}/contact" class="btn btn-primary">{copy.ctaPrimary}</a>
+      <a href="{base}/contact?subject=aeo" class="btn btn-secondary">{copy.ctaSecondary}</a>
+      <a href="{base}/connect" class="hero__agentCta">{copy.ctaAgent}</a>
     </div>
   </div>
 </section>
@@ -120,8 +101,6 @@
     min-height: 100vh;
     overflow: hidden;
     isolation: isolate;
-    --scroll-zoom: 1.15;
-    --scroll-light: 0.15;
   }
 
   .hero__bg {
@@ -130,85 +109,46 @@
     z-index: -2;
   }
 
-  .hero__video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scale(var(--scroll-zoom, 1.15));
-    transform-origin: center center;
-    transition: transform 250ms ease-out;
-    filter: brightness(0.86) contrast(1.04) saturate(0.18);
+  /* Scanline portrait — right portion of the hero on desktop, the figure
+     filling most of the viewport height. Soft left mask so the canvas melts
+     into the dark stage instead of showing a hard edge (the artwork's pure
+     black background makes the blend seamless). */
+  :global(.hero__desk3d) {
+    inset: 0 0 0 auto !important;
+    width: min(62vw, 1080px) !important;
+    z-index: 0;
+    mask-image: linear-gradient(90deg, transparent 0%, #000 20%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 20%);
+  }
+  @media (max-width: 900px) {
+    :global(.hero__desk3d) {
+      inset: 0 !important;
+      width: 100% !important;
+      opacity: 0.5;
+      mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+    }
   }
 
-  /* Ice tint masked to the head only */
-  .hero__iceTint {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(
-      135deg,
-      rgba(200, 235, 255, 0.6) 0%,
-      rgba(150, 210, 245, 0.55) 35%,
-      rgba(100, 180, 230, 0.55) 65%,
-      rgba(60, 140, 200, 0.6) 100%
-    );
-    mix-blend-mode: color;
-    mask-image: radial-gradient(
-      ellipse 22% 42% at 50% 50%,
-      #000 55%,
-      rgba(0, 0, 0, 0.6) 75%,
-      transparent 100%
-    );
-    -webkit-mask-image: radial-gradient(
-      ellipse 22% 42% at 50% 50%,
-      #000 55%,
-      rgba(0, 0, 0, 0.6) 75%,
-      transparent 100%
-    );
-  }
-
-  /* ASCII glyph overlay — same scale as the video so it zooms with it.
-     Layer opacity is driven by scroll position so glyphs "light up"
-     progressively as the user scrolls past the hero. */
-  :global(.hero__asciiOverlay) {
-    position: absolute !important;
+  /* CRT terminal — upper-left on desktop, aligned with the lede column and
+     tucked under the header. Low visual weight; hidden on mobile. */
+  :global(.hero__terminal) {
     inset: 0;
     z-index: 0;
-    mix-blend-mode: screen;
-    transform: scale(var(--scroll-zoom, 1.15));
-    transform-origin: center center;
-    opacity: var(--scroll-light, 0.15);
-    transition: transform 250ms ease-out, opacity 200ms linear;
+  }
+  @media (max-width: 900px) {
+    :global(.hero__terminal) { display: none; }
   }
 
-  /* Code snippets float over everything else in the bg */
-  :global(.hero__code) {
-    position: absolute !important;
-    inset: 0;
-    z-index: 0;
-    color: rgba(190, 230, 255, 0.5) !important;
-  }
-
+  /* Legibility scrim — a soft dark field behind the lede only, no global
+     murk. The stage itself stays pure near-black. */
   .hero__vignette {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 55% 55% at 22% 80%, rgba(6, 8, 15, 0.7) 0%, rgba(6, 8, 15, 0.32) 55%, transparent 82%),
-      linear-gradient(90deg, rgba(6, 8, 15, 1) 0%, rgba(6, 8, 15, 0.9) 7%, rgba(6, 8, 15, 0.45) 16%, transparent 28%, transparent 72%, rgba(6, 8, 15, 0.45) 84%, rgba(6, 8, 15, 0.9) 93%, rgba(6, 8, 15, 1) 100%),
-      linear-gradient(180deg, rgba(6, 8, 15, 0.85) 0%, transparent 18%, transparent 55%, rgba(6, 8, 15, 0.92) 100%);
-  }
-
-  .hero__grid {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.14;
-    background-image:
-      linear-gradient(rgba(245, 241, 234, 0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(245, 241, 234, 0.06) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+      radial-gradient(ellipse 50% 45% at 20% 82%, rgba(4, 6, 11, 0.62) 0%, rgba(4, 6, 11, 0.26) 55%, transparent 82%),
+      linear-gradient(180deg, rgba(4, 6, 11, 0.5) 0%, transparent 14%);
   }
 
   /* Bottom fade-to-black — pairs with the HeroStats top fade so the
@@ -230,51 +170,70 @@
     );
   }
 
-  /* Lede */
+  /* Lede — left column, capped so it never reaches the 3D figure at
+     1440px+; wide whitespace around it. */
   .hero__lede {
     position: absolute;
-    left: 10%;
-    bottom: 10%;
-    right: clamp(1rem, 4vw, 3rem);
+    left: clamp(2rem, 7vw, 8rem);
+    bottom: 11%;
     z-index: 3;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 1.55rem;
-    max-width: 1100px;
+    max-width: min(44rem, 44vw);
   }
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     .hero__lede {
       left: 1rem;
       right: 1rem;
       bottom: 8%;
+      max-width: none;
     }
   }
 
-  /* Intro — serif, italic-ready */
+  /* Choreographed entrance — the lede rises in ~0.8s after load, once the
+     3D figure's assemble intro is already underway. One clean moment. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__intro,
+    .hero__title,
+    .hero__sub,
+    .hero__ctas {
+      opacity: 0;
+      animation: heroRise 900ms cubic-bezier(0.22, 0.61, 0.21, 1) forwards;
+    }
+    .hero__intro { animation-delay: 800ms; }
+    .hero__title { animation-delay: 950ms; }
+    .hero__sub { animation-delay: 1050ms; }
+    .hero__ctas { animation-delay: 1150ms; }
+  }
+  @keyframes heroRise {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* Intro — Space Grotesk lede, name/verb pick up the terminal accent */
   .hero__intro {
     margin: 0;
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     font-size: clamp(1.4rem, 2.1vw, 2rem);
+    font-weight: 400;
     color: var(--muted);
     line-height: 1.3;
     letter-spacing: 0.005em;
   }
   .hero__introName {
     color: var(--accent-soft);
-    font-style: italic;
   }
-  /* "Build" gets a subtle ice-blue accent to match the cool palette */
   .hero__introVerb {
     color: var(--accent-soft);
-    font-style: italic;
   }
 
   .hero__title {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(3.4rem, 9.5vw, 7.5rem);
-    line-height: 0.96;
+    font-size: clamp(2.6rem, 4.9vw, 4.4rem);
+    line-height: 0.98;
     letter-spacing: -0.03em;
     font-weight: 500;
     color: var(--text);
@@ -282,12 +241,23 @@
     text-wrap: balance;
   }
 
-  /* Blue glow lives on the rotating verb */
+  /* Green glow lives on the rotating verb */
   :global(.hero__verb) {
     color: var(--accent-soft);
     text-shadow:
-      0 0 24px rgba(94, 200, 255, 0.45),
-      0 0 48px rgba(94, 200, 255, 0.22);
+      0 0 24px rgba(0, 255, 65, 0.4),
+      0 0 48px rgba(0, 255, 65, 0.2);
+  }
+
+  /* Positioning subheadline — the "what I do for you" line under the verb */
+  .hero__sub {
+    margin: 0;
+    max-width: 34rem;
+    font-family: var(--font-display);
+    font-size: clamp(0.98rem, 1.25vw, 1.15rem);
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--muted);
   }
 
   .hero__ctas {
@@ -295,5 +265,31 @@
     flex-wrap: wrap;
     gap: 0.8rem;
     margin-top: 0.4rem;
+    align-items: center;
+  }
+
+  /* Agent channel — quiet mono chip next to the real CTAs */
+  .hero__agentCta {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    color: var(--accent-soft);
+    opacity: 0.75;
+    transition: opacity var(--duration-hover) var(--ease-default),
+      text-shadow var(--duration-hover) var(--ease-default);
+  }
+  .hero__agentCta:hover {
+    opacity: 1;
+    text-shadow: 0 0 12px rgba(0, 255, 65, 0.45);
+  }
+  /* Four CTAs stay a clean wrapped row on small screens */
+  @media (max-width: 560px) {
+    .hero__ctas {
+      gap: 0.55rem;
+    }
+    .hero__ctas :global(.btn) {
+      font-size: 0.78rem;
+      padding: 0.6rem 0.95rem;
+    }
   }
 </style>

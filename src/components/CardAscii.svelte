@@ -26,7 +26,7 @@
     seed = "0",
     cols = 12,
     rows = 5,
-    color = "rgba(143, 169, 255, 0.55)",
+    color = "rgba(74, 222, 128, 0.55)",
     variant = "noise",
     class: className = "",
   }: Props = $props();
@@ -158,7 +158,7 @@
     word-break: break-all;
     /* Reflect grid shape — narrow band to right of card */
     width: calc(var(--cols, 12) * 0.45rem);
-    text-shadow: 0 0 12px rgba(58, 109, 255, 0.25);
+    text-shadow: 0 0 12px rgba(0, 255, 65, 0.25);
   }
 
   /* When inside a hovered card, the ASCII brightens + nudges */

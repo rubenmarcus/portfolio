@@ -2,19 +2,18 @@
   import { onMount } from "svelte";
 
   interface Props {
-    /** Pixel size of each grid cell. Smaller = denser. */
     cell?: number;
-    /** Probability per cell of having any glyph at all (sparseness). */
     density?: number;
-    /** How fast individual glyphs morph (per second). */
     morphRate?: number;
-    /** Opacity of glyphs. 0–1. */
     opacity?: number;
-    /** Whether the field reacts to the cursor (brightens near mouse). */
     reactive?: boolean;
-    /** Tint color for glyphs (rgba string preferred). */
+    /** Triggers a rapid glitch-scramble across the whole field. */
+    glitch?: boolean;
+    /** When set, glitch only applies to left+right side columns (0–0.5 fraction of width). */
+    glitchSides?: number;
+    /** Elliptical clear zone — always applied. Values 0–1 normalized. */
+    excludeEllipse?: { cx: number; cy: number; rx: number; ry: number };
     color?: string;
-    /** Class on the wrapping element. */
     class?: string;
   }
 
@@ -24,7 +23,10 @@
     morphRate = 1.4,
     opacity = 0.42,
     reactive = true,
-    color = "rgba(143, 169, 255, 1)",
+    glitch = false,
+    glitchSides,
+    excludeEllipse,
+    color = "rgba(0, 255, 65, 1)",
     class: className = "",
   }: Props = $props();
 
@@ -43,12 +45,24 @@
   let mouseY = -9999;
   let lastMorph = 0;
 
+  function ellipseDist(c: number, r: number): number {
+    if (!excludeEllipse) return 99;
+    const nx = (c + 0.5) / cols - excludeEllipse.cx;
+    const ny = (r + 0.5) / rows - excludeEllipse.cy;
+    return Math.sqrt((nx / excludeEllipse.rx) ** 2 + (ny / excludeEllipse.ry) ** 2);
+  }
+
   function buildField(w: number, h: number) {
     cols = Math.floor(w / cell) + 1;
     rows = Math.floor(h / cell) + 1;
     chars = new Array(cols * rows);
     for (let i = 0; i < chars.length; i++) {
-      chars[i] = Math.random() < density ? Math.floor(Math.random() * GLYPHS.length) : -1;
+      const r = Math.floor(i / cols);
+      const c = i % cols;
+      const d = ellipseDist(c, r);
+      if (d < 0.78) { chars[i] = -1; continue; }
+      const localDensity = d < 1.1 ? density * ((d - 0.78) / 0.32) : density;
+      chars[i] = Math.random() < localDensity ? Math.floor(Math.random() * GLYPHS.length) : -1;
     }
   }
 
@@ -64,8 +78,22 @@
     const h = canvas.height;
     ctx.clearRect(0, 0, w, h);
 
-    // Periodic morph — swap a few chars
-    if (now - lastMorph > 1000 / morphRate) {
+    if (glitch) {
+      // Flood ~60% of cells, skip inside ellipse and (if glitchSides set) skip center zone
+      const flood = Math.floor(chars.length * 0.6);
+      for (let i = 0; i < flood; i++) {
+        const idx = Math.floor(Math.random() * chars.length);
+        const fc = idx % cols;
+        const fr = Math.floor(idx / cols);
+        if (ellipseDist(fc, fr) < 1.0) continue;
+        if (glitchSides !== undefined) {
+          const nx = fc / cols;
+          if (nx >= glitchSides && nx <= 1 - glitchSides) continue;
+        }
+        chars[idx] = Math.floor(Math.random() * GLYPHS.length);
+      }
+    } else if (now - lastMorph > 1000 / morphRate) {
+      // Periodic morph — swap a few chars
       lastMorph = now;
       const swaps = Math.max(4, Math.floor(cols * rows * 0.004));
       for (let i = 0; i < swaps; i++) {
@@ -78,7 +106,9 @@
       }
     }
 
-    ctx.font = `${Math.floor(cell * 0.85)}px "JetBrains Mono", monospace`;
+    ctx.font = glitch
+      ? `bold ${Math.floor(cell * 1.1)}px "JetBrains Mono", monospace`
+      : `${Math.floor(cell * 0.85)}px "JetBrains Mono", monospace`;
     ctx.textBaseline = "top";
 
     const dpr = window.devicePixelRatio || 1;
@@ -95,17 +125,38 @@
 
         const px = c * cell * dpr;
         const py = r * cell * dpr;
-        let alpha = opacity;
 
-        if (reactive) {
-          const dx = px - mxLocal;
-          const dy = py - myLocal;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < haloR2) {
-            const t = 1 - d2 / haloR2;
-            alpha = Math.min(1, opacity + t * 0.65);
+        // Ellipse fade — skip core, smooth edge
+        const ed = ellipseDist(c, r);
+        if (ed < 0.78) continue;
+        const ellipseFade = ed < 1.1 ? (ed - 0.78) / 0.32 : 1.0;
+
+        // glitchSides: only scramble left/right columns, treat center as normal
+        const inGlitchZone = glitch && (
+          glitchSides === undefined ||
+          c / cols < glitchSides ||
+          c / cols > 1 - glitchSides
+        );
+
+        let alpha: number;
+        if (inGlitchZone) {
+          const wave = Math.abs(Math.sin((r / rows + now * 0.0012) * Math.PI * 8));
+          alpha = Math.min(1, 0.25 + wave * 0.28 + Math.random() * 0.08);
+        } else {
+          alpha = opacity;
+          if (reactive) {
+            const dx = px - mxLocal;
+            const dy = py - myLocal;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < haloR2) {
+              const t = 1 - d2 / haloR2;
+              alpha = Math.min(1, opacity + t * 0.65);
+            }
           }
         }
+
+        alpha *= ellipseFade;
+        if (alpha < 0.01) continue;
 
         ctx.fillStyle = color.replace(/,\s*1\)$/, `, ${alpha.toFixed(3)})`);
         ctx.fillText(GLYPHS[g], px, py);
@@ -167,7 +218,7 @@
   });
 </script>
 
-<div bind:this={wrapper} class={`ascii-field ${className}`} aria-hidden="true">
+<div bind:this={wrapper} class={`ascii-field ${className}${glitch ? " ascii-glitch" : ""}`} aria-hidden="true">
   <canvas bind:this={canvas}></canvas>
 </div>
 

@@ -1,38 +1,43 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import DitherBg from "../components/DitherBg.svelte";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import Divider from "../components/Divider.astro";
 import CardAscii from "../components/CardAscii.svelte";
+import WireCard from "../components/WireCard.astro";
+import DitherCover from "../components/DitherCover.svelte";
 
 const timeline = [
   {
     year: "2025",
-    period: "Oct 2025 — Now",
+    period: "Oct 2025 → 2026",
     role: "Senior AI Fullstack Engineer",
     org: "MultiVM Labs",
     location: "Remote",
     bullets: [
-      "Core frontend engineer for Quantum, a post-quantum secure L1 — main web app + developer-facing interfaces",
-      "Built Ralph Starter from scratch — AI coding orchestrator with Figma / GitHub / Linear / Notion integrations (100+ daily npm downloads)",
-      "Created AEO.js — Answer Engine Optimization for JS, makes sites discoverable by ChatGPT, Claude, Perplexity (100+ daily npm downloads)",
-      "Built Autoresearcher — benchmark-driven autonomous research loop CLI",
-      "Built Mirofi.sh — 1-click deployment for Mirofish workflows",
-      "Built a SUI AI Agent for DeFi on SUI — chat interface + agent logic",
+      "Core frontend engineer for Quantum, a post-quantum secure L1. Main web app + developer-facing interfaces",
+      "Own developer experience across the stack: post-quantum-packages (making PQ signing usable from TS/Rust) and AI tooling (Ralph Starter, Autoresearcher)",
+      "Built Ralph Starter from scratch: AI coding orchestrator with Figma / GitHub / Linear / Notion integrations (100+ daily npm downloads)",
+      "Created AEO.js: Answer Engine Optimization for JS, makes sites discoverable by ChatGPT, Claude, Perplexity (100+ daily npm downloads)",
+      "Built Autoresearcher, a benchmark-driven autonomous research loop CLI",
+      "Built Mirofi.sh, a 1-click deployment for Mirofish workflows",
+      "Built a SUI AI Agent for DeFi on SUI: chat interface + agent logic",
     ],
     stack: ["React", "Next.js", "TypeScript", "Node", "Claude/LLM SDKs", "MCP", "SUI SDK", "EVM", "Tailwind", "Turborepo", "Rust", "Svelte", "Bun"],
   },
   {
     year: "2022",
-    period: "Aug 2022 — Sep 2025",
+    period: "Aug 2022 → Sep 2025",
     role: "Senior AI Fullstack Engineer",
     org: "Bitte Protocol",
     location: "Remote",
     bullets: [
-      "Built an end-to-end AI trading agent on NearIntents + Bitte AI — UI, agent logic, real-time data pooling",
-      "Developed intelligent agents and frontends across Solana, EVM, SUI, and NEAR — DEXs, launchpads, DeFi platforms",
-      "Core contributor on Bitte Wallet — API architecture, UI/UX, Chrome extension, NEAR + EVM SDKs",
-      "Mintbase NFT marketplace — performance + maintainability with Next.js, GraphQL, React Query",
+      "Built an end-to-end AI trading agent on NearIntents + Bitte AI: UI, agent logic, real-time data pooling",
+      "Built the dev-facing tooling for shipping AI agents: make-agent CLI (validate + deploy an agent from an OpenAPI manifest, instant playground), the @bitte-ai/chat embeddable SDK, agent boilerplates and docs",
+      "Developed intelligent agents and frontends across Solana, EVM, SUI, and NEAR: DEXs, launchpads, DeFi platforms",
+      "Core contributor on Bitte Wallet: API architecture, UI/UX, Chrome extension, NEAR + EVM SDKs",
+      "Mintbase NFT marketplace: performance + maintainability with Next.js, GraphQL, React Query",
       "Led frontend cross-chain integrations: solana-web3.js, Viem, Wagmi, Suiet, near-api-js",
       "Open source: improved Mintbase.js SDK and Bitte AI packages DX + docs",
       "DevOps: CI/CD pipelines with GitHub Actions + Terraform",
@@ -42,48 +47,48 @@ const timeline = [
   },
   {
     year: "2021",
-    period: "Sep 2021 — Jul 2022",
+    period: "Sep 2021 → Jul 2022",
     role: "Senior Fullstack Engineer",
     org: "Grover",
     location: "Lisbon, Portugal",
     bullets: [
       "Led migration of the main app homepage from legacy React 16 + Redux to Next.js + React Query",
-      "Converted all site assets to WebP — reduced resource load by 50%+ while keeping visual quality",
+      "Converted all site assets to WebP. Reduced resource load by 50%+ while keeping visual quality",
       "Designed and shipped A/B tests, fixed critical bugs, drove user acquisition + retention",
     ],
     stack: ["Next.js", "React", "Redux", "Vue.js", "TypeScript", "GraphQL", "React Query", "GitHub Actions", "Docker", "Terraform", "Cypress", "RTL", "Jest", "AWS", "Playwright"],
   },
   {
     year: "2019",
-    period: "Apr 2019 — Aug 2021",
+    period: "Apr 2019 → Aug 2021",
     role: "Lead Frontend Engineer",
     org: "Zup Innovation",
     location: "São Paulo",
     bullets: [
       "Mission-critical financial platforms for Itaú (largest bank in Latin America) and Santander Spain",
-      "Architected + built Itaú's Developer Portal — Strapi + Node backend with Next.js frontend",
+      "Architected + built Itaú's Developer Portal: Strapi + Node backend with Next.js frontend",
       "Developed modular micro-frontend app for StackSpot using Single SPA + React",
       "Implemented facial biometric solution for real-time verification + credit score evaluation",
-      "Code quality leadership in a 60+ engineer org — test coverage, code reviews, CI/CD",
+      "Code quality leadership in a 60+ engineer org: test coverage, code reviews, CI/CD",
       "Led an internal Vue.js banking dashboard with focus on maintainability + secure data handling",
     ],
     stack: ["Next.js", "React", "Redux", "React Query", "TypeScript", "Vue.js", "Node", "Strapi", "GraphQL", "GitHub Actions", "Docker", "Terraform", "Cypress", "Jest", "Single SPA"],
   },
   {
     year: "2018",
-    period: "Feb 2018 — Mar 2019",
+    period: "Feb 2018 → Mar 2019",
     role: "Software Engineer",
     org: "GO-K",
     location: "São Paulo",
     bullets: [
-      "Built a vehicle marketplace for Brazil's largest logistics group — exclusive buy/sell channel, focus on scalability",
-      "Delivered landing pages + custom web apps for multiple clients — speed, conversion, SEO",
+      "Built a vehicle marketplace for Brazil's largest logistics group: exclusive buy/sell channel, focus on scalability",
+      "Delivered landing pages + custom web apps for multiple clients: speed, conversion, SEO",
     ],
     stack: ["Next.js", "React", "Angular", "Vue.js", "TypeScript", "Node", "AWS"],
   },
   {
     year: "2012",
-    period: "Mar 2012 — Mar 2017",
+    period: "Mar 2012 → Mar 2017",
     role: "Software Engineer",
     org: "Freelancer",
     location: "São Paulo + worldwide",
@@ -108,14 +113,16 @@ const skills = [
 ];
 
 const education = [
-  { school: "FIAP", program: "Information Systems (Associate)", period: "Jan 2020 — Jan 2022" },
+  { school: "FIAP", program: "Information Systems (Associate)", period: "Jan 2020 → Jan 2022" },
 ];
 ---
 
 <BaseLayout
-  title="About — Ruben Marcus"
-  description="Senior AI Fullstack Engineer based in Lisbon. 13 years building scalable apps across web3, fintech, and e-commerce. Currently at MultiVM Labs."
+  title="About | Ruben Marcus"
+  description="Senior AI Fullstack Engineer based in Lisbon. 13 years building scalable apps across web3, fintech, and e-commerce."
+  image="/og/about.png"
 >
+  <DitherBg client:load opacity={0.55} />
   <Section id="intro">
     <SectionHeader
       index="04"
@@ -134,34 +141,48 @@ const education = [
           Built 10+ AI agents for DeFi protocols across Solana, EVM, SUI, NEAR, and Cardano.
           Creator of <a href="https://ralphstarter.ai" class="link-inline" target="_blank" rel="noopener">Ralph Starter</a>
           (AI coding orchestrator) and <a href="https://aeojs.org" class="link-inline" target="_blank" rel="noopener">AEO.js</a>
-          (answer-engine optimisation) — both shipping with 100+ daily npm downloads.
+          (answer-engine optimisation). Both ship with 100+ daily npm downloads.
         </p>
         <p data-reveal-item>
-          Currently at <a href="https://multivmlabs.com" class="link-inline" target="_blank" rel="noopener">MultiVM Labs</a>
-          building Quantum, a post-quantum secure blockchain. Before that, four years on
-          NEAR + EVM at Bitte Protocol — wallet, marketplace, trading agents, cross-chain SDKs.
+          Most recently at <a href="https://multivmlabs.com" class="link-inline" target="_blank" rel="noopener">MultiVM Labs</a>,
+          building Quantum, an L1 blockchain. Before that, four years on
+          NEAR + EVM at Bitte Protocol: wallet, marketplace, trading agents, cross-chain SDKs.
           Earlier: lead frontend on Itaú's developer portal (the face of Open Banking at the
           largest bank in Latin America), Grover, and Brazilian agency work for Nike, Samsung,
           Centauro, Under Armour.
         </p>
         <p data-reveal-item>
-          I care about the seams — how spec becomes code, how research becomes a product,
+          On the AEO side I also take on <a href="/contact?subject=aeo" class="link-inline">AEO engagements</a>:
+          fixed-scope projects that end with a before/after score report from
+          <a href="https://check.aeojs.org" class="link-inline" target="_blank" rel="noopener">check.aeojs.org</a>
+          (2,200+ sites scanned and counting).
+        </p>
+        <p data-reveal-item>
+          I care about the seams: how spec becomes code, how research becomes a product,
           how a UI feels when an agent owns half of it. Selectively available for AI tooling,
-          Web3, and post-quantum work.
+          agents, and Web3 work.
         </p>
       </div>
 
       <aside class="about-card" data-reveal>
-        <img src="/rubenmarcus.jpeg" alt="Ruben Marcus" width="320" height="320" loading="eager" />
+        <div class="about-card__photo">
+          <DitherCover
+            client:visible
+            src="/art/about-portrait.png"
+            seed="Ruben Marcus"
+            alt="Ruben Marcus"
+            class="about-card__portrait"
+            invert
+          />
+        </div>
         <div class="about-card__meta">
           <span class="bracket">At a glance</span>
           <dl>
             <div><dt>Full name</dt><dd>Ruben Marcus Luz Paschoarelli</dd></div>
             <div><dt>Based</dt><dd>Lisbon, Portugal</dd></div>
             <div><dt>Role</dt><dd>Sr. AI Fullstack Engineer</dd></div>
-            <div><dt>Org</dt><dd>MultiVM Labs</dd></div>
             <div><dt>Years</dt><dd>13 (4+ web3, 2+ AI tools)</dd></div>
-            <div><dt>Email</dt><dd><a href="mailto:rubenmarcus.dev@gmail.com" class="link-inline">rubenmarcus.dev@gmail.com</a></dd></div>
+            <div><dt>Email</dt><dd><a href="mailto:ruben@rubenmarcus.dev" class="link-inline">ruben@rubenmarcus.dev</a></dd></div>
             <div><dt>Phone</dt><dd>+351 912 892 825</dd></div>
           </dl>
         </div>
@@ -174,30 +195,32 @@ const education = [
   <Section id="timeline" tight>
     <ol class="timeline" data-reveal>
       {timeline.map((t) => (
-        <li class="timeline-row" data-reveal-item>
-          <div class="timeline-meta">
-            <span class="timeline-year">{t.year}</span>
-            <span class="timeline-period">{t.period}</span>
-            <span class="timeline-location">{t.location}</span>
-          </div>
-          <div class="timeline-body">
-            <div class="timeline-head">
-              <span class="timeline-role">{t.role}</span>
-              <span class="timeline-org">{t.org}</span>
+        <li data-reveal-item>
+          <WireCard class="timeline-row" glyph={t.year}>
+            <div class="timeline-meta">
+              <span class="timeline-year">{t.year}</span>
+              <span class="timeline-period">{t.period}</span>
+              <span class="timeline-location">{t.location}</span>
             </div>
-            <ul class="timeline-bullets">
-              {t.bullets.map((b) => <li>{b}</li>)}
-            </ul>
-            <div class="timeline-stack">
-              {t.stack.map((s) => <span class="timeline-tag">{s}</span>)}
+            <div class="timeline-body">
+              <div class="timeline-head">
+                <span class="timeline-role">{t.role}</span>
+                <span class="timeline-org">{t.org}</span>
+              </div>
+              <ul class="timeline-bullets">
+                {t.bullets.map((b) => <li>{b}</li>)}
+              </ul>
+              <div class="timeline-stack">
+                {t.stack.map((s) => <span class="timeline-tag">{s}</span>)}
+              </div>
             </div>
-          </div>
+          </WireCard>
         </li>
       ))}
     </ol>
   </Section>
 
-  <Divider index="04.2" label="Skills" />
+  <Divider index="04.3" label="Skills" />
 
   <Section id="skills" tight>
     <div class="skills-grid" data-reveal>
@@ -213,7 +236,7 @@ const education = [
     </div>
   </Section>
 
-  <Divider index="04.3" label="Education" />
+  <Divider index="04.4" label="Education" />
 
   <Section id="education" tight>
     <ul class="edu-list" data-reveal>
@@ -262,13 +285,18 @@ const education = [
     gap: 1rem;
   }
 
-  .about-card img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
+  .about-card__photo {
+    position: relative;
     border-radius: 12px;
-    filter: grayscale(35%) contrast(1.05);
+    overflow: hidden;
+  }
+
+  /* Generated particle portrait (scripts/gen-about-portrait.mjs) through the
+     same DitherCover as every other card: portrait at rest, dots on hover. */
+  .about-card__photo :global(.about-card__portrait) {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    border-radius: 12px;
   }
 
   .about-card__meta dl {
@@ -294,23 +322,23 @@ const education = [
     font-size: 0.9rem;
   }
 
-  /* Timeline */
+  /* Timeline — entries as wire cards */
   .timeline {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
-  .timeline-row {
+  .timeline :global(.timeline-row) {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
-    padding: 1.6rem 0;
-    border-top: 1px solid var(--line);
   }
   @media (min-width: 720px) {
-    .timeline-row { grid-template-columns: 200px 1fr; gap: 2rem; }
+    .timeline :global(.timeline-row) { grid-template-columns: 200px 1fr; gap: 2rem; }
   }
-  .timeline-row:last-child { border-bottom: 1px solid var(--line); }
 
   .timeline-meta {
     display: flex;
@@ -439,22 +467,3 @@ const education = [
   .edu-program { color: var(--muted); font-size: 0.95rem; }
   .edu-period { font-family: var(--font-mono); font-size: 0.74rem; color: var(--muted-soft); }
 </style>
-
-<script>
-  import { reveal } from "../lib/motion/reveal";
-  const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            reveal(e.target as HTMLElement);
-            io.unobserve(e.target);
-          }
-        }
-      },
-      { threshold: 0.14, rootMargin: "0px 0px -8% 0px" },
-    );
-    targets.forEach((t) => io.observe(t));
-  }
-</script>

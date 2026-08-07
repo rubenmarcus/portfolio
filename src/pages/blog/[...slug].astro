@@ -2,6 +2,9 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Section from "../../components/Section.astro";
+import DitherBg from "../../components/DitherBg.svelte";
+import ShareLinks from "../../components/blog/ShareLinks.svelte";
+import ViewCounter from "../../components/blog/ViewCounter.svelte";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -22,19 +25,65 @@ const currentIndex = allPosts.findIndex((p) => p.id === post.id);
 const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
 const nextPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 
+// Related writing: tag overlap, most-shared first, recency breaks ties.
+// This is what links the series together (CS Brasil, agents, ECDSA.fail).
+const related = allPosts
+  .filter((p) => p.id !== post.id)
+  .map((p) => ({ p, shared: p.data.tags.filter((t) => post.data.tags.includes(t)).length }))
+  .filter(({ shared }) => shared > 0)
+  .sort((a, b) => b.shared - a.shared || b.p.data.date.getTime() - a.p.data.date.getTime())
+  .slice(0, 3)
+  .map(({ p }) => p);
+
 const formattedDate = post.data.date.toLocaleDateString("en-US", {
   year: "numeric",
   month: "long",
   day: "numeric",
 });
+
+const postUrl = new URL(`/blog/${post.id}/`, Astro.site).href;
+
+// View counter only mounts when the Supabase public env vars are configured;
+// the component also self-guards and renders nothing without them.
+const viewsEnabled = Boolean(
+  import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+);
+
+// "Originally published on …" label derived from the canonical host.
+const canonicalHost = post.data.canonical
+  ? new URL(post.data.canonical).hostname.replace(/^www\./, "")
+  : null;
+
+const blogPostingLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.date.toISOString(),
+  ...(post.data.updated && { dateModified: post.data.updated.toISOString() }),
+  author: {
+    "@type": "Person",
+    name: "Ruben Marcus",
+    url: "https://rubenmarcus.dev",
+  },
+  ...(post.data.cover && { image: new URL(post.data.cover, Astro.site).href }),
+  mainEntityOfPage: postUrl,
+  inLanguage: "en",
+};
 ---
 
 <BaseLayout
   title={`${post.data.title} — Ruben Marcus`}
   description={post.data.description}
-  image={post.data.cover}
+  image={`/og/blog/${post.id}.png`}
+  type="article"
+  publishedTime={post.data.date}
+  modifiedTime={post.data.updated}
+  canonicalUrl={post.data.canonical}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(blogPostingLd)} slot="head" />
   <article class="post">
+    <DitherBg client:load opacity={0.35} />
     <Section id="post-head">
       <header class="post-head">
         <a class="post-back" href="/blog">← All writing</a>
@@ -45,6 +94,12 @@ const formattedDate = post.data.date.toLocaleDateString("en-US", {
           <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
           <span class="post-meta__sep">·</span>
           <span>{post.data.readTime}</span>
+          {viewsEnabled && (
+            <>
+              <span class="post-meta__sep">·</span>
+              <ViewCounter client:load slug={post.id} />
+            </>
+          )}
           {post.data.reactions ? (
             <>
               <span class="post-meta__sep">·</span>
@@ -61,11 +116,13 @@ const formattedDate = post.data.date.toLocaleDateString("en-US", {
           {post.data.tags.map((t: string) => <span class="post-tag">#{t}</span>)}
         </div>
 
+        <ShareLinks client:load url={postUrl} title={post.data.title} />
+
         {post.data.canonical && (
           <p class="post-canonical">
             Originally published on
             <a href={post.data.canonical} target="_blank" rel="noopener noreferrer canonical" class="link-inline">
-              dev.to ↗
+              {canonicalHost} ↗
             </a>
           </p>
         )}
@@ -85,6 +142,19 @@ const formattedDate = post.data.date.toLocaleDateString("en-US", {
     </Section>
 
     <Section id="post-nav" tight>
+      {related.length > 0 && (
+        <div class="post-related">
+          <span class="overline">Related writing</span>
+          <div class="post-related__grid">
+            {related.map((r) => (
+              <a href={`/blog/${r.id}`} class="post-nav__card">
+                <span class="post-related__tag">#{r.data.tags[0]}</span>
+                <span class="post-nav__title">{r.data.title}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
       <nav class="post-nav" aria-label="Other posts">
         {prevPost ? (
           <a href={`/blog/${prevPost.id}`} class="post-nav__card">
@@ -102,12 +172,50 @@ const formattedDate = post.data.date.toLocaleDateString("en-US", {
       </nav>
 
       <div class="post-foot">
-        <a href="/blog" class="btn btn-secondary">← All writing</a>
-        <a href="/contact" class="btn btn-ghost">Reach out about this →</a>
+        <a href="/blog" class="btn btn-secondary" data-magnetic>← All writing</a>
+        <a href="/contact" class="btn btn-ghost" data-magnetic>Reach out about this →</a>
       </div>
     </Section>
   </article>
 </BaseLayout>
+
+<script>
+  // Copy button on every fenced code block. Runs on first load and after
+  // every ClientRouter swap (astro:page-load).
+  function mountCodeCopy() {
+    document.querySelectorAll<HTMLElement>(".prose pre").forEach((pre) => {
+      if (pre.querySelector(".code-copy")) return;
+      const btn = document.createElement("button");
+      btn.className = "code-copy";
+      btn.type = "button";
+      btn.setAttribute("aria-label", "Copiar código");
+      btn.innerHTML =
+        '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>copy</span>';
+      btn.addEventListener("click", async () => {
+        const text = pre.querySelector("code")?.innerText ?? pre.innerText;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        btn.classList.add("code-copy--done");
+        btn.querySelector("span")!.textContent = "copied";
+        setTimeout(() => {
+          btn.classList.remove("code-copy--done");
+          btn.querySelector("span")!.textContent = "copy";
+        }, 1500);
+      });
+      pre.appendChild(btn);
+    });
+  }
+  mountCodeCopy();
+  document.addEventListener("astro:page-load", mountCodeCopy);
+</script>
 
 <style>
   .post {
@@ -143,8 +251,8 @@ const formattedDate = post.data.date.toLocaleDateString("en-US", {
 
   .post-title {
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    line-height: 1.02;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    line-height: 1.08;
     letter-spacing: -0.012em;
     color: var(--text);
     text-wrap: balance;
@@ -183,10 +291,33 @@ const formattedDate = post.data.date.toLocaleDateString("en-US", {
     display: block;
     width: 100%;
     max-width: 1080px;
-    height: auto;
-    margin: 2.5rem auto 0;
+    /* Wide cinematic crop — the generated art is square, full-bleed was huge */
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    margin: 2rem auto 0;
     border-radius: var(--radius-card);
     border: 1px solid var(--line);
+  }
+
+  /* Related writing */
+  .post-related {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .post-related__grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .post-related__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .post-related__tag {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--accent-soft);
   }
 
   /* Footer nav */
@@ -318,7 +449,7 @@ const formattedDate = post.data.date.toLocaleDateString("en-US", {
     margin: 0;
     padding: 0.6rem 1.2rem;
     border-left: 2px solid var(--accent);
-    background: rgba(42, 92, 255, 0.04);
+    background: rgba(0, 255, 65, 0.04);
     border-radius: 4px;
     color: var(--text);
     font-style: italic;
@@ -335,21 +466,57 @@ const formattedDate = post.data.date.toLocaleDateString("en-US", {
     font-size: 0.86em;
     padding: 0.12em 0.42em;
     border-radius: 4px;
-    background: rgba(245, 241, 234, 0.06);
-    border: 1px solid var(--line);
-    color: var(--text);
+    background: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.22);
+    color: var(--accent-soft);
   }
 
   .prose pre {
     overflow-x: auto;
     padding: 1.1rem 1.2rem;
     border-radius: 10px;
-    background: #06080c;
-    border: 1px solid var(--line);
+    background: #15181d;
+    border: 1px solid rgba(245, 241, 234, 0.12);
     font-family: var(--font-mono);
     font-size: 0.85rem;
     line-height: 1.55;
-    color: #cfd6e2;
+    color: #d4dce6;
+    position: relative;
+  }
+
+  .code-copy {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.28rem 0.55rem;
+    border: 1px solid rgba(245, 241, 234, 0.14);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.55);
+    color: var(--muted-soft);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    cursor: pointer;
+    opacity: 0;
+    transition:
+      opacity var(--duration-hover) var(--ease-default),
+      color var(--duration-hover) var(--ease-default),
+      border-color var(--duration-hover) var(--ease-default);
+  }
+  .prose pre:hover .code-copy,
+  .code-copy:focus-visible {
+    opacity: 1;
+  }
+  .code-copy:hover {
+    color: var(--accent-soft);
+    border-color: rgba(0, 255, 65, 0.32);
+  }
+  .code-copy--done {
+    color: var(--accent);
+    border-color: rgba(0, 255, 65, 0.45);
+    opacity: 1;
   }
   .prose pre code {
     background: transparent;

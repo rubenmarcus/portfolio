@@ -9,6 +9,8 @@ export interface Project {
   stack?: string[];
   group: "ai" | "bitte" | "grover" | "zup-fiap" | "freelance-modern" | "agency" | "early";
   highlight?: boolean;
+  /** Show on /portfolio — the curated cut (the full list is the archive). */
+  featured?: boolean;
 }
 
 /**
@@ -18,17 +20,32 @@ export interface Project {
 export const projects: Project[] = [
   // ── AI / MultiVM Labs (2025–) ─────────────────────────────────────
   {
+    slug: "ralph-starter",
+    title: "Ralph Starter",
+    org: "Quantum",
+    period: "Jan 2026 — Present",
+    year: 2026,
+    description:
+      "Open-source AI coding orchestration platform. Multi-agent swarm mode (race / consensus / pipeline over isolated git worktrees), an MCP server, and a Figma→code visual validation pipeline. 100+ daily npm downloads.",
+    url: "https://ralphstarter.ai",
+    stack: ["TypeScript", "Node", "MCP", "LLM"],
+    group: "ai",
+    highlight: true,
+    featured: true,
+  },
+  {
     slug: "autoresearcher",
     title: "Autoresearcher",
     org: "Quantum",
     period: "Mar 2026 — Present",
     year: 2026,
     description:
-      "Standalone terminal CLI for benchmark-driven autonomous research loops. Runs an agent iteration, runs your benchmark, parses a metric with regex, keeps the iteration only if it improved.",
+      "Benchmark-driven autonomous research CLI. Multi-agent co-evolution — divergent agent populations in isolated git worktrees, champion merging, a Pareto frontier of candidates, and keep/reject validity gating.",
     url: "https://autoresearcher.org",
     stack: ["TypeScript", "CLI", "LLM"],
     group: "ai",
     highlight: true,
+    featured: true,
   },
   {
     slug: "aeojs",
@@ -37,27 +54,132 @@ export const projects: Project[] = [
     period: "Feb 2026 — Present",
     year: 2026,
     description:
-      "Answer Engine Optimization for the modern web. Make your site listed on ChatGPT, Claude, Perplexity, and any LLM.",
+      "Open-source Answer Engine Optimization framework. AI-crawler robots policy analysis and LLM-ready site exports (llms.txt, ai-index.json). 100+ daily npm downloads.",
     url: "https://aeojs.org",
     stack: ["TypeScript", "Astro plugin", "Next plugin"],
     group: "ai",
     highlight: true,
+    featured: true,
   },
   {
-    slug: "ralph-starter",
-    title: "Ralph Starter",
+    slug: "ecdsa-fail",
+    title: "ECDSA.fail — #1",
     org: "Quantum",
-    period: "Jan 2026 — Present",
+    period: "2025 — 2026",
     year: 2026,
     description:
-      "Ralph loops with integrations to Notion, GitHub, Linear and Figma. From prompt to full-scale projects.",
-    url: "https://ralphstarter.ai",
-    stack: ["TypeScript", "Node", "LLM"],
+      "Led AI engineering of an autonomous multi-agent research harness — 9 specialist LLM agent roles, 7+ providers, role→model routing, fail-closed adapters, spend gates — that took #1 on ECDSA.fail. Research contributor on the resulting publication.",
+    stack: ["Multi-agent", "LLM orchestration", "Research"],
     group: "ai",
     highlight: true,
+    featured: true,
+  },
+  {
+    slug: "qec-decoder",
+    title: "QEC Decoder — #1",
+    org: "Quantum",
+    period: "2025 — 2026",
+    year: 2026,
+    description:
+      "#1 on Optimization Arena's quantum error-correction decoder leaderboard (2,642 EPM, near Bayes-optimal) via a multi-agent campaign with an anti-overfitting evaluation protocol.",
+    stack: ["Multi-agent", "Quantum", "Evaluation"],
+    group: "ai",
+    highlight: true,
+    featured: true,
+  },
+  {
+    slug: "cs-brasil",
+    title: "CS Brasil",
+    org: "Side project",
+    period: "2026",
+    year: 2026,
+    description:
+      "Browser FPS. WebGL, no install, no netcode: matches simulated locally, Supabase as scoreboard. 2,191 players, 154K+ kills, 27 countries in alpha.",
+    url: "https://csbrasil.online",
+    stack: ["Three.js", "WebGL", "Supabase"],
+    group: "ai",
+    featured: true,
+  },
+  {
+    slug: "mirofish",
+    title: "Mirofi.sh",
+    org: "Quantum",
+    period: "2025 — Present",
+    year: 2025,
+    description:
+      "Productized an open-source multi-agent social-simulation engine (GraphRAG/Zep, OASIS) into a hosted SaaS: auth, Supabase storage, Railway/Vercel deployment, and a web platform.",
+    url: "https://mirofi.sh",
+    stack: ["Next.js", "Supabase", "SaaS"],
+    group: "ai",
+    featured: true,
+  },
+  {
+    slug: "pq-smart-wallet",
+    title: "Quantum Wallet (pq-smart-wallet)",
+    org: "Quantum",
+    period: "2025 — Present",
+    year: 2025,
+    description:
+      "Post-quantum ML-DSA wallet. ML-DSA-65 verifier compiled to WASM via Arbitrum Stylus (~374K gas vs ~1.57M pure-EVM), with hand-rolled ERC-4337 UserOps.",
+    url: "https://wallet.quantum.systems",
+    stack: ["Rust", "Arbitrum Stylus", "ERC-4337"],
+    group: "ai",
+    featured: true,
+  },
+
+  {
+    slug: "quantum-website",
+    title: "Quantum.systems",
+    org: "Quantum",
+    period: "2025 — 2026",
+    year: 2025,
+    description:
+      "Main website for the Quantum L1 — design and frontend, with generated 3D art direction.",
+    url: "https://quantum.systems",
+    stack: ["Next.js", "TypeScript", "Sanity"],
+    group: "ai",
+    featured: true,
+  },
+
+  {
+    slug: "quantum-scan",
+    title: "Quantum Scan",
+    org: "Quantum",
+    period: "2025 — 2026",
+    year: 2025,
+    description: "Block explorer for the Quantum L1.",
+    url: "https://quantumscan.org",
+    stack: ["Next.js", "TypeScript"],
+    group: "ai",
+    featured: true,
   },
 
   // ── Bitte Protocol (2022–) ────────────────────────────────────────
+  {
+    slug: "bitte-ai-runtime",
+    title: "Bitte AI Runtime",
+    org: "Bitte Protocol",
+    period: "2023 — Present",
+    year: 2024,
+    description:
+      "Top human committer (104 commits) on Bitte Protocol's production AI runtime: streaming LLM agent loops, OpenAPI→tool conversion, ~20 on-chain primitives across NEAR/EVM/SUI/Cardano, and NEAR Intents swaps.",
+    stack: ["TypeScript", "LLM agents", "Multi-chain"],
+    group: "bitte",
+    highlight: true,
+    featured: true,
+  },
+  {
+    slug: "bitte-agent-sdk",
+    title: "Bitte Agent SDK",
+    org: "Bitte Protocol",
+    period: "2023 — Present",
+    year: 2024,
+    description:
+      "#1 committer (135 of 343 commits) on the agent SDK monorepo: @bitte-ai/chat, the make-agent CLI, and OpenAPI function-calling manifests.",
+    stack: ["TypeScript", "Monorepo", "LLM"],
+    group: "bitte",
+    featured: true,
+  },
   {
     slug: "bitte-wallet",
     title: "Bitte Wallet",
@@ -65,10 +187,22 @@ export const projects: Project[] = [
     period: "Aug 2023 — Present",
     year: 2023,
     description:
-      "Wallet code and architecture, frontend, and some backend features for the Bitte Protocol wallet.",
+      "#3 committer (249 commits) on the production AI-agent wallet — Smart Actions.",
     stack: ["Next.js", "React", "NEAR"],
     group: "bitte",
-    highlight: true,
+    featured: true,
+  },
+  {
+    slug: "chain-agents",
+    title: "Chain Agents",
+    org: "Bitte Protocol",
+    period: "2023 — 2024",
+    year: 2023,
+    description:
+      "Sole author of 5 deployed chain agents: Solana assistant, Aerodrome (Base, ~25 tools), Morpho (Ethereum), meme.cooking (NEAR), and a Sui explorer.",
+    stack: ["TypeScript", "Agents", "Multi-chain"],
+    group: "bitte",
+    featured: true,
   },
   {
     slug: "minsta",
@@ -81,7 +215,6 @@ export const projects: Project[] = [
     url: "https://minsta.mintbase.xyz",
     stack: ["Next.js", "React", "NEAR"],
     group: "bitte",
-    highlight: true,
   },
   {
     slug: "mintbase-js",
@@ -105,6 +238,7 @@ export const projects: Project[] = [
     url: "https://mintbase.xyz",
     stack: ["Next.js", "React", "NEAR"],
     group: "bitte",
+    featured: true,
   },
   {
     slug: "mintbase-ui",
@@ -127,6 +261,7 @@ export const projects: Project[] = [
     description: "New features, documentation, and bug fixes on the tech-rental marketplace.",
     stack: ["Next.js", "React"],
     group: "grover",
+    featured: true,
   },
 
   // ── Zup Innovation / FIAP (2020–2021) ─────────────────────────────
@@ -142,12 +277,15 @@ export const projects: Project[] = [
   },
   {
     slug: "orange-stack",
-    title: "Orange Stack",
+    title: "Orange Stack (StackSpot v1)",
     org: "Zup Innovation",
     period: "Apr 2021 — Sep 2021",
     year: 2021,
-    description: "Internal stack work at Zup Innovation.",
+    description:
+      "The first version of what became StackSpot. Squad lead defining frontend architecture and code guidelines, adopting micro-frontends (Webpack Module Federation) in a complex multi-team application.",
+    stack: ["Webpack Module Federation", "React", "Redux", "Vue.js"],
     group: "zup-fiap",
+    featured: true,
   },
   {
     slug: "guia-react",
@@ -172,6 +310,7 @@ export const projects: Project[] = [
     stack: ["Next.js", "TypeScript", "React", "Jest", "Node", "AWS Lambda", "Docker", "Terraform"],
     group: "zup-fiap",
     highlight: true,
+    featured: true,
   },
   {
     slug: "lejour",
@@ -194,6 +333,7 @@ export const projects: Project[] = [
     url: "https://www.santander.com.br/cartoes",
     stack: ["Angular 7", "RxJS", "Redux", "TypeScript", "Jenkins", "GitLab"],
     group: "freelance-modern",
+    featured: true,
   },
   {
     slug: "surfland",
@@ -224,6 +364,7 @@ export const projects: Project[] = [
     description: "Angular + RxJS project for JSL.",
     stack: ["Angular", "RxJS"],
     group: "freelance-modern",
+    featured: true,
   },
   {
     slug: "kanamobi",
@@ -330,6 +471,7 @@ export const projects: Project[] = [
     description: "New version of the Printi website.",
     url: "http://www.printi.com.br",
     group: "agency",
+    featured: true,
   },
   {
     slug: "centauro",
@@ -340,6 +482,7 @@ export const projects: Project[] = [
     description: "New features and bug fixes on the Centauro e-commerce.",
     url: "http://www.centauro.com.br",
     group: "agency",
+    featured: true,
   },
   {
     slug: "itau-agir-2016",
@@ -370,6 +513,7 @@ export const projects: Project[] = [
     description: "Features, bug fixes, performance improvements.",
     url: "http://underarmour.com.br",
     group: "agency",
+    featured: true,
   },
   {
     slug: "flamengo-loja",
@@ -380,6 +524,7 @@ export const projects: Project[] = [
     description: "Features and bug fixes on Flamengo's official store.",
     url: "http://www.flamengoloja.com.br/",
     group: "agency",
+    featured: true,
   },
   {
     slug: "lista-magica",
@@ -390,6 +535,63 @@ export const projects: Project[] = [
     description: "Screen-to-code from agency designs — HTML5/CSS3/ASP.NET/jQuery.",
     stack: ["HTML5", "CSS3", "ASP.NET", "jQuery"],
     group: "agency",
+  },
+
+  // ── 2011 freelance era (featured) ─────────────────────────────────
+  {
+    slug: "samsung-training",
+    title: "Samsung Training",
+    org: "Samsung",
+    period: "Oct 2011 — Jan 2012",
+    year: 2011,
+    description: "Employee training system for Samsung — ASP.NET C#, HTML/CSS, jQuery.",
+    stack: ["ASP.NET C#", "HTML/CSS", "jQuery"],
+    group: "early",
+    featured: true,
+  },
+  {
+    slug: "roundup",
+    title: "RoundUp",
+    org: "Monsanto",
+    period: "2011 — 2012",
+    year: 2011,
+    description: "RoundUp project for Monsanto — HTML + CSS + PHP.",
+    stack: ["PHP", "HTML/CSS"],
+    group: "early",
+    featured: true,
+  },
+  {
+    slug: "thera-faria-lima",
+    title: "Thera Faria Lima",
+    org: "Cyrela",
+    period: "Nov 2011 — Jan 2012",
+    year: 2011,
+    description: "Website for Cyrela's Thera Faria Lima apartments, via Agência Ole — WordPress / PHP / MySQL.",
+    stack: ["WordPress", "PHP", "MySQL"],
+    group: "early",
+    featured: true,
+  },
+  {
+    slug: "portal-assinante-estadao",
+    title: "Portal do Assinante",
+    org: "Estadão",
+    period: "Oct 2011 — Nov 2011",
+    year: 2011,
+    description: "Portal do Assinante Estadão — HTML/CSS + PHP.",
+    stack: ["PHP", "HTML/CSS"],
+    group: "early",
+    featured: true,
+  },
+  {
+    slug: "top-imobiliario-estadao",
+    title: "Prêmio Top Imobiliário",
+    org: "Estadão",
+    period: "Oct 2011 — Nov 2011",
+    year: 2011,
+    description: "Prêmio Top Imobiliário Estadão — PHP + HTML/CSS.",
+    stack: ["PHP", "HTML/CSS"],
+    group: "early",
+    featured: true,
   },
 
   // ── Early career (pre-2015) ───────────────────────────────────────
@@ -417,12 +619,13 @@ export const projects: Project[] = [
   {
     slug: "panalink",
     title: "Panalink",
-    org: "Freelance",
+    org: "Panasonic",
     period: "Dec 2011 — Jul 2014",
     year: 2011,
-    description: "UI Design + Frontend (ASP.NET C# Razor / HTML / CSS).",
+    description: "UI Design + Frontend (ASP.NET C# Razor / HTML / CSS) for Panasonic's Panalink.",
     stack: ["ASP.NET", "Razor", "HTML/CSS"],
     group: "early",
+    featured: true,
   },
   {
     slug: "nova-camera",
@@ -519,8 +722,8 @@ export const projects: Project[] = [
 ];
 
 export const groupLabels: Record<Project["group"], string> = {
-  ai: "AI tooling / MultiVM Labs",
-  bitte: "Bitte Protocol — NFT & wallet infrastructure",
+  ai: "AI & agentic systems",
+  bitte: "Bitte Protocol — AI agents & wallet infrastructure",
   grover: "Grover",
   "zup-fiap": "Zup Innovation · FIAP · Itaú",
   "freelance-modern": "Freelance · Modern web",

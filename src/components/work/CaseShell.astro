@@ -1,0 +1,169 @@
+---
+/**
+ * CaseShell — shared "technical specimen" frame for /work case studies:
+ * hero with bracket overline + oversized title + meta table, a stat band,
+ * specimen body sections, and prev/next navigation. Thin green annotation
+ * lines, JetBrains Mono labels, generous whitespace throughout.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/Section.astro";
+
+interface MetaItem {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  index: string;
+  overline: string;
+  heading: string;
+  meta: MetaItem[];
+  prev?: { href: string; label: string };
+  next?: { href: string; label: string };
+  lang?: string;
+}
+
+const { title, description, index, overline, heading, meta, prev, next, lang = "en" } =
+  Astro.props;
+
+const isPt = lang.startsWith("pt");
+const archiveHref = isPt ? "/pt/portfolio" : "/portfolio";
+const archiveLabel = isPt ? "← arquivo completo" : "← full archive";
+const navAriaLabel = isPt ? "Navegação do estudo de caso" : "Case study navigation";
+---
+
+<BaseLayout title={title} description={description} lang={lang}>
+  <article class="case">
+    <Section id="intro">
+      <header class="case__hero" data-reveal>
+        <span class="bracket" data-reveal-item>
+          <span class="case__index">{index}</span>
+          <span class="case__sep">/</span>
+          <span>{overline}</span>
+        </span>
+        <h1 class="case__title" data-reveal-item>{heading}</h1>
+        <div class="case__lede" data-reveal-item>
+          <slot name="lede" />
+        </div>
+        <dl class="case__meta" data-reveal-item>
+          {meta.map((m) => (
+            <div>
+              <dt>{m.label}</dt>
+              <dd>{m.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </header>
+
+      <div class="case__stats" data-reveal>
+        <slot name="stats" />
+      </div>
+    </Section>
+
+    <slot />
+
+    <Section id="case-nav" tight>
+      <nav class="case__nav" aria-label={navAriaLabel}>
+        <a href={archiveHref} class="case__navlink">{archiveLabel}</a>
+        <span class="case__navpair">
+          {prev && <a href={prev.href} class="case__navlink">← {prev.label}</a>}
+          {next && <a href={next.href} class="case__navlink">{next.label} →</a>}
+        </span>
+      </nav>
+    </Section>
+  </article>
+</BaseLayout>
+
+<style>
+  .case__hero {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    max-width: 880px;
+  }
+
+  .case__index { color: var(--accent-soft); }
+  .case__sep { color: var(--muted-soft); }
+
+  .case__title {
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 7vw, 5.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-wrap: balance;
+  }
+
+  .case__lede {
+    color: var(--muted);
+    font-size: 1.08rem;
+    line-height: 1.7;
+    max-width: 66ch;
+  }
+  .case__lede :global(p + p) {
+    margin-top: 0.9rem;
+  }
+
+  .case__meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 2rem;
+    margin: 0.6rem 0 0;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--line);
+  }
+  @media (min-width: 720px) {
+    .case__meta { grid-template-columns: repeat(4, 1fr); }
+  }
+  .case__meta dt {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted-soft);
+    margin-bottom: 0.3rem;
+  }
+  .case__meta dd {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+
+  .case__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 2.5rem;
+    margin-top: 4.5rem;
+  }
+  @media (min-width: 720px) {
+    .case__stats { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .case__nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--line);
+  }
+  .case__navpair {
+    display: inline-flex;
+    gap: 1.6rem;
+  }
+  .case__navlink {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    opacity: 0.8;
+    transition: opacity var(--duration-hover) var(--ease-default);
+  }
+  .case__navlink:hover {
+    opacity: 1;
+    text-shadow: 0 0 12px rgba(0, 255, 65, 0.45);
+  }
+</style>

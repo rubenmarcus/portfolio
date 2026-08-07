@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { navItems } from "../lib/navigation";
+  import { navItems, navLabelsPt } from "../lib/navigation";
+  import SvgIcon from "../lib/assets/SvgIcon.svelte";
 
   interface Props {
     currentPath?: string;
@@ -10,6 +11,28 @@
 
   let menuOpen = $state(false);
   let scrolled = $state(false);
+
+  // Language routing — PT pages live under /pt. The Header derives everything
+  // from currentPath so no extra prop is needed.
+  const isPt = $derived(currentPath === "/pt" || currentPath.startsWith("/pt/"));
+  const items = $derived(
+    navItems.map((item) => ({
+      ...item,
+      href: isPt ? `/pt${item.href === "/" ? "" : item.href}` : item.href,
+      label: isPt ? (navLabelsPt[item.href] ?? item.label) : item.label,
+    })),
+  );
+  // Language toggle target — /x ↔ /pt/x. Blog posts mirror one-to-one, so
+  // the toggle deep-links to the same post in the other language.
+  const enPath = $derived(
+    isPt ? currentPath.replace(/^\/pt/, "") || "/" : currentPath,
+  );
+  const ptPath = $derived(
+    isPt
+      ? currentPath
+      : `/pt${currentPath === "/" ? "" : currentPath}`,
+  );
+  const homeHref = $derived(isPt ? "/pt" : "/");
 
   // Use a vanilla scroll listener with a generous threshold + hysteresis so
   // tiny scroll deltas around the boundary don't toggle the state.
@@ -23,7 +46,13 @@
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    // View transitions don't run onMount cleanups — unbind before the swap.
+    const unbind = () => window.removeEventListener("scroll", onScroll);
+    document.addEventListener("astro:before-swap", unbind, { once: true });
+    return () => {
+      unbind();
+      document.removeEventListener("astro:before-swap", unbind);
+    };
   });
 
   // Lock body scroll while mobile menu is open
@@ -36,19 +65,19 @@
   });
 
   function isCurrent(href: string): boolean {
-    if (href === "/") return currentPath === "/";
+    if (href === "/" || href === "/pt") return currentPath === href;
     return currentPath.startsWith(href);
   }
 </script>
 
 <header class="header" class:header--scrolled={scrolled}>
   <div class="header__inner">
-    <a href="/" class="header__brand" aria-label="rubenmarcus.dev — home">
+    <a href={homeHref} class="header__brand" aria-label="rubenmarcus.dev — home">
       <span class="header__name">rubenmarcus.dev</span>
     </a>
 
     <nav class="header__nav" aria-label="Primary">
-      {#each navItems as item}
+      {#each items as item}
         <a
           href={item.href}
           class="nav-link header__link"
@@ -60,35 +89,39 @@
     </nav>
 
     <div class="header__right">
+      <div class="header__lang" aria-label="Language / Idioma">
+        <a
+          href={enPath}
+          class="header__langLink"
+          aria-current={!isPt ? "true" : undefined}
+          hreflang="en"
+          lang="en"
+        >EN</a>
+        <span class="header__langSep" aria-hidden="true">/</span>
+        <a
+          href={ptPath}
+          class="header__langLink"
+          aria-current={isPt ? "true" : undefined}
+          hreflang="pt-br"
+          lang="pt-br"
+        >PT</a>
+      </div>
+
       <div class="header__socials" aria-label="Social links">
         <a href="https://github.com/rubenmarcus" target="_blank" rel="noopener" aria-label="GitHub" class="header__socialIcon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 2A10 10 0 0 0 8.84 21.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.1.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.69 0 3.84-2.34 4.68-4.57 4.93.36.31.69.92.69 1.85V21c0 .27.16.59.67.5A10 10 0 0 0 12 2z"/>
-          </svg>
+          <SvgIcon name="github" size={18} />
         </a>
         <a href="https://x.com/rubenmarcus_dev" target="_blank" rel="noopener" aria-label="X / Twitter" class="header__socialIcon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M18.244 2H21.5l-7.5 8.572L23 22h-6.91l-4.81-6.288L5.7 22H2.44l8.02-9.166L1.5 2h7.05l4.34 5.745L18.244 2zm-1.21 18h1.91L7.06 4H5.05l11.985 16z"/>
-          </svg>
+          <SvgIcon name="xTwitter" size={16} />
         </a>
         <a href="https://linkedin.com/in/rubenmarcus" target="_blank" rel="noopener" aria-label="LinkedIn" class="header__socialIcon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M4 4h4v16H4zM6 2.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM10 8h3.8v2.2h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V20h-4v-5.7c0-1.36-.03-3.1-1.9-3.1-1.9 0-2.2 1.48-2.2 3v5.8h-4V8z"/>
-          </svg>
+          <SvgIcon name="linkedin" size={18} />
         </a>
-        <a href="mailto:rubenmarcus.dev@gmail.com" aria-label="Email" class="header__socialIcon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3" y="5" width="18" height="14" rx="2"/>
-            <path d="M3 7l9 6 9-6"/>
-          </svg>
+        <a href="mailto:ruben@rubenmarcus.dev" aria-label="Email" class="header__socialIcon">
+          <SvgIcon name="mail" size={18} stroke={1.7} />
         </a>
-        <a href="https://dev.to/rubenmarcus" target="_blank" rel="noopener" aria-label="dev.to" class="header__socialIcon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="2.5" y="4.5" width="19" height="15" rx="2"/>
-            <path d="M7 9v6M5.5 9h3M5.5 12h2.5M5.5 15h3"/>
-            <path d="M11 9l1.7 6L14.4 9"/>
-            <path d="M17 9v6h2.5M17 12h1.8"/>
-          </svg>
+        <a href="https://www.npmjs.com/~rmarcus" target="_blank" rel="noopener" aria-label="npm" class="header__socialIcon">
+          <SvgIcon name="npm" size={18} stroke={1.7} />
         </a>
       </div>
 
@@ -107,7 +140,7 @@
   {#if menuOpen}
     <div class="header__overlay" role="dialog" aria-modal="true" aria-label="Site navigation">
       <nav class="header__overlay-nav">
-        {#each navItems as item, i}
+        {#each items as item, i}
           <a
             href={item.href}
             class="header__overlay-link"
@@ -126,7 +159,7 @@
 <style>
   .header {
     position: fixed;
-    top: 0;
+    top: 32px; /* clears the fixed availability marquee above */
     left: 0;
     right: 0;
     z-index: var(--z-nav);
@@ -184,20 +217,99 @@
   }
 
   .header__link {
+    position: relative;
     display: inline-flex;
     align-items: baseline;
     font-family: var(--font-rounded);
-    font-size: 1.4rem;
+    font-size: 1rem;
     font-weight: 500;
     letter-spacing: -0.005em;
   }
 
-  /* Right cluster: socials + burger */
+  /* ASCII caret that types in on hover — ">_" prefixes the link label in
+     stepped ch-width increments, like a terminal prompt appearing. */
+  .header__link::before {
+    content: ">_";
+    display: inline-block;
+    width: 0;
+    margin-right: 0;
+    overflow: hidden;
+    white-space: pre;
+    font-family: var(--font-mono);
+    font-size: 0.72em;
+    color: var(--accent-soft);
+    opacity: 0;
+    transition:
+      width 260ms steps(2, end),
+      margin-right 260ms steps(2, end),
+      opacity 140ms var(--ease-default);
+  }
+  .header__link:hover::before {
+    width: 1.7ch;
+    margin-right: 0.45ch;
+    opacity: 1;
+  }
+
+  /* Active-page indicator — a green underline that slides in; hover previews
+     it at lower contrast for non-active links. */
+  .header__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -7px;
+    height: 1.5px;
+    background: var(--accent-soft);
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 320ms var(--ease-default), opacity 320ms var(--ease-default);
+    opacity: 0.45;
+  }
+  .header__link:hover::after {
+    transform: scaleX(1);
+  }
+  .header__link[aria-current="page"]::after {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .header__link::before,
+    .header__link::after { transition: none; }
+  }
+
+  /* Right cluster: lang toggle + socials + burger */
   .header__right {
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
     justify-self: end;
+  }
+
+  /* Language toggle — mono, subtle; the active locale gets the accent. */
+  .header__lang {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+
+  .header__langLink {
+    color: var(--muted-soft);
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .header__langLink:hover {
+    color: var(--text);
+  }
+  .header__langLink[aria-current="true"] {
+    color: var(--accent-soft);
+  }
+
+  .header__langSep {
+    color: var(--muted-soft);
+    opacity: 0.55;
   }
 
   .header__socials {

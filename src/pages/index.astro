@@ -1,18 +1,27 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import DitherBg from "../components/DitherBg.svelte";
 import HeroScene from "../components/HeroScene.svelte";
-import HeroStats from "../components/HeroStats.svelte";
 import HeroStack from "../components/HeroStack.astro";
+import HireMeFor from "../components/HireMeFor.svelte";
+import StatsGrid from "../components/StatsGrid.svelte";
 import AsciiField from "../components/AsciiField.svelte";
-import CardAscii from "../components/CardAscii.svelte";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
-import Divider from "../components/Divider.astro";
-import { projects } from "../lib/data/projects";
-import { aiTools } from "../lib/data/aiTools";
+import GlitchDivider from "../components/GlitchDivider.svelte";
+import DitherCover from "../components/DitherCover.svelte";
+import HireAgent from "../components/HireAgent.svelte";
+import { fetchGithubStars, fetchNpmDownloads } from "../lib/stats-live";
+import { NPM_PACKAGES } from "../lib/data/stats";
 
-const featured = projects.filter((p) => p.highlight).slice(0, 5);
+// Live stats resolved at build time — visitors get exact numbers without
+// hitting the GitHub/npm rate limits. Null on failure → client-side fetch.
+const [initialStars, initialNpm] = await Promise.all([
+  fetchGithubStars().catch(() => null),
+  fetchNpmDownloads(NPM_PACKAGES).catch(() => null),
+]);
+
 const allPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
@@ -21,97 +30,32 @@ const featuredArticles = allPosts.slice(0, 3);
 
 <BaseLayout
   title="Ruben Marcus — AI Fullstack & Web3 Engineer"
-  description="Senior AI Fullstack Engineer building autonomous AI tooling, post-quantum infrastructure, and on-chain product surfaces at MultiVM Labs. Based in Lisbon."
+  description="Senior AI Fullstack Engineer building autonomous AI tooling, agents, and on-chain product surfaces. Based in Lisbon."
+  image="/og/index.png"
 >
+  <DitherBg client:load opacity={0.55} />
   <HeroScene client:load />
 
-  <!-- Live stats widget -->
-  <HeroStats client:load />
+  <!-- Hire me — commercial services strip -->
+  <HireMeFor client:visible />
+
+  <GlitchDivider client:visible />
+
+  <!-- Stats — proof in numbers -->
+  <StatsGrid client:visible {initialStars} {initialNpm} />
 
   <!-- Tech stack pills widget -->
   <HeroStack />
 
-  <!-- Featured work -->
-  <Section id="work">
-    <SectionHeader
-      index="01"
-      overline="Selected work"
-      title="A decade of shipping — from agency front-ends to autonomous AI."
-      description="Below: highlights from a 14-year run across e-commerce, banking, NFT infrastructure, and now AI tooling. The full archive lives in /portfolio."
-    />
-
-    <ol class="work-list">
-      {featured.map((p, i) => (
-        <li class="work-row" data-reveal>
-          <a class="work-link" href={p.url ?? "/portfolio"} target={p.url ? "_blank" : "_self"} rel={p.url ? "noopener noreferrer" : undefined}>
-            <span class="work-index">{String(i + 1).padStart(2, "0")}</span>
-            <div class="work-body">
-              <div class="work-head">
-                <span class="work-title">{p.title}</span>
-                <span class="work-org">{p.org}</span>
-                <span class="work-period">{p.period}</span>
-              </div>
-              <p class="work-desc">{p.description}</p>
-              {p.stack && (
-                <div class="work-stack">
-                  {p.stack.slice(0, 5).map((s) => <span class="work-tag">{s}</span>)}
-                </div>
-              )}
-            </div>
-            <span class="work-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-      ))}
-    </ol>
-
-    <p class="work-more">
-      <a href="/portfolio" class="link-inline">See the full project archive →</a>
-    </p>
-  </Section>
-
-  <Divider index="02" label="AI tools I ship" />
-
-  <!-- AI tools strip -->
-  <Section id="ai" tight>
-    <SectionHeader
-      index="02"
-      overline="AI tooling"
-      title="Three open tools I'm shipping right now."
-      description="All three are public, free, and used in production at MultiVM Labs."
-    />
-
-    <div class="ai-strip">
-      {aiTools.map((t, i) => (
-        <a class="ai-card" href={t.url} target="_blank" rel="noopener noreferrer" data-reveal>
-          <CardAscii client:visible seed={`home-${t.slug}`} variant={(["wave","noise","block"] as const)[i % 3]} cols={11} rows={4} />
-          <div class="ai-card__top">
-            <span class="ai-card__name">{t.name}</span>
-            <span class="bracket">{t.year}</span>
-          </div>
-          <p class="ai-card__tagline">{t.tagline}</p>
-          <p class="ai-card__desc">{t.description}</p>
-          <div class="ai-card__tags">
-            {t.tags.map((tg) => <span class="ai-card__tag">{tg}</span>)}
-          </div>
-          <span class="ai-card__more">Visit {t.url.replace("https://", "")} →</span>
-        </a>
-      ))}
-    </div>
-
-    <p class="work-more">
-      <a href="/ai" class="link-inline">All AI tools and research →</a>
-    </p>
-  </Section>
-
-  <Divider index="03" label="Writing" />
+  <GlitchDivider client:visible />
 
   <!-- Articles -->
   <Section id="writing" tight>
     <SectionHeader
       index="03"
-      overline="Writing"
+      overline="Blog"
       title="Notes on agents, automation, and the stack."
-      description="Articles on dev.to. More long-form coming as the AI tooling matures."
+      description="Articles on AI agents, orchestration, and the stack. Packages live on npm."
     />
 
     <ul class="article-list">
@@ -119,6 +63,14 @@ const featuredArticles = allPosts.slice(0, 3);
         <li class="article-row" data-reveal>
           <a class="article-link" href={`/blog/${post.id}`}>
             <span class="article-index">{String(i + 1).padStart(2, "0")}</span>
+            <DitherCover
+              client:visible
+              src={post.data.cover ?? ""}
+              seed={post.data.title}
+              alt={`Cover — ${post.data.title}`}
+              class="article-thumb"
+              invert
+            />
             <div class="article-body">
               <span class="article-title">{post.data.title}</span>
               <p class="article-desc">{post.data.description}</p>
@@ -141,21 +93,26 @@ const featuredArticles = allPosts.slice(0, 3);
     </p>
   </Section>
 
+  <!-- Hire via agent — AGENTS.md snippet + /api/hire -->
+  <Section id="agent-hire" tight>
+    <HireAgent client:visible />
+  </Section>
+
   <!-- Contact CTA -->
   <Section id="contact-cta" tight>
     <div class="cta-band" data-reveal>
       <AsciiField client:visible cell={20} density={0.18} morphRate={1.1} opacity={0.35} class="cta-ascii" />
       <div class="cta-band__inner">
-        <span class="bracket" data-reveal-item>06 / Contact</span>
+        <span class="bracket" data-reveal-item>04 / Contact</span>
         <h2 class="cta-title" data-reveal-item>
           Need an engineer who can ship from spec to PR?
         </h2>
         <p class="cta-desc" data-reveal-item>
-          I'm selectively available for AI tooling, Web3, and post-quantum infrastructure work.
+          I'm selectively available for AI tooling, agents, and Web3 product work.
         </p>
         <div class="cta-actions" data-reveal-item>
-          <a href="mailto:ruben@rubenmarcus.dev" class="btn btn-primary">ruben@rubenmarcus.dev</a>
-          <a href="/contact" class="btn btn-secondary">All contact channels</a>
+          <a href="mailto:ruben@rubenmarcus.dev" class="btn btn-primary" data-magnetic>ruben@rubenmarcus.dev</a>
+          <a href="/contact" class="btn btn-secondary" data-magnetic>All contact channels</a>
         </div>
       </div>
     </div>
@@ -163,191 +120,9 @@ const featuredArticles = allPosts.slice(0, 3);
 </BaseLayout>
 
 <style>
-  /* Work list (selected projects) */
-  .work-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .work-row {
-    border-top: 1px solid var(--line);
-  }
-  .work-row:last-child {
-    border-bottom: 1px solid var(--line);
-  }
-
-  .work-link {
-    display: grid;
-    grid-template-columns: 32px 1fr auto;
-    gap: 1.2rem;
-    padding: 1.4rem 0;
-    align-items: start;
-    color: var(--text);
-    transition: background-color var(--duration-hover) var(--ease-default);
-  }
-  .work-link:hover {
-    background: rgba(245, 241, 234, 0.02);
-  }
-
-  .work-index {
-    font-family: var(--font-mono);
-    font-size: 0.76rem;
-    color: var(--muted-soft);
-    padding-top: 0.4rem;
-  }
-
-  .work-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
-  }
-
-  .work-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.5rem 0.85rem;
-  }
-
-  .work-title {
-    font-family: var(--font-display);
-    font-size: clamp(1.4rem, 2.6vw, 1.95rem);
-    line-height: 1.1;
-    color: var(--text);
-  }
-
-  .work-org {
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    color: var(--accent-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .work-period {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--muted-soft);
-  }
-
-  .work-desc {
-    color: var(--muted);
-    max-width: 64ch;
-  }
-
-  .work-stack {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 0.3rem 0.45rem;
-    margin-top: 0.4rem;
-  }
-
-  .work-tag {
-    padding: 0.18rem 0.5rem;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-pill);
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    color: var(--muted-soft);
-  }
-
-  .work-arrow {
-    color: var(--muted-soft);
-    transition: transform var(--duration-hover) var(--ease-default), color var(--duration-hover) var(--ease-default);
-    align-self: center;
-  }
-  .work-link:hover .work-arrow {
-    transform: translate(2px, -2px);
-    color: var(--accent-soft);
-  }
-
   .work-more {
     margin-top: 2rem;
   }
-
-  /* AI strip */
-  .ai-strip {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: 1fr;
-  }
-  @media (min-width: 720px) { .ai-strip { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 1080px) { .ai-strip { grid-template-columns: 1fr 1fr 1fr; } }
-
-  .ai-card {
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
-    padding: 1.4rem;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-card);
-    background: var(--bg-1);
-    color: var(--text);
-    transition:
-      border-color var(--duration-hover) var(--ease-default),
-      transform var(--duration-hover) var(--ease-default),
-      background-color var(--duration-hover) var(--ease-default);
-  }
-  .ai-card:hover {
-    border-color: var(--line-bright);
-    transform: translateY(-2px);
-    background: var(--bg-2);
-  }
-
-  .ai-card__top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.7rem;
-  }
-
-  .ai-card__name {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    line-height: 1;
-  }
-
-  .ai-card__tagline {
-    color: var(--accent-soft);
-    font-style: italic;
-    font-family: var(--font-display);
-    font-size: 1.05rem;
-  }
-
-  .ai-card__desc {
-    color: var(--muted);
-    font-size: 0.95rem;
-    line-height: 1.55;
-  }
-
-  .ai-card__tags {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 0.3rem 0.4rem;
-    margin-top: 0.4rem;
-  }
-
-  .ai-card__tag {
-    padding: 0.18rem 0.5rem;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-pill);
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    color: var(--muted-soft);
-  }
-
-  .ai-card__more {
-    margin-top: auto;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--muted-soft);
-  }
-  .ai-card:hover .ai-card__more { color: var(--accent-soft); }
 
   /* Articles */
   .article-list {
@@ -364,11 +139,32 @@ const featuredArticles = allPosts.slice(0, 3);
     display: grid;
     grid-template-columns: 32px 1fr auto;
     gap: 1.2rem;
-    padding: 1.2rem 0;
+    padding: 1.6rem 0;
     color: var(--text);
     transition: background-color var(--duration-hover) var(--ease-default);
+    align-items: center;
   }
   .article-link:hover { background: rgba(245, 241, 234, 0.02); }
+
+  /* Post thumbnail — the generated cover at rest, dither dots on hover */
+  :global(.article-thumb) {
+    display: none;
+  }
+  @media (min-width: 880px) {
+    .article-link {
+      grid-template-columns: 32px 168px 1fr auto;
+    }
+    :global(.article-thumb) {
+      display: block;
+      width: 168px;
+      aspect-ratio: 16 / 10;
+      min-height: 0;
+      border: 1px solid var(--line);
+    }
+  }
+  .article-link:hover :global(.dither-cover__dither) {
+    opacity: 1;
+  }
 
   .article-index {
     font-family: var(--font-mono);
@@ -400,11 +196,11 @@ const featuredArticles = allPosts.slice(0, 3);
   .cta-band {
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(58, 109, 255, 0.22);
+    border: 1px solid rgba(0, 255, 65, 0.22);
     border-radius: 18px;
     background:
-      radial-gradient(circle at 20% 0%, rgba(58, 109, 255, 0.12), transparent 50%),
-      linear-gradient(180deg, rgba(160, 195, 255, 0.04), rgba(160, 195, 255, 0.015));
+      radial-gradient(circle at 20% 0%, rgba(0, 255, 65, 0.1), transparent 50%),
+      linear-gradient(180deg, rgba(134, 239, 172, 0.04), rgba(134, 239, 172, 0.015));
     padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3rem);
     text-align: center;
   }
@@ -443,24 +239,3 @@ const featuredArticles = allPosts.slice(0, 3);
   /* Helper used in article-meta */
   :global(.hero__sep) { color: var(--muted-soft); opacity: 0.6; }
 </style>
-
-<script>
-  // Hydrate scroll reveal across the home page using the same utilities
-  import { reveal } from "../lib/motion/reveal";
-
-  const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
-  if (targets.length > 0 && "IntersectionObserver" in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            reveal(e.target as HTMLElement);
-            io.unobserve(e.target);
-          }
-        }
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
-    );
-    targets.forEach((t) => io.observe(t));
-  }
-</script>

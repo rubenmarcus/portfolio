@@ -1,0 +1,727 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import DitherBg from "../../components/DitherBg.svelte";
+import Section from "../../components/Section.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
+import Divider from "../../components/Divider.astro";
+import AsciiField from "../../components/AsciiField.svelte";
+import CardAscii from "../../components/CardAscii.svelte";
+import { aiTools, supportingTools } from "../../lib/data/aiTools";
+import WireCard from "../../components/WireCard.astro";
+import VoxelIcon from "../../lib/assets/VoxelIcon.svelte";
+import HeroStats from "../../components/HeroStats.svelte";
+import type { VoxelIconName } from "../../lib/assets";
+
+// Voxel mark per tool — same mapping as the home AI Tools widget.
+const TOOL_ICONS: Record<string, VoxelIconName> = {
+  autoresearcher: "claude",
+  "ralph-starter": "terminal",
+  aeojs: "zap",
+};
+
+// pt-BR copy for the tool cards — the data source stays EN for the EN pages.
+const TOOLS_PT: Record<string, { tagline: string; description: string; features: string[] }> = {
+  "ralph-starter": {
+    tagline: "Specs viram código. A IA cuida do resto.",
+    description:
+      "Uma plataforma open-source de orquestração de código com IA. O modo swarm multi-agent roda estratégias de race, consensus ou pipeline sobre git worktrees isoladas; um MCP server expõe o loop inteiro para qualquer cliente MCP; e um pipeline de validação visual Figma→code fecha o loop de design. 100+ downloads diários no npm.",
+    features: [
+      "Swarms multi-agent: race · consensus · pipeline sobre git worktrees isoladas",
+      "MCP server: o loop completo de orquestração exposto a qualquer cliente MCP",
+      "Pipeline de validação visual Figma→code",
+      "5 fontes de spec: OpenSpec · Figma · GitHub · Linear · Notion",
+      "Roda testes, lint e build sozinho, captura erros shift-left",
+      "100+ downloads diários no npm",
+    ],
+  },
+  autoresearcher: {
+    tagline: "Loops de pesquisa general-purpose.",
+    description:
+      "Um CLI de pesquisa autônoma guiado por benchmark. Co-evolução multi-agent: populações divergentes de agents exploram em git worktrees isoladas, os campeões fazem merge de volta, e uma Pareto frontier acompanha os melhores candidatos, com keep/reject validity gating a cada iteração. Usado internamente na MultiVM Labs para benchmarks de criptografia pós-quântica, smart wallets e chain-level, mas propositalmente general-purpose.",
+    features: [
+      "Co-evolução multi-agent: populações divergentes em git worktrees, merge dos campeões",
+      "Pareto frontier: melhores candidatos acompanhados entre objetivos concorrentes",
+      "Keep/reject validity gating por métrica de benchmark",
+      "Relatório final em Markdown + audit log JSONL por run",
+      "Componível com qualquer benchmark expressável como shell command",
+    ],
+  },
+  aeojs: {
+    tagline: "Answer Engine Optimization para a web moderna.",
+    description:
+      "Um framework open-source de Answer Engine Optimization. Analisa sua robots policy para AI crawlers e gera exports prontos pra LLM (llms.txt, ai-index.json) para que ChatGPT, Claude, Perplexity e qualquer LLM descubra e cite seu site. Grátis, sem cadastro, 100+ downloads diários no npm.",
+    features: [
+      "Análise de robots policy p/ AI crawlers: quem vê o quê, e por quê",
+      "Exports prontos p/ LLM: llms.txt · ai-index.json · Markdown por página",
+      "Plugins first-class: Astro · Next.js · Vite · Nuxt · Angular · Webpack",
+      "Modo CLI standalone",
+      "Widget humano/IA drop-in",
+      "100+ downloads diários no npm",
+    ],
+  },
+};
+
+const SUPPORT_PT: Record<string, string> = {
+  "Mirofi.sh":
+    "SaaS hospedado, productizado a partir de um motor open-source de simulação social multi-agent (GraphRAG/Zep, OASIS). Auth, storage Supabase, deploy Railway/Vercel, plataforma web.",
+  "Chain Agents":
+    "Cinco chain agents em produção, autor único: assistente Solana, Aerodrome (Base, ~25 tools), Morpho (Ethereum), meme.cooking (NEAR), explorer Sui.",
+  "ralph-templates": "Templates de projeto prontos pra uso, consumidos pelo ralph-starter.",
+  "ralph-ideas": "Roadmap público e changelog do ecossistema Ralph.",
+  "awesome-ralph": "Links curados do ecossistema Ralph.",
+  "post-quantum-packages":
+    "Tooling de criptografia pós-quântica para Rust e TypeScript: ML-KEM, ML-DSA, SLH-DSA, Falcon.",
+};
+
+// Working knowledge — the disciplines behind the expertise cards, grounded
+// in shipped work (Bitte runtime, ralph-starter, autoresearcher, aeo.js).
+const KNOWLEDGE = [
+  { name: "Orquestração de agents", note: "Swarms de race / consensus / pipeline sobre git worktrees isoladas: ralph-starter." },
+  { name: "MCP / tool use", note: "O MCP server do ralph-starter expõe o loop inteiro a qualquer cliente MCP." },
+  { name: "Evals & benchmarks", note: "Protocolos anti-overfitting e Pareto frontiers. O core loop do Autoresearcher." },
+  { name: "Multi-provider routing", note: "Roteamento role→model entre 7+ providers de LLM no harness do ECDSA.fail." },
+  { name: "Guardrails & spend gates", note: "Adapters fail-closed e budget gates em toda run autônoma." },
+  { name: "Streaming UX", note: "Loops de agents com streaming no runtime de produção da Bitte." },
+  { name: "Structured output / function calling", note: "Conversão OpenAPI→tool e manifests de function calling na Bitte." },
+  { name: "Memory", note: "Memória de agents com Zep / GraphRAG, productizada no Mirofi.sh." },
+  { name: "RAG", note: "Pipelines de GraphRAG dentro do motor de simulação multi-agent por trás do Mirofi.sh." },
+  { name: "Vector search & embeddings", note: "A camada de retrieval sob os stacks de memória e RAG acima." },
+  { name: "Context engineering", note: "Exports de llms.txt + ai-index.json pra LLMs lerem um site direito. No aeo.js." },
+  { name: "Fine-tuning vs prompting", note: "Loops de prompt + eval em vez de fine-tunes. A aposta por trás dos dois #1." },
+];
+
+// Expertise areas — the tools below are the open-source proof of these.
+// Numbers come from src/lib/data/stats.ts and src/lib/data/aiTools.ts.
+const EXPERTISE = [
+  {
+    glyph: "&&",
+    name: "Sistemas de agents & orquestração",
+    desc: "Swarms multi-agent sobre git worktrees isoladas, MCP servers que expõem o loop inteiro, roteamento role→model entre providers com adapters fail-closed.",
+    proof: "prova · #1 no ECDSA.fail. Runtime da Bitte em produção, 2.85M+ mensagens de agents",
+  },
+  {
+    glyph: "∴",
+    name: "Desenho de avaliação & benchmarks",
+    desc: "Protocolos de avaliação anti-overfitting, Pareto frontiers entre objetivos concorrentes, keep/reject validity gating a cada iteração.",
+    proof: "prova · #1 no leaderboard de QEC decoder do Optimization Arena",
+  },
+  {
+    glyph: "{}",
+    name: "AEO / AI search",
+    desc: "Answer Engine Optimization: robots policy para AI crawlers, llms.txt e exports estruturados. Eu escrevi a ferramenta que mede o que ChatGPT, Claude e Perplexity citam.",
+    proof: "prova · criador do aeo.js + check.aeojs.org. 4.569 scans",
+  },
+  {
+    glyph: ">_",
+    name: "Features de LLM em produção",
+    desc: "Loops de agents com streaming, conversão OpenAPI→tool e agents on-chain que agem, não só conversam.",
+    proof: "prova · ~20 primitivas on-chain em NEAR / EVM / SUI / Cardano",
+  },
+];
+---
+
+<BaseLayout
+  lang="pt-br"
+  title="Engenharia de IA | Ruben Marcus"
+  description="Engenheiro de IA construindo sistemas de agents, protocolos de avaliação e tooling de AEO. #1 no ECDSA.fail e no leaderboard de QEC decoder, 2.85M+ mensagens de agents em produção. As ferramentas open-source abaixo são a prova."
+  image="/og/pt-ai.png"
+>
+  <DitherBg client:load opacity={0.55} />
+  <!-- Sparse ASCII atmosphere — only visible at the page edges -->
+  <div class="ai-atmos" aria-hidden="true">
+    <AsciiField client:load cell={20} density={0.13} morphRate={0.9} opacity={0.24} reactive={true} />
+  </div>
+
+  <Section id="intro">
+    <SectionHeader
+      index="01"
+      overline="AI expertise"
+      title="Eu construo os loops que tornam agents úteis."
+      description="Orquestração de agents, protocolos de avaliação, AEO e features de LLM em produção. Entregue em produção e medido em leaderboards públicos. As ferramentas open-source abaixo são a prova."
+    />
+
+    <div class="xp-grid">
+      {EXPERTISE.map((x, i) => (
+        <WireCard class="xp-card" glyph={x.glyph} data-reveal>
+          <span class="xp-index">{String(i + 1).padStart(2, "0")}</span>
+          <h2 class="xp-name">{x.name}</h2>
+          <p class="xp-desc">{x.desc}</p>
+          <p class="xp-proof">{x.proof}</p>
+        </WireCard>
+      ))}
+    </div>
+  </Section>
+
+  <!-- Open source showcase — the six tools as clip cards -->
+  <HeroStats client:visible lang="pt" />
+
+  <!-- Working knowledge — the disciplines behind the expertise -->
+  <Section id="knowledge" tight>
+    <div class="know" data-reveal>
+      <header class="know__head">
+        <span class="bracket">02 / Conhecimento aplicado</span>
+        <h2 class="know__title">O stack de IA que eu realmente uso em produção.</h2>
+      </header>
+      <ul class="know__grid">
+        {KNOWLEDGE.map((k) => (
+          <li class="know__cell">
+            <span class="know__name">{k.name}</span>
+            <span class="know__note">{k.note}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </Section>
+
+  {aiTools.map((t, i) => (
+    <Section id={t.slug} tight>
+      <article class="tool" data-reveal>
+        <header class="tool__head" data-reveal-item>
+          <span class="bracket">{String(i + 1).padStart(2, "0")} / {t.tags[0]}</span>
+          <div class="tool__nameRow">
+            <VoxelIcon client:visible name={TOOL_ICONS[t.slug] ?? "circleDot"} size={40} />
+            <h2 class="tool__name">{t.name}</h2>
+          </div>
+          <p class="tool__tagline">{TOOLS_PT[t.slug]?.tagline ?? t.tagline}</p>
+          <img
+            class="tool__cover"
+            src={`/art/covers/${t.slug}.png`}
+            alt={`${t.name} | capa gerada`}
+            loading="lazy"
+            decoding="async"
+          />
+        </header>
+
+        <div class="tool__grid">
+          <div class="tool__col" data-reveal-item>
+            <p class="tool__desc">{TOOLS_PT[t.slug]?.description ?? t.description}</p>
+
+            <div class="tool__tags">
+              {t.tags.map((tg) => <span class="tool__tag">{tg}</span>)}
+            </div>
+
+            <div class="tool__actions">
+              <a href={t.url} class="btn btn-primary" target="_blank" rel="noopener noreferrer" data-magnetic>
+                Visitar {t.url.replace("https://", "")} ↗
+              </a>
+              {t.repo && (
+                <a href={t.repo} class="btn btn-secondary" target="_blank" rel="noopener noreferrer" data-magnetic>
+                  GitHub
+                </a>
+              )}
+            </div>
+          </div>
+
+          <ul class="tool__features" data-reveal-item>
+            <CardAscii client:visible seed={`feat-${t.slug}`} variant="block" cols={14} rows={5} />
+            <span class="bracket tool__featuresLabel">Features</span>
+            {(TOOLS_PT[t.slug]?.features ?? t.features).map((f) => (
+              <li>{f}</li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    </Section>
+  ))}
+
+  <!-- The agent fleet — compact strip; the full grid lives on /agents -->
+  <Section id="agent-fleet" tight>
+    <div class="fleet" data-reveal>
+      <span class="bracket" data-reveal-item>Bitte Protocol</span>
+      <h2 class="fleet__title" data-reveal-item>A frota de agentes</h2>
+      <p class="fleet__desc" data-reveal-item>
+        O lado de produção desse trabalho: na Bitte eu desenhei o padrão de agent e o runtime.
+        Um spec OpenAPI vira um agent com tool calling e assinatura de carteira no chat. Depois
+        entreguei agents chain-specific em cima dele que fazem swap, stake, apostam e lançam tokens de verdade.
+      </p>
+      <div class="fleet__actions" data-reveal-item>
+        <a href="/pt/agents" class="btn btn-secondary" data-magnetic>Conheça os agentes →</a>
+      </div>
+    </div>
+  </Section>
+
+  <Divider index="02.5" label="AEO, como serviço" />
+
+  <!-- AEO expertise — productized sprint offer -->
+  <Section id="aeo" tight>
+    <div class="aeo-block" data-reveal>
+      <div class="aeo-block__head" data-reveal-item>
+        <span class="bracket">AEO expertise</span>
+        <h2 class="aeo-block__title">Eu construí a camada de AEO. Agora rodo ela como serviço.</h2>
+        <p class="aeo-block__desc">
+          Eu sou o criador do <a href="https://aeojs.org" class="link-inline" target="_blank" rel="noopener">aeo.js</a>
+          (100+ downloads diários no npm) e do
+          <a href="https://check.aeojs.org" class="link-inline" target="_blank" rel="noopener">check.aeojs.org</a>
+          (2.200+ sites escaneados). Eu sei exatamente o que faz ChatGPT, Claude e Perplexity
+          citarem um site, porque escrevi a ferramenta que mede isso.
+        </p>
+      </div>
+
+      <div class="aeo-cards">
+        <WireCard class="aeo-card" glyph="{}">
+          <span class="bracket">A oferta</span>
+          <h3 class="aeo-card__name">AEO</h3>
+          <p class="aeo-card__desc">
+            Um projeto de escopo fechado: eu audito seu site contra os answer engines,
+            entrego as correções de structured-data / llms.txt / camada de conteúdo e te
+            devolvo um relatório de antes/depois do check.aeojs.org.
+          </p>
+        </WireCard>
+
+        <WireCard class="aeo-card" glyph="01">
+          <span class="bracket">Prova, não achismo</span>
+          <h3 class="aeo-card__name">Relatório antes / depois</h3>
+          <p class="aeo-card__price">Pontuado na mesma rubrica que meu scanner usa</p>
+          <p class="aeo-card__desc">
+            Você recebe o scan inicial, o diff entregue e o re-scan. A
+            melhora no seu score de AI search é medida, não afirmada.
+          </p>
+        </WireCard>
+
+        <WireCard class="aeo-card aeo-card--cta" glyph=">_">
+          <span class="bracket">Agende</span>
+          <h3 class="aeo-card__name">Conserte seu score de AI search</h3>
+          <p class="aeo-card__desc">
+            Vagas limitadas. O trabalho é mão na massa, não delegado.
+          </p>
+          <div class="aeo-card__actions">
+            <a href="/pt/contact?subject=aeo" class="btn btn-primary" data-magnetic>Iniciar um projeto de AEO</a>
+            <a href="https://check.aeojs.org" class="btn btn-secondary" target="_blank" rel="noopener" data-magnetic>Escaneie seu site grátis ↗</a>
+          </div>
+        </WireCard>
+      </div>
+    </div>
+  </Section>
+
+  <Section id="supporting" tight>
+    <SectionHeader
+      index="03"
+      overline="Repos de apoio"
+      title="O ecossistema em volta das ferramentas."
+      description="Templates, trackers de ideias, awesome-lists curadas e pacotes compartilhados de criptografia."
+    />
+
+    <div class="support-grid">
+      {supportingTools.map((s, i) => (
+        <a class="support-card" href={s.repo} target="_blank" rel="noopener noreferrer" data-reveal>
+          <CardAscii client:visible seed={`sup-${s.name}`} variant={(["noise","wave","block","noise"] as const)[i % 4]} cols={10} rows={4} />
+          <div class="support-card__top">
+            <span class="support-card__name">{s.name}</span>
+            <span class="support-card__arrow" aria-hidden="true">↗</span>
+          </div>
+          <p class="support-card__desc">{SUPPORT_PT[s.name] ?? s.description}</p>
+          <span class="overline">{s.repo.replace("https://", "")}</span>
+        </a>
+      ))}
+    </div>
+  </Section>
+
+  <Section id="cta" tight>
+    <div class="cta-band" data-reveal>
+      <span class="bracket" data-reveal-item>05 / Contato</span>
+      <h2 class="cta-title" data-reveal-item>Quer integrar uma dessas na sua stack?</h2>
+      <p class="cta-desc" data-reveal-item>Bora conversar. São open source, mas eu costumo ajudar times a adotar.</p>
+      <div class="cta-actions" data-reveal-item>
+        <a href="mailto:ruben@rubenmarcus.dev" class="btn btn-primary" data-magnetic>ruben@rubenmarcus.dev</a>
+        <a href="https://github.com/multivmlabs" class="btn btn-secondary" target="_blank" rel="noopener" data-magnetic>Todos os repos no GitHub</a>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  /* ASCII atmospheric layer behind the AI page — masked to edges so content
+     remains highly readable. Reactive halo behaviour comes from the component. */
+  .ai-atmos {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    mask-image:
+      radial-gradient(ellipse at center, transparent 38%, #000 78%),
+      linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-image:
+      radial-gradient(ellipse at center, transparent 38%, #000 78%),
+      linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+    -webkit-mask-composite: source-in;
+  }
+
+  /* Working knowledge — compact grid of disciplines */
+  .know {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+  .know__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .know__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .know__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.8rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .know__grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 1020px) {
+    .know__grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  .know__cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.95rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-1);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      transform var(--duration-hover) var(--ease-default),
+      box-shadow var(--duration-hover) var(--ease-default);
+  }
+  .know__cell:hover {
+    border-color: rgba(0, 255, 65, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 255, 65, 0.06);
+  }
+  .know__name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    line-height: 1.2;
+    color: var(--text);
+  }
+  .know__note {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1.55;
+    color: var(--muted-soft);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .know__cell { transition: none; }
+    .know__cell:hover { transform: none; }
+  }
+
+  /* Expertise cards — the lead section; tools below are the proof */
+  .xp-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 880px) {
+    .xp-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .xp-grid :global(.xp-card) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .xp-index {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted-soft);
+  }
+  .xp-name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.1;
+  }
+  .xp-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .xp-proof {
+    margin-top: auto;
+    padding-top: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: var(--accent-soft);
+  }
+
+  .tool {
+    border-top: 1px solid var(--line);
+    padding-top: 2.5rem;
+  }
+
+  .tool__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Generated particle-art cover — same language as the blog thumbs */
+  .tool__cover {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+  }
+
+  .tool__nameRow {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+  }
+
+  .tool__name {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    color: var(--text);
+  }
+
+  .tool__tagline {
+    font-family: var(--font-display);
+    color: var(--accent-soft);
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    line-height: 1.2;
+    max-width: 38ch;
+  }
+
+  .tool__grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 880px) {
+    .tool__grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; }
+  }
+
+  .tool__col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .tool__desc {
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.65;
+  }
+
+  .tool__tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tool__tag {
+    padding: 0.22rem 0.6rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .tool__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 0.5rem;
+  }
+
+  .tool__features {
+    position: relative;
+    overflow: hidden;
+    list-style: none;
+    padding: 1.4rem;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-1);
+  }
+
+  .tool__featuresLabel {
+    margin-bottom: 0.4rem;
+    color: var(--muted-soft);
+  }
+
+  .tool__features li {
+    color: var(--text);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    padding-left: 1.1rem;
+    position: relative;
+  }
+
+  .tool__features li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent-soft);
+  }
+
+  /* AEO block */
+  .aeo-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2.2rem;
+  }
+  .aeo-block__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .aeo-block__title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4.5vw, 3.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+  }
+  .aeo-block__desc {
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.65;
+    max-width: 66ch;
+  }
+  .aeo-cards {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 880px) {
+    .aeo-cards { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  .aeo-cards :global(.aeo-card) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .aeo-card__name {
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    line-height: 1.1;
+  }
+  .aeo-card__price {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent-soft);
+    letter-spacing: 0.04em;
+  }
+  .aeo-card__desc {
+    color: var(--muted);
+    font-size: 0.94rem;
+    line-height: 1.6;
+  }
+  .aeo-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: auto;
+    padding-top: 0.6rem;
+  }
+  .aeo-cards :global(.aeo-card--cta) {
+    border-color: rgba(0, 255, 65, 0.3);
+    background: linear-gradient(180deg, rgba(0, 255, 65, 0.07), rgba(0, 255, 65, 0.02));
+  }
+
+  /* Agent fleet strip — links out to /agents */
+  .fleet {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--bg-1);
+  }
+  .fleet__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .fleet__desc { color: var(--muted); max-width: 64ch; }
+  .fleet__actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 0.4rem; }
+
+  /* Supporting */
+  .support-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) { .support-grid { grid-template-columns: 1fr 1fr; } }
+
+  .support-card {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 1.35rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-1);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      transform var(--duration-hover) var(--ease-default);
+  }
+  .support-card:hover {
+    border-color: var(--line-bright);
+    transform: translateY(-2px);
+  }
+
+  .support-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+  }
+
+  .support-card__name {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .support-card__arrow { color: var(--muted-soft); }
+  .support-card:hover .support-card__arrow { color: var(--accent-soft); }
+
+  .support-card__desc { color: var(--muted); font-size: 0.92rem; }
+
+  /* CTA */
+  .cta-band {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(245, 241, 234, 0.035), rgba(245, 241, 234, 0.015));
+    padding: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3rem);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.04;
+    max-width: 24ch;
+    text-wrap: balance;
+  }
+  .cta-desc { max-width: 52ch; color: var(--muted); }
+  .cta-actions {
+    display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 0.4rem;
+  }
+</style>

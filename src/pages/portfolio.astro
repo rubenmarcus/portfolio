@@ -1,354 +1,158 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import DitherBg from "../components/DitherBg.svelte";
 import Section from "../components/Section.astro";
-import SectionHeader from "../components/SectionHeader.astro";
-import { projects, groupLabels, groupOrder, type Project } from "../lib/data/projects";
+import PortfolioGrid from "../components/portfolio/PortfolioGrid.svelte";
+import { projects, groupLabels, groupOrder } from "../lib/data/projects";
 
-const grouped: Record<Project["group"], Project[]> = {
-  ai: [],
-  bitte: [],
-  grover: [],
-  "zup-fiap": [],
-  "freelance-modern": [],
-  agency: [],
-  early: [],
+const caseStudies: Record<string, string> = {
+  "ecdsa-fail": "/work/ecdsa-fail",
+  "bitte-ai-runtime": "/work/bitte-runtime",
 };
 
-for (const p of projects) grouped[p.group].push(p);
-for (const k of groupOrder) grouped[k].sort((a, b) => b.year - a.year);
+/** Slugs with generated cover art at /art/covers/<slug>.png — the rest fall
+ *  back to the seeded DitherCover inside the grid. */
+const COVERS = new Set([
+  "ralph-starter",
+  "autoresearcher",
+  "aeojs",
+  "ecdsa-fail",
+  "qec-decoder",
+  "mirofish",
+  "bitte-agent-sdk",
+  "bitte-ai-runtime",
+]);
 
-const counts = groupOrder.map((g) => ({ key: g, label: groupLabels[g], count: grouped[g].length }));
-const total = projects.length;
+/** Brand cards get the green wireframe logo renders at /art/logos/<brand>.png */
+const LOGO_COVERS: Record<string, string> = {
+  "quantum-website": "/art/logos/quantum.png",
+  "quantum-scan": "/art/logos/quantum.png",
+  "pq-smart-wallet": "/art/logos/quantum.png",
+  "bitte-wallet": "/art/logos/bitte.png",
+  "chain-agents": "/art/logos/bitte.png",
+  "mintbase-marketplace": "/art/logos/mintbase.png",
+  grover: "/art/logos/grover.png",
+  "cs-brasil": "/art/covers/corosolto.png",
+  "itau-dev-portal": "/art/logos/itau.png",
+  "santander-cartoes": "/art/logos/santander.png",
+  "under-armour": "/art/logos/under-armour.png",
+  "flamengo-loja": "/art/logos/flamengo.png",
+  centauro: "/art/logos/centauro.png",
+  printi: "/art/logos/printi.png",
+  "clicca-jsl": "/art/logos/jsl.png",
+  "orange-stack": "/art/logos/stackspot.png",
+  panalink: "/art/logos/panasonic.png",
+  "samsung-training": "/art/logos/samsung.png",
+  roundup: "/art/logos/monsanto.png",
+  "thera-faria-lima": "/art/logos/cyrela.png",
+  "portal-assinante-estadao": "/art/logos/estadao.png",
+  "top-imobiliario-estadao": "/art/logos/estadao.png",
+};
+
+// Recent eras first, newest projects first within each era. Only the curated
+// cut (featured) shows — the full list stays in the data as the archive.
+const ordered = groupOrder.flatMap((g) =>
+  projects.filter((p) => p.group === g && p.featured).sort((a, b) => b.year - a.year),
+);
+
+const items = ordered.map((p) => ({
+  ...p,
+  cover: COVERS.has(p.slug) ? `/art/covers/${p.slug}.png` : LOGO_COVERS[p.slug],
+  caseStudy: caseStudies[p.slug],
+}));
 ---
 
 <BaseLayout
   title="Portfolio — Ruben Marcus"
-  description="A 14-year archive of projects. AI tooling, NFT infrastructure, banking portals, e-commerce, agency work, and the early WordPress / .NET years."
+  description="A curated, filterable cut of 14 years of projects. Filter by era, company, and technology across AI tooling, NFT infrastructure, banking portals, and e-commerce."
+  image="/og/portfolio.png"
 >
-  <!-- Blue atmospheric filter — fixed wash that gives the portfolio page its own identity -->
-  <div class="portfolio-atmos" aria-hidden="true">
-    <div class="portfolio-atmos__a"></div>
-    <div class="portfolio-atmos__b"></div>
-    <div class="portfolio-atmos__c"></div>
+  <DitherBg client:load opacity={0.55} />
+  <!-- Wireframe atmosphere — thin green perspective grid, the page's identity -->
+  <div class="wire-bg" aria-hidden="true">
+    <div class="wire-bg__field"></div>
+    <div class="wire-bg__floor"></div>
   </div>
 
-  <Section id="intro">
-    <SectionHeader
-      index="01"
-      overline="Portfolio"
-      title={`${total} projects across 14 years.`}
-      description="Grouped by era. The recent stuff (AI tools, Bitte Protocol) is at the top — scroll for the agency years, e-commerce, and the early WordPress / .NET work."
+  <Section id="archive" tight>
+    <p class="see-also">
+      <span class="see-also__label">see also:</span>
+      <a href="/agents">AI Agents →</a> the fleet behind the recent work
+    </p>
+    <PortfolioGrid
+      client:load
+      projects={items}
+      groupLabels={groupLabels}
+      groupOrder={groupOrder}
     />
-
-    <div class="filters" data-reveal>
-      {counts.map((c) => (
-        <a class="filter" href={`#${c.key}`} data-reveal-item>
-          <span class="filter__count">{c.count}</span>
-          <span class="filter__label">{c.label}</span>
-        </a>
-      ))}
-    </div>
   </Section>
-
-  {groupOrder.map((g, gi) => {
-    const list = grouped[g];
-    if (list.length === 0) return null;
-    return (
-      <Section id={g} tight>
-        <header class="group-head" data-reveal>
-          <span class="bracket" data-reveal-item>{String(gi + 1).padStart(2, "0")} / {list.length} projects</span>
-          <h2 class="group-title" data-reveal-item>{groupLabels[g]}</h2>
-        </header>
-
-        <ol class="proj-list">
-          {list.map((p, i) => (
-            <li class="proj-row" data-reveal>
-              {p.url ? (
-                <a class="proj-link" href={p.url} target="_blank" rel="noopener noreferrer">
-                  <span class="proj-index">{String(i + 1).padStart(2, "0")}</span>
-                  <div class="proj-body">
-                    <div class="proj-head">
-                      <span class="proj-title">{p.title}</span>
-                      <span class="proj-org">{p.org}</span>
-                      <span class="proj-period">{p.period}</span>
-                    </div>
-                    <p class="proj-desc">{p.description}</p>
-                    {p.stack && (
-                      <div class="proj-stack">
-                        {p.stack.map((s) => <span class="proj-tag">{s}</span>)}
-                      </div>
-                    )}
-                  </div>
-                  <span class="proj-arrow" aria-hidden="true">↗</span>
-                </a>
-              ) : (
-                <div class="proj-link proj-link--static">
-                  <span class="proj-index">{String(i + 1).padStart(2, "0")}</span>
-                  <div class="proj-body">
-                    <div class="proj-head">
-                      <span class="proj-title">{p.title}</span>
-                      <span class="proj-org">{p.org}</span>
-                      <span class="proj-period">{p.period}</span>
-                    </div>
-                    <p class="proj-desc">{p.description}</p>
-                    {p.stack && (
-                      <div class="proj-stack">
-                        {p.stack.map((s) => <span class="proj-tag">{s}</span>)}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </li>
-          ))}
-        </ol>
-      </Section>
-    );
-  })}
 </BaseLayout>
 
 <style>
-  /* Blue atmospheric wash — three layered radial gradients fixed to the viewport.
-     Gives the portfolio its own visual identity vs the rest of the site. */
-  .portfolio-atmos {
+  /* Cross-link hint above the grid — replaces the old page header */
+  .see-also {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted-soft);
+    /* the removed intro header used to provide this top breathing room */
+    margin: 5.5rem 0 1.4rem;
+  }
+  .see-also__label { color: var(--muted); }
+  .see-also a {
+    color: var(--accent-soft);
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .see-also a:hover { color: var(--accent); }
+
+  /* Wireframe atmosphere — a faint flat grid over the whole viewport plus a
+     perspective "floor" grid scrolling toward the viewer. Terminal-green
+     hairlines only, masked so content stays readable. */
+  .wire-bg {
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
-  }
-  .portfolio-atmos > div {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(120px);
-    mix-blend-mode: screen;
-  }
-  .portfolio-atmos__a {
-    top: -22%;
-    left: -10%;
-    width: 60vw;
-    height: 60vw;
-    background: radial-gradient(circle, rgba(42, 92, 255, 0.22), transparent 60%);
-    animation: atmos-drift-a 22s ease-in-out infinite alternate;
-  }
-  .portfolio-atmos__b {
-    top: 30%;
-    right: -18%;
-    width: 55vw;
-    height: 55vw;
-    background: radial-gradient(circle, rgba(96, 140, 255, 0.16), transparent 60%);
-    animation: atmos-drift-b 28s ease-in-out infinite alternate;
-  }
-  .portfolio-atmos__c {
-    bottom: -20%;
-    left: 20%;
-    width: 70vw;
-    height: 70vw;
-    background: radial-gradient(circle, rgba(20, 50, 160, 0.22), transparent 60%);
-    animation: atmos-drift-c 34s ease-in-out infinite alternate;
+    perspective: 55vh;
+    perspective-origin: 50% 42%;
   }
 
-  @keyframes atmos-drift-a {
-    from { transform: translate(0, 0); }
-    to   { transform: translate(8vw, 6vh); }
+  /* Flat faint grid across the upper field */
+  .wire-bg__field {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0, 255, 65, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.045) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse at 50% 30%, #000 0%, transparent 62%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 30%, #000 0%, transparent 62%);
   }
-  @keyframes atmos-drift-b {
-    from { transform: translate(0, 0); }
-    to   { transform: translate(-6vw, 4vh); }
+
+  /* Perspective floor — rotates away from the viewer, scrolls forward */
+  .wire-bg__floor {
+    position: absolute;
+    left: -60%;
+    right: -60%;
+    bottom: -10%;
+    height: 78%;
+    transform: rotateX(63deg);
+    transform-origin: bottom center;
+    background-image:
+      linear-gradient(rgba(0, 255, 65, 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.16) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.25) 45%, transparent 78%);
+    -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.25) 45%, transparent 78%);
+    animation: wire-floor-scroll 9s linear infinite;
   }
-  @keyframes atmos-drift-c {
-    from { transform: translate(0, 0); }
-    to   { transform: translate(4vw, -5vh); }
+
+  @keyframes wire-floor-scroll {
+    from { background-position-y: 0; }
+    to   { background-position-y: 72px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .portfolio-atmos > div { animation: none; }
-  }
-
-  .filters {
-    display: grid;
-    gap: 0.5rem;
-    grid-template-columns: 1fr 1fr;
-  }
-  @media (min-width: 720px) {
-    .filters { grid-template-columns: repeat(4, 1fr); }
-  }
-  @media (min-width: 1100px) {
-    .filters { grid-template-columns: repeat(7, 1fr); }
-  }
-
-  .filter {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
-    padding: 0.85rem 1rem;
-    border: 1px solid rgba(42, 92, 255, 0.22);
-    border-radius: var(--radius-card);
-    background: linear-gradient(180deg, rgba(42, 92, 255, 0.06), rgba(42, 92, 255, 0.02));
-    color: var(--text);
-    transition:
-      border-color var(--duration-hover) var(--ease-default),
-      background-color var(--duration-hover) var(--ease-default),
-      box-shadow var(--duration-hover) var(--ease-default),
-      transform var(--duration-hover) var(--ease-default);
-  }
-  .filter:hover {
-    border-color: rgba(42, 92, 255, 0.55);
-    background: linear-gradient(180deg, rgba(42, 92, 255, 0.12), rgba(42, 92, 255, 0.04));
-    box-shadow: 0 0 0 1px rgba(42, 92, 255, 0.25), 0 8px 28px rgba(42, 92, 255, 0.12);
-    transform: translateY(-2px);
-  }
-
-  .filter__count {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    line-height: 1;
-    color: var(--accent-soft);
-    text-shadow: 0 0 18px rgba(42, 92, 255, 0.4);
-  }
-
-  .filter__label {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    color: var(--muted);
-    letter-spacing: 0.04em;
-    line-height: 1.3;
-  }
-
-  .group-head {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .group-title {
-    font-family: var(--font-display);
-    font-size: clamp(1.6rem, 3.5vw, 2.5rem);
-    line-height: 1.1;
-    color: var(--text);
-  }
-
-  .proj-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .proj-row {
-    border-bottom: 1px solid var(--line);
-  }
-
-  .proj-link {
-    display: grid;
-    grid-template-columns: 38px 1fr auto;
-    gap: 1rem;
-    padding: 1.2rem 1rem 1.2rem 0.75rem;
-    color: var(--text);
-    transition:
-      background-color var(--duration-hover) var(--ease-default),
-      box-shadow var(--duration-hover) var(--ease-default);
-    border-left: 2px solid transparent;
-    margin-left: -0.75rem;
-  }
-  .proj-link:hover {
-    background: linear-gradient(90deg, rgba(42, 92, 255, 0.06), transparent 70%);
-    border-left-color: var(--accent);
-    box-shadow: inset 0 0 32px rgba(42, 92, 255, 0.04);
-  }
-  .proj-link--static { cursor: default; }
-
-  .proj-index {
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    color: var(--muted-soft);
-    padding-top: 0.4rem;
-  }
-
-  .proj-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .proj-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.4rem 0.75rem;
-  }
-
-  .proj-title {
-    font-family: var(--font-display);
-    font-size: clamp(1.2rem, 2vw, 1.55rem);
-    line-height: 1.15;
-  }
-
-  .proj-org {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--accent-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .proj-period {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--muted-soft);
-  }
-
-  .proj-desc {
-    color: var(--muted);
-    font-size: 0.95rem;
-    max-width: 70ch;
-  }
-
-  .proj-stack {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 0.3rem 0.4rem;
-    margin-top: 0.2rem;
-  }
-
-  .proj-tag {
-    padding: 0.15rem 0.45rem;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-pill);
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    color: var(--muted-soft);
-  }
-
-  .proj-arrow {
-    color: var(--muted-soft);
-    align-self: center;
-    transition: transform var(--duration-hover) var(--ease-default), color var(--duration-hover) var(--ease-default);
-  }
-  .proj-link:hover .proj-arrow {
-    transform: translate(2px, -2px);
-    color: var(--accent-soft);
+    .wire-bg__floor { animation: none; }
   }
 </style>
-
-<script>
-  import { reveal } from "../lib/motion/reveal";
-  const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            reveal(e.target as HTMLElement, { stagger: 70 });
-            io.unobserve(e.target);
-          }
-        }
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -6% 0px" },
-    );
-    targets.forEach((t) => io.observe(t));
-  }
-</script>

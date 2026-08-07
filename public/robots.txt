@@ -1,4 +1,36 @@
 User-agent: *
 Allow: /
 
+# AI crawlers explicitly welcome — this site is AEO-optimized and
+# wants to be cited by answer engines.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
 Sitemap: https://rubenmarcus.dev/sitemap-index.xml

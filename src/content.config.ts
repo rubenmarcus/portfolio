@@ -17,4 +17,22 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { blog };
+// pt-BR mirrors of selected blog posts. Same schema, same filenames;
+// canonical is intentionally unused here (PT pages are canonical-less mirrors).
+const blogPt = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/blog-pt" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.coerce.date(),
+    updated: z.coerce.date().optional(),
+    readTime: z.string(),
+    tags: z.array(z.string()),
+    cover: z.string().optional(),
+    canonical: z.string().url().optional(),
+    reactions: z.number().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { blog, blogPt };

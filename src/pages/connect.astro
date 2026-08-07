@@ -1,0 +1,256 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DitherBg from "../components/DitherBg.svelte";
+import Section from "../components/Section.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import HireAgent from "../components/HireAgent.svelte";
+import SvgIcon from "../lib/assets/SvgIcon.svelte";
+import type { SvgIconName } from "../lib/assets";
+
+const MCP_URL = "https://rubenmarcus.dev/api/mcp";
+
+const clients: { name: string; icon: SvgIconName; steps: string[] }[] = [
+  {
+    name: "Claude",
+    icon: "claude",
+    steps: [
+      "Open Claude settings → Connectors → Add custom connector.",
+      `Name it rubenmarcus and paste the URL: ${MCP_URL}`,
+      "Connect. Then ask: what has Ruben shipped?",
+    ],
+  },
+  {
+    name: "ChatGPT",
+    icon: "openai",
+    steps: [
+      "Settings → Apps & Connectors → developer mode → Create.",
+      `Paste the URL: ${MCP_URL} and save.`,
+      "Ask ChatGPT to call get_resume or book_intro.",
+    ],
+  },
+  {
+    name: "Kimi",
+    icon: "kimi",
+    steps: [
+      "Add a streamable-HTTP MCP server (or paste the URL in Kimi's MCP settings).",
+      `URL: ${MCP_URL}`,
+      "Run tools/list to see the four tools.",
+    ],
+  },
+  {
+    name: "Cursor / any MCP client",
+    icon: "cursor",
+    steps: [
+      "Add a streamable-HTTP MCP server.",
+      `URL: ${MCP_URL}`,
+      "Run tools/list to see the four tools.",
+    ],
+  },
+];
+
+const tools = [
+  { name: "get_resume", desc: "who I am, proof points, links" },
+  { name: "get_services", desc: "the six fixed-scope offers" },
+  { name: "check_availability", desc: "current engagement status" },
+  { name: "book_intro", desc: "posts a project brief to my inbox" },
+];
+---
+
+<BaseLayout
+  title="Connect — Ruben Marcus"
+  description="This site speaks MCP. Add rubenmarcus.dev as a connector in Claude, ChatGPT, Cursor or Kimi and let your agent read the resume, check availability, and book a project intro."
+  image="/og/connect.png"
+>
+  <DitherBg client:load opacity={0.55} />
+
+  <Section id="intro">
+    <SectionHeader
+      index="07"
+      overline="Connect"
+      title="This site speaks MCP."
+      description="Add it as a connector and your agent can read the resume, check availability, and book a project intro. No account, no auth, no signup."
+    />
+
+    <div class="url-bar" data-reveal>
+      <span class="url-bar__label">MCP endpoint</span>
+      <code class="url-bar__url" id="mcp-url">{MCP_URL}</code>
+      <button class="url-bar__copy" data-copy={MCP_URL}>copy</button>
+    </div>
+
+    <div class="client-grid">
+      {clients.map((c, i) => (
+        <div class="client-card" data-reveal>
+          <div class="client-card__top">
+            <span class="client-card__icon"><SvgIcon name={c.icon} size={24} /></span>
+            <span class="client-card__num">{String(i + 1).padStart(2, "0")}</span>
+          </div>
+          <h2 class="client-card__name">{c.name}</h2>
+          <ol class="client-card__steps">
+            {c.steps.map((s) => <li>{s}</li>)}
+          </ol>
+        </div>
+      ))}
+    </div>
+
+    <div class="tools-block" data-reveal>
+      <span class="bracket" data-reveal-item>The four tools</span>
+      <ul class="tools-list">
+        {tools.map((t) => (
+          <li class="tools-list__row" data-reveal-item>
+            <code class="tools-list__name">{t.name}</code>
+            <span class="tools-list__desc">{t.desc}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="tools-block__note" data-reveal-item>
+        Prefer plain HTTP? <code>GET /api/resume.json</code> returns the machine-readable
+        CV, <code>POST /api/hire</code> takes a brief. Terminal people: <code>curl rubenmarcus.dev</code>.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="agents-md" tight>
+    <HireAgent client:visible />
+  </Section>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll("[data-copy]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const text = btn.getAttribute("data-copy") ?? "";
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+      }
+      btn.textContent = "copied ✓";
+      setTimeout(() => (btn.textContent = "copy"), 2000);
+    });
+  });
+</script>
+
+<style>
+  .url-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border: 1px solid rgba(0, 255, 65, 0.3);
+    border-radius: var(--radius-card);
+    background: #06080c;
+    padding: 0.9rem 1.2rem;
+    margin-bottom: 2.5rem;
+  }
+  .url-bar__label {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+  }
+  .url-bar__url {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent);
+    text-shadow: 0 0 12px rgba(0, 255, 65, 0.35);
+  }
+  .url-bar__copy {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    padding: 0.25rem 0.8rem;
+    cursor: pointer;
+  }
+  .url-bar__copy:hover {
+    color: var(--accent);
+    border-color: rgba(0, 255, 65, 0.4);
+  }
+
+  .client-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-bottom: 3rem;
+  }
+  @media (min-width: 880px) {
+    .client-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .client-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    transition: border-color var(--duration-hover) var(--ease-default);
+  }
+  .client-card:hover { border-color: rgba(0, 255, 65, 0.35); }
+
+  .client-card__num {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted-soft);
+  }
+  .client-card__name {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    margin: 0;
+  }
+  .client-card__steps {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .tools-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.2rem 0;
+    border-top: 1px solid var(--line);
+  }
+  .tools-list__row {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .tools-list__name {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--accent-soft);
+    min-width: 12ch;
+  }
+  .tools-list__desc {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .tools-block__note {
+    color: var(--muted-soft);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .tools-block__note code {
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    color: var(--accent-soft);
+  }
+</style>

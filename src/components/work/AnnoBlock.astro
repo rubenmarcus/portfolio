@@ -1,0 +1,104 @@
+---
+/**
+ * AnnoBlock — a "technical specimen" figure: a JetBrains Mono annotation
+ * label with a thin green leader line feeding into a framed visual block.
+ * The leader terminates in a tick that drops into the panel's corner,
+ * like a callout on a botanical plate.
+ */
+interface Props {
+  label: string;
+  index?: string;
+  note?: string;
+}
+
+const { label, index, note } = Astro.props;
+---
+
+<figure class="anno">
+  <figcaption class="anno__head">
+    {index && <span class="anno__index">{index}</span>}
+    <span class="anno__label">{label}</span>
+    <span class="anno__leader" aria-hidden="true"></span>
+    {note && <span class="anno__note">{note}</span>}
+  </figcaption>
+  <div class="anno__body">
+    <slot />
+  </div>
+</figure>
+
+<style>
+  .anno {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .anno__head {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .anno__index {
+    color: var(--muted-soft);
+  }
+
+  .anno__label {
+    color: var(--accent-soft);
+    white-space: nowrap;
+  }
+
+  /* The leader: a hairline that runs from the label to the panel edge,
+     ending in a small tick that drops down into the panel corner. */
+  .anno__leader {
+    position: relative;
+    flex: 1;
+    height: 1px;
+    min-width: 2rem;
+    background: linear-gradient(90deg, rgba(0, 255, 65, 0.45), rgba(0, 255, 65, 0.08));
+  }
+  .anno__leader::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -2px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
+  }
+  .anno__leader::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 1px;
+    height: 9px;
+    background: rgba(0, 255, 65, 0.45);
+  }
+
+  .anno__note {
+    color: var(--muted-soft);
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    .anno__note { display: none; }
+  }
+
+  .anno__body {
+    margin-top: 0.55rem;
+    padding: 1.3rem 1.5rem;
+    border: 1px solid var(--line);
+    border-top-color: rgba(0, 255, 65, 0.28);
+    border-radius: 4px;
+    background:
+      radial-gradient(ellipse at 12% 0%, rgba(0, 255, 65, 0.04), transparent 55%),
+      rgba(3, 6, 4, 0.55);
+    overflow-x: auto;
+  }
+</style>

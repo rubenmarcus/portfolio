@@ -4,7 +4,7 @@ description: "Before touching Content-Types or routes, talk about security. This
 date: 2021-05-16
 readTime: "10 min"
 tags: ["nextjs", "frontend", "strapi", "security"]
-cover: "https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fa4baw8889wg224j7laly.jpg"
+cover: "/art/blog/getting-started-with-next-js-strapi-security-first.png"
 canonical: "https://dev.to/rubenmarcus/getting-started-with-next-js-strapi-security-first-3380"
 reactions: 28
 ---
@@ -114,7 +114,7 @@ To be authenticated you need to send a JWT in the header. See [Strapi's authenti
 - **Security Headers & ClickJacking:** Using `X-Frame-Options: DENY` or `SAMEORIGIN`, you prevent third parties from being able to run your Next.js application within a frame. The [next-secure-headers plugin](https://github.com/jagaapple/next-secure-headers) helps with FrameGuard, XSS Protection, [Content Security Policy](https://developer.mozilla.org/docs/Web/HTTP/Headers/Content-Security-Policy), [nosniff](https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Content-Type-Options), [noopen](https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Download-Options), [forceHTTPSRedirect](https://developer.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security), [referrerPolicy](https://developer.mozilla.org/docs/Web/HTTP/Headers/Referrer-Policy), [expectCT](https://developer.mozilla.org/docs/Web/HTTP/Headers/Expect-CT).
 - **JWT & Rolling Tokens:** You can implement JWT for the authentication of your App to guarantee the integrity of your API and access to it. [This is a good tutorial](https://medium.com/@xfor/apollo-next-js-refresh-token-authentication-flow-15e5f45df5a3).
 
-**More:** [NextAuth.js](https://next-auth.js.org/) — a plugin to help you with security in the authentication of your Next.js app.
+**More:** [NextAuth.js](https://next-auth.js.org/), a plugin to help you with security in the authentication of your Next.js app.
 
 ## SSL
 
@@ -141,15 +141,15 @@ Although it is not only a concern with security but also with performance, API c
 
 There are some sites and tools on the web that test how secure our application is:
 
-- **[Sentry](https://sentry.io/)** — error monitoring. Integrates with [GraphQL](https://github.com/BrunoScheufler/graphql-middleware-sentry), [Strapi](https://strapi.io/documentation/3.0.0-beta.x/guides/error-catching.html) or [Next.js](https://leerob.io/blog/configuring-sentry-for-nextjs-apps). Free tier for developers.
-- **Sqreen** — security monitoring platform. Can bring real-time data from potential exploits, protect you from attacks and malicious activities. Strapi supports Sqreen natively; Next.js needs a custom server.
-- **[LGTM](https://lgtm.com/)** — open-source static analysis tool used by Google, Microsoft, NASA, Dell. Checks for vulnerabilities on GitHub or BitBucket. Has automatic code review and powerful alerts.
-- **[SonarCloud](https://sonarcloud.io/)** — checks for bugs and vulnerabilities, plus code maintainability, test coverage, codesmells, duplication. Can stop a PR/MR on GitHub, GitLab, Azure DevOps, or BitBucket if it does not reach the expected code quality.
-- **[Mozilla Observatory](https://observatory.mozilla.org/)** — insights about the security of your website.
-- **[DigiCert SSL Tools](https://ssltools.digicert.com/checker/views/checkInstallation.jsp)** — SSL certificate data, vulnerabilities, certificate chain, server configuration.
-- **[Qualys SSL Labs](https://www.ssllabs.com/ssltest)** — more complete SSL testing than DigiCert.
-- **[Pen-test Tool: Website Vulnerability](https://pentest-tools.com/website-vulnerability-scanning/website-scanner)** — SQL Injection, XSS, file inclusion, remote command execution (paid).
-- **[Sucuri SiteChecker](https://sitecheck.sucuri.net/)** — checks if your site is blacklisted on Google, has unsafe links, etc.
+- **[Sentry](https://sentry.io/)**: error monitoring. Integrates with [GraphQL](https://github.com/BrunoScheufler/graphql-middleware-sentry), [Strapi](https://strapi.io/documentation/3.0.0-beta.x/guides/error-catching.html) or [Next.js](https://leerob.io/blog/configuring-sentry-for-nextjs-apps). Free tier for developers.
+- **Sqreen**: security monitoring platform. Can bring real-time data from potential exploits, protect you from attacks and malicious activities. Strapi supports Sqreen natively; Next.js needs a custom server.
+- **[LGTM](https://lgtm.com/)**: open-source static analysis tool used by Google, Microsoft, NASA, Dell. Checks for vulnerabilities on GitHub or BitBucket. Has automatic code review and powerful alerts.
+- **[SonarCloud](https://sonarcloud.io/)**: checks for bugs and vulnerabilities, plus code maintainability, test coverage, codesmells, duplication. Can stop a PR/MR on GitHub, GitLab, Azure DevOps, or BitBucket if it does not reach the expected code quality.
+- **[Mozilla Observatory](https://observatory.mozilla.org/)**: insights about the security of your website.
+- **[DigiCert SSL Tools](https://ssltools.digicert.com/checker/views/checkInstallation.jsp)**: SSL certificate data, vulnerabilities, certificate chain, server configuration.
+- **[Qualys SSL Labs](https://www.ssllabs.com/ssltest)**: more complete SSL testing than DigiCert.
+- **[Pen-test Tool: Website Vulnerability](https://pentest-tools.com/website-vulnerability-scanning/website-scanner)**: SQL Injection, XSS, file inclusion, remote command execution (paid).
+- **[Sucuri SiteChecker](https://sitecheck.sucuri.net/)**: checks if your site is blacklisted on Google, has unsafe links, etc.
 
 The intent of this article was to give a general idea of how to mitigate and solve various security and vulnerability problems in web applications with Next.js and Strapi before you start using the stack. The concepts mentioned here apply to any web application using REST or GraphQL APIs.
 

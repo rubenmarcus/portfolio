@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import Lenis from "lenis";
+  import { registerLenis } from "../lib/motion/scroll";
 
   onMount(() => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -12,6 +13,9 @@
       smoothWheel: true,
       touchMultiplier: 1.4,
     });
+
+    // Keep GSAP ScrollTrigger in sync with Lenis-driven scroll positions.
+    registerLenis(lenis);
 
     let rafId = 0;
     const raf = (time: number) => {

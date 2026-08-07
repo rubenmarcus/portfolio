@@ -1,15 +1,11 @@
 <script lang="ts">
   /**
-   * Ice-flow ambient bg — direct port of quantum-website's ShaderAtmosphere
-   * (`ice-flow` variant) with the ASCII post-pass and cursor flashlight.
+   * Ambient bg — drifting FBM layers with ASCII post-pass and cursor flashlight.
    *
    * Pipeline:
-   *   1. BG pass: full-quad atmosphere shader (warped FBM + voronoi + grain)
+   *   1. BG pass: three FBM planes drifting at different speeds/angles
    *   2. ASCII pass: converts the buffer into glyphs, applies scanlines /
    *      vignette / cursor halo
-   *
-   * Cursor tracking listens on document.pointermove so the flashlight
-   * follows the user even while they're hovering content stacked above.
    */
 
   import { onMount, onDestroy } from "svelte";
@@ -36,76 +32,56 @@
     uniform vec2  uResolution;
     varying vec2 vUv;
 
-    float hash11(float p) { p = fract(p * 0.1031); p *= p + 33.33; p *= p + p; return fract(p); }
-    float hash21(vec2 p)  { vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
-    vec2  hash22(vec2 p)  { vec3 p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973)); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.xx + p3.yz) * p3.zy); }
+    float hash21(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
 
     float noise(vec2 p) {
-      vec2 i = floor(p);
-      vec2 f = fract(p);
-      float a = hash21(i);
-      float b = hash21(i + vec2(1.0, 0.0));
-      float c = hash21(i + vec2(0.0, 1.0));
-      float d = hash21(i + vec2(1.0, 1.0));
+      vec2 i = floor(p); vec2 f = fract(p);
+      float a = hash21(i), b = hash21(i + vec2(1,0)),
+            c = hash21(i + vec2(0,1)), d = hash21(i + vec2(1,1));
       vec2 u = f * f * (3.0 - 2.0 * f);
-      return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+      return mix(a,b,u.x) + (c-a)*u.y*(1.0-u.x) + (d-b)*u.x*u.y;
     }
 
     float fbm(vec2 p) {
-      float v = 0.0; float a = 0.5;
-      for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.07; a *= 0.5; }
+      float v = 0.0, a = 0.5;
+      for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.05; a *= 0.5; }
       return v;
     }
 
-    float warpedFbm(vec2 p, float t) {
-      vec2 q = vec2(fbm(p + vec2(0.0, t * 0.05)),
-                    fbm(p + vec2(5.2, 1.3) + t * 0.03));
-      vec2 r = vec2(fbm(p + 4.0 * q + vec2(1.7, 9.2) + t * 0.04),
-                    fbm(p + 4.0 * q + vec2(8.3, 2.8) - t * 0.04));
-      return fbm(p + 4.0 * r);
-    }
-
-    vec2 voronoi(vec2 p, float t) {
-      vec2 i = floor(p); vec2 f = fract(p);
-      float F1 = 1e9, F2 = 1e9;
-      for (int y = -1; y <= 1; y++) {
-        for (int x = -1; x <= 1; x++) {
-          vec2 g = vec2(float(x), float(y));
-          vec2 o = hash22(i + g);
-          o = 0.5 + 0.5 * sin(t * 0.3 + 6.2831 * o);
-          vec2 r = g + o - f;
-          float d = dot(r, r);
-          if (d < F1) { F2 = F1; F1 = d; } else if (d < F2) { F2 = d; }
-        }
-      }
-      return vec2(sqrt(F1), sqrt(F2));
-    }
-
-    vec3 paletteIce(float t) {
-      vec3 a = vec3(0.04, 0.06, 0.10);
-      vec3 b = vec3(0.36, 0.55, 0.74);
-      vec3 c = vec3(0.66, 0.76, 0.86);
-      return mix(a, mix(b, c, smoothstep(0.5, 1.0, t)), smoothstep(0.0, 1.0, t));
+    // Very dark palette — near-black with subtle deep-green variance
+    vec3 paletteDrift(float t) {
+      vec3 base = vec3(0.008, 0.016, 0.011);
+      vec3 mid  = vec3(0.028, 0.082, 0.05);
+      vec3 peak = vec3(0.05, 0.14, 0.085);
+      float s = clamp(t, 0.0, 1.0);
+      return mix(base, mix(mid, peak, smoothstep(0.52, 1.0, s)), smoothstep(0.0, 0.68, s));
     }
 
     void main() {
       vec2 uv = vUv;
       vec2 ar = vec2(uResolution.x / uResolution.y, 1.0);
-      vec2 p = (uv - 0.5) * ar;
+      vec2 p  = (uv - 0.5) * ar;
+      float t = uTime;
 
-      // ICE-FLOW variant 0
-      float w = warpedFbm(p * 1.6, uTime * 0.7);
-      vec2 vor = voronoi(p * 1.8, uTime * 0.4);
-      float cells = smoothstep(0.0, 0.18, vor.y - vor.x);
-      vec3 color = paletteIce(w);
-      color += vec3(0.04, 0.07, 0.10) * (1.0 - cells) * 0.6;
+      // Three FBM layers drifting at different speeds and angles —
+      // no Voronoi, no cells, purely organic turbulence
+      float l1 = fbm(p * 1.7 + vec2(t * 0.032,  t * 0.012));
+      float l2 = fbm(p * 2.3 + vec2(-t * 0.018,  t * 0.024) + vec2(3.7, 1.4));
+      float l3 = fbm(p * 1.1 + vec2(t * 0.009, -t * 0.028) + vec2(7.1, 5.3));
 
-      float vig = 1.0 - smoothstep(0.55, 1.05, length(p));
-      color *= vig;
-      float grain = (hash21(gl_FragCoord.xy + vec2(uTime * 60.0)) - 0.5) * 0.04;
-      color += grain;
+      // Diagonal cross-warp between layers for complexity
+      float warp  = fbm(p * 1.4 + vec2(l1 * 1.8, l2 * 1.4) + t * 0.015);
+      float mixed = l1 * 0.42 + l2 * 0.32 + warp * 0.26;
 
-      gl_FragColor = vec4(color, 1.0);
+      // Soft radial fade
+      float vig = 1.0 - smoothstep(0.42, 0.92, length(p));
+      mixed *= vig;
+
+      // Micro grain — very fine, not chunky
+      float grain = (hash21(gl_FragCoord.xy + vec2(t * 47.0)) - 0.5) * 0.022;
+      mixed = clamp(mixed + grain, 0.0, 1.0);
+
+      gl_FragColor = vec4(paletteDrift(mixed), 1.0);
     }
   `;
 
@@ -198,7 +174,7 @@
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isMobile = window.innerWidth < 768;
-    const effCell = isMobile ? 14 : 8;
+    const effCell = isMobile ? 20 : 13;
 
     let w = host.clientWidth;
     let h = host.clientHeight;
@@ -250,15 +226,15 @@
           tDiffuse: { value: null },
           uResolution: { value: new THREE.Vector2(w, h) },
           uCellSize: { value: effCell },
-          uColor: { value: new THREE.Color("#a8c3d8") },
+          uColor: { value: new THREE.Color("#2e7d4f") },
           uBackgroundColor: { value: new THREE.Color("#000000") },
           uTime: { value: 0 },
           uMouse: { value: new THREE.Vector2(w * 0.5, h * 0.5) },
           uMouseGlow: { value: 0 },
-          uMouseRadius: { value: 0.28 },
-          uMouseStrength: { value: 0.85 },
-          uScanlines: { value: 0.18 },
-          uVignette: { value: 0.45 },
+          uMouseRadius: { value: 0.32 },
+          uMouseStrength: { value: 0.9 },
+          uScanlines: { value: 0.07 },
+          uVignette: { value: 0.28 },
         },
         vertexShader: VERT,
         fragmentShader: ASCII_FRAG,
@@ -315,7 +291,7 @@
         bgMat.uniforms.uTime.value = t;
         asciiPass.uniforms.uTime.value = t;
 
-        currentGlow += (targetGlow - currentGlow) * 0.08;
+        currentGlow += (targetGlow - currentGlow) * 0.12;
         asciiPass.uniforms.uMouse.value.copy(mouse);
         asciiPass.uniforms.uMouseGlow.value = currentGlow;
 

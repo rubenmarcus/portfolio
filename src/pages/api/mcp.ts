@@ -1,0 +1,183 @@
+/**
+ * POST /api/mcp — Model Context Protocol endpoint (streamable HTTP,
+ * JSON responses). Lets any MCP client (Claude, ChatGPT, Cursor, Kimi)
+ * add rubenmarcus.dev as a connector and call portfolio tools:
+ *
+ *   get_resume        — who Ruben is, proof points, links
+ *   get_services      — what he sells, fixed-scope offers
+ *   check_availability— current engagement status
+ *   book_intro        — POST a project brief (relays to email)
+ *
+ * Hand-rolled JSON-RPC 2.0 — no SDK, no dependencies.
+ */
+export const prerender = false;
+
+import type { APIRoute } from "astro";
+
+const EMAIL = "ruben@rubenmarcus.dev";
+
+const RESUME = {
+  name: "Ruben Marcus",
+  role: "Senior AI Fullstack Engineer",
+  base: "Lisbon, Portugal — remote worldwide",
+  years: 14,
+  proof: [
+    "#1 on ECDSA.fail (multi-agent research harness: 9 LLM roles, 7+ providers)",
+    "#1 on Optimization Arena QEC decoder leaderboard (2,642 EPM)",
+    "Bitte Protocol AI runtime in production: 2.85M+ messages, 24,164 users, 16,703 deployed agents",
+    "CS Brasil browser FPS: 2,191 players, 154K+ kills, 27 countries",
+    "Creator of aeo.js + check.aeojs.org (4,569 AEO scans)",
+    "34K+ all-time npm downloads across published packages",
+  ],
+  openSource: {
+    "ralph-starter": "https://ralphstarter.ai",
+    autoresearcher: "https://autoresearcher.org",
+    "aeo.js": "https://aeojs.org",
+    "aeo-checker": "https://check.aeojs.org",
+    scanrepo: "https://scanrepo.dev",
+    "cs-brasil": "https://csbrasil.online",
+  },
+  links: {
+    site: "https://rubenmarcus.dev",
+    github: "https://github.com/rubenmarcus",
+    linkedin: "https://linkedin.com/in/rubenmarcus",
+    email: EMAIL,
+  },
+};
+
+const SERVICES = [
+  "AI product prototyping — idea to working AI product in weeks (agents, RAG, evals)",
+  "Landing pages that convert — premium marketing pages with real engineering",
+  "Interactive web experiences — Three.js, WebGL, shaders, generative art",
+  "Agentic workflows & internal tools — multi-agent systems and automation",
+  "AEO & technical SEO — the scanner gives you the score, he raises it",
+  "Frontend modernization — Next.js, SvelteKit, TypeScript, incremental",
+];
+
+const AVAILABILITY =
+  "Selectively available for full-time roles and freelance contracts. Fixed-scope engagements preferred. Replies within a day or two.";
+
+const TOOLS = [
+  {
+    name: "get_resume",
+    description: "Ruben Marcus' resume: role, proof points, open source, links.",
+    inputSchema: { type: "object", properties: {} },
+  },
+  {
+    name: "get_services",
+    description: "Fixed-scope services Ruben sells, with one-line pitches.",
+    inputSchema: { type: "object", properties: {} },
+  },
+  {
+    name: "check_availability",
+    description: "Current availability for full-time roles and freelance contracts.",
+    inputSchema: { type: "object", properties: {} },
+  },
+  {
+    name: "book_intro",
+    description: "Book a project intro with Ruben. Relays the brief to his email.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        name: { type: "string", description: "Contact person's name" },
+        contact: { type: "string", description: "Email or Telegram handle" },
+        brief: { type: "string", description: "What they want to build" },
+        budget: { type: "string", description: "Optional budget range" },
+        agent: { type: "string", description: "Calling agent (claude, chatgpt, kimi...)" },
+      },
+      required: ["name", "contact", "brief"],
+    },
+  },
+];
+
+const result = (id: unknown, text: string) => ({
+  jsonrpc: "2.0",
+  id,
+  result: { content: [{ type: "text", text }] },
+});
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "content-type": "application/json",
+      "access-control-allow-origin": "*",
+      "access-control-allow-methods": "POST, OPTIONS",
+      "access-control-allow-headers": "content-type, mcp-session-id",
+    },
+  });
+
+export const OPTIONS: APIRoute = () => json({}, 204);
+export const GET: APIRoute = () =>
+  json({
+    name: "rubenmarcus-portfolio",
+    transport: "streamable-http",
+    usage: "POST JSON-RPC 2.0: initialize, tools/list, tools/call",
+    tools: TOOLS.map((t) => t.name),
+  });
+
+export const POST: APIRoute = async ({ request }) => {
+  let msg: any;
+  try {
+    msg = await request.json();
+  } catch {
+    return json({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "parse error" } }, 400);
+  }
+  const { id, method, params } = msg;
+
+  switch (method) {
+    case "initialize":
+      return json({
+        jsonrpc: "2.0",
+        id,
+        result: {
+          protocolVersion: params?.protocolVersion ?? "2024-11-05",
+          capabilities: { tools: {} },
+          serverInfo: { name: "rubenmarcus-portfolio", version: "1.0.0" },
+          instructions:
+            "Portfolio of Ruben Marcus, senior AI fullstack engineer. Use get_resume / get_services / check_availability to answer questions about him, and book_intro to start a project engagement on the user's behalf.",
+        },
+      });
+    case "ping":
+      return json({ jsonrpc: "2.0", id, result: {} });
+    case "notifications/initialized":
+      return new Response(null, { status: 202 });
+    case "tools/list":
+      return json({ jsonrpc: "2.0", id, result: { tools: TOOLS } });
+    case "tools/call": {
+      const name = params?.name;
+      const args = params?.arguments ?? {};
+      if (name === "get_resume") return json(result(id, JSON.stringify(RESUME, null, 2)));
+      if (name === "get_services") return json(result(id, SERVICES.join("\n")));
+      if (name === "check_availability") return json(result(id, AVAILABILITY));
+      if (name === "book_intro") {
+        const { name: n, contact, brief, budget, agent } = args as Record<string, string>;
+        if (!n || !contact || !brief) {
+          return json(result(id, "error: name, contact and brief are required"));
+        }
+        try {
+          const res = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
+            method: "POST",
+            headers: { "content-type": "application/json", accept: "application/json" },
+            body: JSON.stringify({
+              _subject: `[MCP intro] ${n} via ${agent || "mcp"}`,
+              name: String(n).slice(0, 120),
+              contact: String(contact).slice(0, 160),
+              brief: String(brief).slice(0, 4000),
+              budget: budget || "not specified",
+              agent: agent || "mcp",
+              source: "api/mcp",
+            }),
+          });
+          if (!res.ok) return json(result(id, `error: mail relay failed (${res.status})`));
+          return json(result(id, "Intro booked. Ruben replies within a day or two."));
+        } catch {
+          return json(result(id, "error: mail relay unreachable"));
+        }
+      }
+      return json({ jsonrpc: "2.0", id, error: { code: -32602, message: `unknown tool: ${name}` } });
+    }
+    default:
+      return json({ jsonrpc: "2.0", id, error: { code: -32601, message: `method not found: ${method}` } });
+  }
+};

@@ -1,29 +1,121 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import DitherBg from "../components/DitherBg.svelte";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import Divider from "../components/Divider.astro";
 import AsciiField from "../components/AsciiField.svelte";
 import CardAscii from "../components/CardAscii.svelte";
 import { aiTools, supportingTools } from "../lib/data/aiTools";
+import WireCard from "../components/WireCard.astro";
+import VoxelIcon from "../lib/assets/VoxelIcon.svelte";
+import HeroStats from "../components/HeroStats.svelte";
+import type { VoxelIconName } from "../lib/assets";
+
+// Voxel mark per tool — same mapping as the home AI Tools widget.
+const TOOL_ICONS: Record<string, VoxelIconName> = {
+  autoresearcher: "claude",
+  "ralph-starter": "terminal",
+  aeojs: "zap",
+};
+
+// Working knowledge — the disciplines behind the expertise cards, grounded
+// in shipped work (Bitte runtime, ralph-starter, autoresearcher, aeo.js).
+const KNOWLEDGE = [
+  { name: "Agent orchestration", note: "Race / consensus / pipeline swarms over isolated git worktrees: ralph-starter." },
+  { name: "MCP / tool use", note: "ralph-starter's MCP server exposes the whole loop to any MCP client." },
+  { name: "Evals & benchmarks", note: "Anti-overfitting protocols and Pareto frontiers. Autoresearcher's core loop." },
+  { name: "Multi-provider routing", note: "Role→model routing across 7+ LLM providers in the ECDSA.fail harness." },
+  { name: "Guardrails & spend gates", note: "Fail-closed adapters and budget gates on every autonomous run." },
+  { name: "Streaming UX", note: "Streaming agent loops in Bitte's production runtime." },
+  { name: "Structured output / function calling", note: "OpenAPI→tool conversion and function-calling manifests at Bitte." },
+  { name: "Memory", note: "Zep / GraphRAG-backed agent memory, productized at Mirofi.sh." },
+  { name: "RAG", note: "GraphRAG pipelines inside the multi-agent simulation engine behind Mirofi.sh." },
+  { name: "Vector search & embeddings", note: "The retrieval layer under the memory and RAG stacks above." },
+  { name: "Context engineering", note: "llms.txt + ai-index.json exports so LLMs read a site right. Shipped in aeo.js." },
+  { name: "Fine-tuning vs prompting", note: "Prompt + eval loops over fine-tunes. The bet behind both #1 finishes." },
+];
+
+// Expertise areas — the tools below are the open-source proof of these.
+// Numbers come from src/lib/data/stats.ts and src/lib/data/aiTools.ts.
+const EXPERTISE = [
+  {
+    glyph: "&&",
+    name: "Agent systems & orchestration",
+    desc: "Multi-agent swarms over isolated git worktrees, MCP servers that expose the whole loop, role→model routing across providers with fail-closed adapters.",
+    proof: "proof · #1 on ECDSA.fail. Bitte runtime in production, 2.85M+ agent messages",
+  },
+  {
+    glyph: "∴",
+    name: "Evaluation & benchmark design",
+    desc: "Anti-overfitting evaluation protocols, Pareto frontiers across competing objectives, keep/reject validity gating on every iteration.",
+    proof: "proof · #1 on Optimization Arena's QEC decoder leaderboard",
+  },
+  {
+    glyph: "{}",
+    name: "AEO / AI search",
+    desc: "Answer Engine Optimization: AI-crawler robots policy, llms.txt and structured exports. I wrote the tooling that measures what ChatGPT, Claude, and Perplexity cite.",
+    proof: "proof · creator of aeo.js + check.aeojs.org. 4,569 scans",
+  },
+  {
+    glyph: ">_",
+    name: "Production LLM features",
+    desc: "Streaming agent loops, OpenAPI→tool conversion, and on-chain agents that act, not just chat.",
+    proof: "proof · ~20 on-chain primitives across NEAR / EVM / SUI / Cardano",
+  },
+];
 ---
 
 <BaseLayout
-  title="AI Tools — Ruben Marcus"
-  description="Open-source AI tools I'm shipping at MultiVM Labs — Ralph Starter, Autoresearcher, and AEO.js. Spec-driven coding, benchmark-driven research loops, and Answer Engine Optimization for the modern web."
+  title="AI Engineering | Ruben Marcus"
+  description="AI engineer building agent systems, evaluation protocols, and AEO tooling. #1 on ECDSA.fail and the QEC decoder leaderboard, 2.85M+ agent messages in production. The open-source tools below are the proof."
+  image="/og/ai.png"
 >
+  <DitherBg client:load opacity={0.55} />
   <!-- Sparse ASCII atmosphere — only visible at the page edges -->
   <div class="ai-atmos" aria-hidden="true">
-    <AsciiField client:load cell={20} density={0.16} morphRate={0.9} opacity={0.3} reactive={true} />
+    <AsciiField client:load cell={20} density={0.13} morphRate={0.9} opacity={0.24} reactive={true} />
   </div>
 
   <Section id="intro">
     <SectionHeader
-      index="02"
-      overline="AI tools"
-      title="Three open tools, one thesis: software writes itself when you give it the right loop."
-      description="At MultiVM Labs I focus on the connective tissue around autonomous agents — the harnesses, the benchmarks, the AEO layer for AI search. All open source, all in production."
+      index="01"
+      overline="AI expertise"
+      title="I build the loops that make agents useful."
+      description="Agent orchestration, evaluation protocols, AEO, and production LLM features. Shipped in production and measured on public leaderboards. The open-source tools below are the proof."
     />
+
+    <div class="xp-grid">
+      {EXPERTISE.map((x, i) => (
+        <WireCard class="xp-card" glyph={x.glyph} data-reveal>
+          <span class="xp-index">{String(i + 1).padStart(2, "0")}</span>
+          <h2 class="xp-name">{x.name}</h2>
+          <p class="xp-desc">{x.desc}</p>
+          <p class="xp-proof">{x.proof}</p>
+        </WireCard>
+      ))}
+    </div>
+  </Section>
+
+  <!-- Open source showcase — the six tools as clip cards -->
+  <HeroStats client:visible />
+
+  <!-- Working knowledge — the disciplines behind the expertise -->
+  <Section id="knowledge" tight>
+    <div class="know" data-reveal>
+      <header class="know__head">
+        <span class="bracket">02 / Working knowledge</span>
+        <h2 class="know__title">The AI stack I actually use in production.</h2>
+      </header>
+      <ul class="know__grid">
+        {KNOWLEDGE.map((k) => (
+          <li class="know__cell">
+            <span class="know__name">{k.name}</span>
+            <span class="know__note">{k.note}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   </Section>
 
   {aiTools.map((t, i) => (
@@ -31,8 +123,18 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
       <article class="tool" data-reveal>
         <header class="tool__head" data-reveal-item>
           <span class="bracket">{String(i + 1).padStart(2, "0")} / {t.tags[0]}</span>
-          <h2 class="tool__name">{t.name}</h2>
+          <div class="tool__nameRow">
+            <VoxelIcon client:visible name={TOOL_ICONS[t.slug] ?? "circleDot"} size={40} />
+            <h2 class="tool__name">{t.name}</h2>
+          </div>
           <p class="tool__tagline">{t.tagline}</p>
+          <img
+            class="tool__cover"
+            src={`/art/covers/${t.slug}.png`}
+            alt={`${t.name} | generated cover art`}
+            loading="lazy"
+            decoding="async"
+          />
         </header>
 
         <div class="tool__grid">
@@ -44,11 +146,11 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
             </div>
 
             <div class="tool__actions">
-              <a href={t.url} class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+              <a href={t.url} class="btn btn-primary" target="_blank" rel="noopener noreferrer" data-magnetic>
                 Visit {t.url.replace("https://", "")} ↗
               </a>
               {t.repo && (
-                <a href={t.repo} class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+                <a href={t.repo} class="btn btn-secondary" target="_blank" rel="noopener noreferrer" data-magnetic>
                   GitHub
                 </a>
               )}
@@ -67,14 +169,81 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
     </Section>
   ))}
 
-  <Divider index="03" label="Supporting work" />
+  <!-- The agent fleet — compact strip; the full grid lives on /agents -->
+  <Section id="agent-fleet" tight>
+    <div class="fleet" data-reveal>
+      <span class="bracket" data-reveal-item>Bitte Protocol</span>
+      <h2 class="fleet__title" data-reveal-item>The agent fleet</h2>
+      <p class="fleet__desc" data-reveal-item>
+        The production side of this work: at Bitte I designed the agent pattern and runtime.
+        An OpenAPI spec becomes a tool-calling agent with in-chat wallet signing. Then I shipped
+        chain-specific agents on it that swap, stake, bet, and launch tokens for real.
+      </p>
+      <div class="fleet__actions" data-reveal-item>
+        <a href="/agents" class="btn btn-secondary" data-magnetic>Meet the agents →</a>
+      </div>
+    </div>
+  </Section>
+
+  <Divider index="02.5" label="AEO, as a service" />
+
+  <!-- AEO expertise — productized sprint offer -->
+  <Section id="aeo" tight>
+    <div class="aeo-block" data-reveal>
+      <div class="aeo-block__head" data-reveal-item>
+        <span class="bracket">AEO expertise</span>
+        <h2 class="aeo-block__title">I built the AEO layer. Now I run it as a service.</h2>
+        <p class="aeo-block__desc">
+          I'm the creator of <a href="https://aeojs.org" class="link-inline" target="_blank" rel="noopener">aeo.js</a>
+          (100+ daily npm downloads) and
+          <a href="https://check.aeojs.org" class="link-inline" target="_blank" rel="noopener">check.aeojs.org</a>
+          (2,200+ sites scanned). I know exactly what makes ChatGPT, Claude, and Perplexity
+          cite a site, because I wrote the tooling that measures it.
+        </p>
+      </div>
+
+      <div class="aeo-cards">
+        <WireCard class="aeo-card" glyph="{}">
+          <span class="bracket">The offer</span>
+          <h3 class="aeo-card__name">AEO</h3>
+          <p class="aeo-card__desc">
+            A fixed-scope engagement: I audit your site against the answer engines,
+            ship the structured-data / llms.txt / content-layer fixes, and hand you a
+            before/after score report from check.aeojs.org.
+          </p>
+        </WireCard>
+
+        <WireCard class="aeo-card" glyph="01">
+          <span class="bracket">Proof, not vibes</span>
+          <h3 class="aeo-card__name">Before / after report</h3>
+          <p class="aeo-card__price">Scored on the same rubric my scanner uses</p>
+          <p class="aeo-card__desc">
+            You get the baseline scan, the shipped diff, and the re-scan. The
+            improvement in your AI search score is measured, not asserted.
+          </p>
+        </WireCard>
+
+        <WireCard class="aeo-card aeo-card--cta" glyph=">_">
+          <span class="bracket">Book it</span>
+          <h3 class="aeo-card__name">Fix your AI search score</h3>
+          <p class="aeo-card__desc">
+            Slots are limited. The work is hands-on, not delegated.
+          </p>
+          <div class="aeo-card__actions">
+            <a href="/contact?subject=aeo" class="btn btn-primary" data-magnetic>Start an AEO project</a>
+            <a href="https://check.aeojs.org" class="btn btn-secondary" target="_blank" rel="noopener" data-magnetic>Scan your site free ↗</a>
+          </div>
+        </WireCard>
+      </div>
+    </div>
+  </Section>
 
   <Section id="supporting" tight>
     <SectionHeader
       index="03"
       overline="Supporting repos"
       title="The ecosystem around the tools."
-      description="Templates, ideas trackers, curated awesome-lists, and the post-quantum cryptography packages that power the Quantum chain."
+      description="Templates, ideas trackers, curated awesome-lists, and shared cryptography tooling packages."
     />
 
     <div class="support-grid">
@@ -94,12 +263,12 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
 
   <Section id="cta" tight>
     <div class="cta-band" data-reveal>
-      <span class="bracket" data-reveal-item>06 / Contact</span>
+      <span class="bracket" data-reveal-item>05 / Contact</span>
       <h2 class="cta-title" data-reveal-item>Want to integrate one of these into your stack?</h2>
-      <p class="cta-desc" data-reveal-item>I'm happy to chat — these are open source, but I'll often help teams adopt them.</p>
+      <p class="cta-desc" data-reveal-item>I'm happy to chat. These are open source, but I'll often help teams adopt them.</p>
       <div class="cta-actions" data-reveal-item>
-        <a href="mailto:ruben@rubenmarcus.dev" class="btn btn-primary">ruben@rubenmarcus.dev</a>
-        <a href="https://github.com/multivmlabs" class="btn btn-secondary" target="_blank" rel="noopener">All MultiVM Labs repos</a>
+        <a href="mailto:ruben@rubenmarcus.dev" class="btn btn-primary" data-magnetic>ruben@rubenmarcus.dev</a>
+        <a href="https://github.com/multivmlabs" class="btn btn-secondary" target="_blank" rel="noopener" data-magnetic>All repos on GitHub</a>
       </div>
     </div>
   </Section>
@@ -123,6 +292,110 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
     -webkit-mask-composite: source-in;
   }
 
+  /* Working knowledge — compact grid of disciplines */
+  .know {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+  .know__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .know__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .know__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.8rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .know__grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 1020px) {
+    .know__grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  .know__cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.95rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-1);
+    transition:
+      border-color var(--duration-hover) var(--ease-default),
+      transform var(--duration-hover) var(--ease-default),
+      box-shadow var(--duration-hover) var(--ease-default);
+  }
+  .know__cell:hover {
+    border-color: rgba(0, 255, 65, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 255, 65, 0.06);
+  }
+  .know__name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    line-height: 1.2;
+    color: var(--text);
+  }
+  .know__note {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1.55;
+    color: var(--muted-soft);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .know__cell { transition: none; }
+    .know__cell:hover { transform: none; }
+  }
+
+  /* Expertise cards — the lead section; tools below are the proof */
+  .xp-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 880px) {
+    .xp-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .xp-grid :global(.xp-card) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .xp-index {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted-soft);
+  }
+  .xp-name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.1;
+  }
+  .xp-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .xp-proof {
+    margin-top: auto;
+    padding-top: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: var(--accent-soft);
+  }
+
   .tool {
     border-top: 1px solid var(--line);
     padding-top: 2.5rem;
@@ -135,6 +408,23 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
     margin-bottom: 2rem;
   }
 
+  /* Generated particle-art cover — same language as the blog thumbs */
+  .tool__cover {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+  }
+
+  .tool__nameRow {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+  }
+
   .tool__name {
     font-family: var(--font-display);
     font-size: clamp(2.5rem, 6vw, 4.5rem);
@@ -145,7 +435,6 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
 
   .tool__tagline {
     font-family: var(--font-display);
-    font-style: italic;
     color: var(--accent-soft);
     font-size: clamp(1.1rem, 2vw, 1.5rem);
     line-height: 1.2;
@@ -229,6 +518,89 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
     color: var(--accent-soft);
   }
 
+  /* AEO block */
+  .aeo-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2.2rem;
+  }
+  .aeo-block__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .aeo-block__title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4.5vw, 3.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+  }
+  .aeo-block__desc {
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.65;
+    max-width: 66ch;
+  }
+  .aeo-cards {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 880px) {
+    .aeo-cards { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  .aeo-cards :global(.aeo-card) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .aeo-card__name {
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    line-height: 1.1;
+  }
+  .aeo-card__price {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent-soft);
+    letter-spacing: 0.04em;
+  }
+  .aeo-card__desc {
+    color: var(--muted);
+    font-size: 0.94rem;
+    line-height: 1.6;
+  }
+  .aeo-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: auto;
+    padding-top: 0.6rem;
+  }
+  .aeo-cards :global(.aeo-card--cta) {
+    border-color: rgba(0, 255, 65, 0.3);
+    background: linear-gradient(180deg, rgba(0, 255, 65, 0.07), rgba(0, 255, 65, 0.02));
+  }
+
+  /* Agent fleet strip — links out to /agents */
+  .fleet {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--bg-1);
+  }
+  .fleet__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .fleet__desc { color: var(--muted); max-width: 64ch; }
+  .fleet__actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 0.4rem; }
+
   /* Supporting */
   .support-grid {
     display: grid;
@@ -298,22 +670,3 @@ import { aiTools, supportingTools } from "../lib/data/aiTools";
     display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 0.4rem;
   }
 </style>
-
-<script>
-  import { reveal } from "../lib/motion/reveal";
-  const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            reveal(e.target as HTMLElement);
-            io.unobserve(e.target);
-          }
-        }
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
-    );
-    targets.forEach((t) => io.observe(t));
-  }
-</script>

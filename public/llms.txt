@@ -1,0 +1,51 @@
+# Ruben Marcus: Senior AI Fullstack Engineer
+
+> Personal site of Ruben Marcus, a senior AI fullstack engineer based in Lisbon
+> (remote worldwide). 13 years across AI tooling, Web3, fintech, and e-commerce.
+> Builds autonomous AI agent systems, evaluation harnesses, AEO tooling, and
+> premium web experiences. Available for full-time roles and freelance contracts.
+
+## Main sections
+
+- [Index](https://rubenmarcus.dev/): Hero, services (hire me for), proof-in-numbers stats, open-source tools, selected work.
+- [Portfolio](https://rubenmarcus.dev/portfolio): Filterable 14-year project archive. Filter by era/company and technology.
+- [AI](https://rubenmarcus.dev/ai): AI expertise (agent orchestration, evaluation design, AEO, production LLM features) and the open-source tools that prove it.
+- [Agents](https://rubenmarcus.dev/agents): The autonomous agent fleet behind this site and client work — roles, orchestration model, and what each agent ships.
+- [Blog](https://rubenmarcus.dev/blog): Technical articles on agents, benchmarks, WebGL, and the stack.
+- [About](https://rubenmarcus.dev/about): Bio, timeline, contact details.
+- [Contact](https://rubenmarcus.dev/contact): Project inquiries for AI tooling, agents, AEO, Web3.
+
+## Latest writing
+
+- [This portfolio is agents-welcome. Probably the first.](https://rubenmarcus.dev/blog/agents-welcome-portfolio)
+- [The AI harness behind CS Brasil is a folder of markdown](https://rubenmarcus.dev/blog/cs-brasil-ai-harness)
+- [How AEO can help your business grow](https://rubenmarcus.dev/blog/aeo-what-it-moves)
+- [My agent swarm is a for loop](https://rubenmarcus.dev/blog/dag-agent-orchestration)
+- [Cross-pollinating LLMs: peer review for machines](https://rubenmarcus.dev/blog/llm-cross-pollination)
+- [A command center for agent swarms, in markdown](https://rubenmarcus.dev/blog/agent-command-center)
+
+## RSS feeds
+
+- [English feed](https://rubenmarcus.dev/rss.xml): All English blog posts.
+- [Feed em português](https://rubenmarcus.dev/rss-pt.xml): Posts do blog em PT-BR.
+
+## Open-source tools
+
+- [Ralph Starter](https://ralphstarter.ai): AI coding orchestration platform. Multi-agent swarms over isolated git worktrees, MCP server.
+- [Autoresearcher](https://autoresearcher.org): Benchmark-driven autonomous research CLI. Multi-agent co-evolution with a Pareto frontier.
+- [AEO.js](https://aeojs.org): Answer Engine Optimization framework. AI-crawler policy analysis, llms.txt and ai-index.json exports.
+- [check.aeojs.org](https://check.aeojs.org): Free AEO scanner. 4,500+ sites scanned.
+
+## Proof points
+
+- #1 on ECDSA.fail (multi-agent research harness, 9 LLM roles, 7+ providers).
+- #1 on Optimization Arena's QEC decoder leaderboard (2,642 EPM).
+- Bitte Protocol AI runtime in production: 2.85M+ messages, 24,164 unique users, 16,703 deployed agents.
+- CS Brasil (browser FPS): 2,191 players, 154K+ kills, 27 countries.
+
+## Contact
+
+- Email: ruben@rubenmarcus.dev
+- GitHub: https://github.com/rubenmarcus
+- LinkedIn: https://linkedin.com/in/rubenmarcus
+- npm: https://www.npmjs.com/~rmarcus (primary package profile; dev.to presence is being retired)
