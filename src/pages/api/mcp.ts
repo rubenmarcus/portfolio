@@ -96,11 +96,17 @@ const result = (id: unknown, text: string) => ({
   result: { content: [{ type: "text", text }] },
 });
 
+// JSON-RPC endpoint: Vercel's CDN can cache POST responses keyed by URL
+// only, which would cross-contaminate initialize/tools/list/tools/call.
+// no-store on every response keeps each method's payload distinct.
+const NOCACHE = { "cache-control": "no-store" };
+
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
     headers: {
       "content-type": "application/json",
+      ...NOCACHE,
       "access-control-allow-origin": "*",
       "access-control-allow-methods": "POST, OPTIONS",
       "access-control-allow-headers": "content-type, mcp-session-id",
@@ -141,7 +147,7 @@ export const POST: APIRoute = async ({ request }) => {
     case "ping":
       return json({ jsonrpc: "2.0", id, result: {} });
     case "notifications/initialized":
-      return new Response(null, { status: 202 });
+      return new Response(null, { status: 202, headers: NOCACHE });
     case "tools/list":
       return json({ jsonrpc: "2.0", id, result: { tools: TOOLS } });
     case "tools/call": {

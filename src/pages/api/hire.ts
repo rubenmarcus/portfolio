@@ -20,6 +20,9 @@ const json = (body: unknown, status = 200) =>
     status,
     headers: {
       "content-type": "application/json",
+      // Never cached: a CDN-cached POST response would replay one
+      // submission's answer (or error) to every other agent.
+      "cache-control": "no-store",
       // Open CORS — this endpoint is meant to be called by agents anywhere.
       "access-control-allow-origin": "*",
       "access-control-allow-methods": "POST, OPTIONS",
