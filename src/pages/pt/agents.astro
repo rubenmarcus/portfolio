@@ -9,14 +9,6 @@ import { aiAgents, type AgentGroup } from "../../lib/data/aiAgents";
 
 // Fleet groups, in display order — subheadings per origin.
 const GROUPS: { id: AgentGroup; overline: string; title: string; blurb?: string }[] = [
-  { id: "bitte", overline: "Bitte Protocol", title: "Bitte Protocol — a frota de produção" },
-  {
-    id: "ecdsa",
-    overline: "ECDSA.fail",
-    title: "ECDSA.fail — os papéis do centro de comando",
-    blurb:
-      "Não são daemons — são role prompts e contratos com spend gates numa camada de orquestração baseada em arquivos, despachados pro CLI de coding agent que couber melhor no trabalho: Codex, Claude, Amp, Kimi. A disciplina é o produto.",
-  },
   {
     id: "game",
     overline: "CS Brasil",
@@ -24,6 +16,14 @@ const GROUPS: { id: AgentGroup; overline: string; title: string; blurb?: string 
     blurb:
       "Os papéis dentro do Gauntlet loop que itera no meu FPS de browser — críticos adversariais, builders em paralelo e o caçador de regressão que paga o loop inteiro.",
   },
+  {
+    id: "ecdsa",
+    overline: "ECDSA.fail",
+    title: "ECDSA.fail — os papéis do centro de comando",
+    blurb:
+      "Não são daemons — são role prompts e contratos com spend gates numa camada de orquestração baseada em arquivos, despachados pro CLI de coding agent que couber melhor no trabalho: Codex, Claude, Amp, Kimi. A disciplina é o produto.",
+  },
+  { id: "bitte", overline: "Bitte Protocol", title: "Bitte Protocol — a frota de produção" },
 ];
 const grouped = GROUPS.map((g) => ({ ...g, agents: aiAgents.filter((a) => a.group === g.id) }));
 
