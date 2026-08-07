@@ -458,8 +458,8 @@
       }
       videoTex?.dispose();
       tex.dispose();
-      particleGeo.dispose();
-      particleMat.dispose();
+      lineGeo.dispose();
+      lineMat.dispose();
       material.dispose();
       quad.geometry.dispose();
       renderer.dispose();

@@ -275,6 +275,17 @@
       );
       io.observe(host);
 
+      // View transitions move this persisted island into the new body, and
+      // the observer can get stuck on the stale "not intersecting" entry
+      // delivered while the element was detached — freezing the canvas.
+      // Re-observing after each swap forces a fresh initial entry.
+      const onAfterSwap = () => {
+        if (!host) return;
+        io.unobserve(host);
+        io.observe(host);
+      };
+      document.addEventListener("astro:after-swap", onAfterSwap);
+
       let raf = 0;
       let last = 0;
       const frameMs = 1000 / 30;
@@ -315,6 +326,7 @@
       cleanup = () => {
         cancelAnimationFrame(raf);
         window.removeEventListener("resize", onResize);
+        document.removeEventListener("astro:after-swap", onAfterSwap);
         if (!isMobile) {
           document.removeEventListener("pointermove", onPointerMove);
           document.removeEventListener("pointerleave", onPointerLeaveDoc);
