@@ -18,32 +18,6 @@ const iconMap: Record<string, SvgIconName> = {
   Telegram: "telegram",
   npm: "npm",
 };
-
-// Pacotes freelance — clicar num card pré-seleciona o interesse no
-// formulário abaixo e rola até ele.
-const offers = [
-  {
-    interest: "Sprint AI",
-    name: "Sprint AI",
-    price: "€4-8k",
-    term: "2-4 semanas",
-    desc: "Sua feature de IA, entregue de ponta a ponta: workflows de agents, pipelines de tool-calling, RAG, structured outputs, evals. Da ideia vaga à produção: a interface, o serviço e a IA no meio.",
-  },
-  {
-    interest: "Retainer",
-    name: "Retainer",
-    price: "€3-5k/mês",
-    term: "alguns dias por semana",
-    desc: "Um senior product engineer fracionado no seu time: product judgment, entrega full-stack e IA agêntica.",
-  },
-  {
-    interest: "AEO",
-    name: "AEO Sprint",
-    price: "€1.5-3k",
-    term: "1-2 semanas",
-    desc: "Eu construí o aeo.js (2.200+ sites escaneados). Conserto a visibilidade do seu site nos mecanismos de IA: llms.txt, dados estruturados, acesso de AI crawlers, citabilidade, com relatório de score antes/depois.",
-  },
-];
 ---
 
 <BaseLayout
@@ -65,20 +39,6 @@ const offers = [
       title="Bora conversar."
       description="Seletivamente disponível para AI tooling, agents e produtos Web3. O formulário abaixo é o caminho mais rápido pra uma resposta com escopo. Canais diretos também funcionam. Normalmente respondo em um ou dois dias."
     />
-
-    <div class="offers" data-reveal>
-      {offers.map((o) => (
-        <a href="#contact-form" class="offer" data-offer={o.interest} data-reveal-item>
-          <div class="offer__head">
-            <span class="offer__name">{o.name}</span>
-            <span class="offer__price">{o.price}</span>
-          </div>
-          <span class="offer__term">{o.term}</span>
-          <p class="offer__desc">{o.desc}</p>
-          <span class="offer__cta">Começar por aqui →</span>
-        </a>
-      ))}
-    </div>
 
     <div class="form-shell" data-reveal>
       <form id="contact-form" class="cform" novalidate data-reveal-item>
@@ -317,71 +277,6 @@ const offers = [
     color: var(--muted);
   }
 
-  /* ── Offer cards ── */
-  .offers {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: 1fr;
-    margin-bottom: 2.2rem;
-  }
-  @media (min-width: 720px) { .offers { grid-template-columns: repeat(3, 1fr); } }
-
-  .offer {
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    padding: 1.3rem 1.4rem;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-card);
-    background: var(--bg-1);
-    color: var(--text);
-    transition:
-      border-color var(--duration-hover) var(--ease-default),
-      background-color var(--duration-hover) var(--ease-default),
-      transform var(--duration-hover) var(--ease-default);
-  }
-  .offer:hover {
-    border-color: rgba(0, 255, 65, 0.45);
-    background: var(--bg-2);
-    transform: translateY(-2px);
-  }
-
-  .offer__head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.8rem;
-  }
-  .offer__name {
-    font-family: var(--font-display);
-    font-size: 1.15rem;
-    color: var(--text);
-  }
-  .offer__price {
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    color: var(--accent);
-    white-space: nowrap;
-  }
-  .offer__term {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--muted-soft);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .offer__desc {
-    color: var(--muted);
-    font-size: 0.9rem;
-    line-height: 1.6;
-  }
-  .offer__cta {
-    margin-top: auto;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--accent-soft);
-  }
-
   /* ── Contact form ── */
   .form-shell {
     margin-bottom: 3rem;
@@ -607,17 +502,6 @@ const offers = [
       const radio = form.querySelector(`input[name="interest"][value="${interest}"]`);
       if (radio instanceof HTMLInputElement) radio.checked = true;
     }
-
-    // Offer cards above the form pre-select their interest on click.
-    document.querySelectorAll("[data-offer]").forEach((el) => {
-      if (el instanceof HTMLElement && !el.dataset.bound) {
-        el.dataset.bound = "1";
-        el.addEventListener("click", () => {
-          const radio = form.querySelector(`input[name="interest"][value="${el.getAttribute("data-offer")}"]`);
-          if (radio instanceof HTMLInputElement) radio.checked = true;
-        });
-      }
-    });
 
     const setError = (msg) => {
       if (errorEl) {

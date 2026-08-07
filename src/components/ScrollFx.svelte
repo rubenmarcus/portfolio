@@ -6,7 +6,7 @@
    * states instantly.
    */
   import { onMount } from "svelte";
-  import { initScrollFx, initMagnetic, ScrollTrigger } from "../lib/motion/scroll";
+  import { initScrollFx, initMagnetic } from "../lib/motion/scroll";
 
   onMount(() => {
     let cleanupFx = () => {};
@@ -24,23 +24,9 @@
         });
     }
 
-    // View transitions: kill every ScrollTrigger before the DOM is swapped
-    // (their elements are about to be removed), and re-measure once the new
-    // page has been wired up.
-    const onBeforeSwap = () => {
-      ScrollTrigger.getAll().forEach((st) => st.kill());
-    };
-    const onPageLoad = () => {
-      ScrollTrigger.refresh();
-    };
-    document.addEventListener("astro:before-swap", onBeforeSwap, { once: true });
-    document.addEventListener("astro:page-load", onPageLoad);
-
     return () => {
       cleanupFx();
       cleanupMagnetic();
-      document.removeEventListener("astro:page-load", onPageLoad);
-      document.removeEventListener("astro:before-swap", onBeforeSwap);
     };
   });
 </script>

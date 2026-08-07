@@ -1,13 +1,14 @@
 /**
- * Shared GSAP + ScrollTrigger runtime for the whole site.
+ * Shared GSAP runtime for the whole site.
  *
- * - Registers ScrollTrigger once and keeps it in sync with the Lenis
- *   smooth-scroll instance (Lenis drives the scroll position, ScrollTrigger
- *   just needs `update()` on every Lenis scroll event).
  * - `initScrollFx()` wires every `[data-reveal]` container on the page:
  *   its `[data-reveal-item]` children (or the container itself when it has
  *   none) fade + rise in, staggered, once. Subtle and fast — 300–600ms,
  *   power3.out, no scrolljacking, no pinned sections.
+ * - Visibility is driven by IntersectionObserver, not ScrollTrigger:
+ *   scroll-triggered reveals coupled to Lenis kept breaking across route
+ *   changes (sections stuck invisible until a scroll nudge). IO observes
+ *   real intersection and fires no matter how the scroll is driven.
  * - `initMagnetic()` gives `[data-magnetic]` elements a magnetic pull toward
  *   the cursor (≤6px) with an elastic spring back.
  * - Everything is gated behind prefers-reduced-motion: reduced-motion users
@@ -15,22 +16,10 @@
  */
 
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export const prefersReducedMotion = (): boolean =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-interface LenisLike {
-  on: (event: "scroll", cb: () => void) => void;
-}
-
-/** Called by SmoothScroll.svelte once the Lenis instance exists. */
-export function registerLenis(lenis: LenisLike): void {
-  lenis.on("scroll", () => ScrollTrigger.update());
-}
 
 function revealTargets(root: HTMLElement): HTMLElement[] {
   const items = Array.from(
@@ -45,7 +34,7 @@ function setFinalState(targets: HTMLElement[]): void {
 
 /**
  * Wire scroll reveals for every `[data-reveal]` container under `root`.
- * Returns a cleanup function that kills the created triggers.
+ * Returns a cleanup function that disconnects the observer.
  */
 export function initScrollFx(root: ParentNode = document): () => void {
   const containers = Array.from(
@@ -59,51 +48,39 @@ export function initScrollFx(root: ParentNode = document): () => void {
     return () => {};
   }
 
-  const triggers: ScrollTrigger[] = [];
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const container = entry.target as HTMLElement;
+        io.unobserve(container);
+        gsap.to(revealTargets(container), {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          ease: "power3.out",
+          stagger: 0.07,
+          // Clear transform at rest so CSS hover transforms (card lifts)
+          // keep working after the reveal.
+          clearProps: "transform,willChange",
+        });
+      }
+    },
+    // Reveal a bit before the section fully enters — same feel as the old
+    // "top 88%" trigger, but measured by the compositor, not scroll math.
+    { rootMargin: "0px 0px -12% 0px", threshold: 0 },
+  );
 
   containers.forEach((container) => {
-    const targets = revealTargets(container);
-    gsap.set(targets, { opacity: 0, y: 22, willChange: "opacity, transform" });
-
-    const play = () => {
-      gsap.to(targets, {
-        opacity: 1,
-        y: 0,
-        duration: 0.55,
-        ease: "power3.out",
-        stagger: 0.07,
-        // Clear transform at rest so CSS hover transforms (card lifts)
-        // keep working after the reveal.
-        clearProps: "transform,willChange",
-      });
-    };
-
-    // Already inside the reveal zone (first paint, or right after a
-    // client-side navigation while measurements are still settling):
-    // play immediately instead of waiting for a scroll event that may
-    // never come — sections must never stay hidden until the user scrolls.
-    if (container.getBoundingClientRect().top < window.innerHeight * 0.88) {
-      play();
-      return;
-    }
-
-    const st = ScrollTrigger.create({
-      trigger: container,
-      start: "top 88%",
-      once: true,
-      onEnter: play,
+    gsap.set(revealTargets(container), {
+      opacity: 0,
+      y: 22,
+      willChange: "opacity, transform",
     });
-    triggers.push(st);
+    io.observe(container);
   });
 
-  // Layout may shift once webfonts / images land — re-measure triggers.
-  if (typeof window !== "undefined") {
-    window.addEventListener("load", () => ScrollTrigger.refresh(), {
-      once: true,
-    });
-  }
-
-  return () => triggers.forEach((st) => st.kill());
+  return () => io.disconnect();
 }
 
 /**
@@ -155,4 +132,4 @@ export function initMagnetic(root: ParentNode = document): () => void {
   return () => cleanups.forEach((fn) => fn());
 }
 
-export { gsap, ScrollTrigger };
+export { gsap };
