@@ -212,7 +212,20 @@
   <span class="pg__sweep" aria-hidden="true"></span>
   <div class="pg__cover">
     {#if p.cover}
-      <img class="pg__img" src={p.cover} alt={p.title} loading="lazy" decoding="async" />
+      <img
+        class="pg__img"
+        src={p.cover}
+        alt={p.title}
+        loading="lazy"
+        decoding="async"
+        onload={(e) => e.currentTarget.classList.add("is-loaded")}
+        {@attach (el) => {
+          // SSR'd covers often finish loading before hydration — the onload
+          // above never fires for them, so sweep the already-complete case.
+          const img = el as HTMLImageElement;
+          if (img.complete && img.naturalWidth > 0) img.classList.add("is-loaded");
+        }}
+      />
     {:else}
       <DitherCover class="pg__dither" seed={p.title} alt={p.title} />
     {/if}
@@ -523,7 +536,18 @@
     height: 100%;
     object-fit: cover;
     filter: saturate(0.85) brightness(0.92);
-    transition: filter var(--duration-hover) var(--ease-default);
+    transition:
+      filter 640ms var(--ease-default),
+      opacity 640ms var(--ease-default),
+      transform 640ms var(--ease-default);
+  }
+  /* Blur-up: starts soft + slightly zoomed, sharpens when the lazy cover
+     finishes loading (is-loaded via onload / attachment). Gated on html.js
+     so a no-JS render still shows the covers. */
+  html.js .pg__img:not(.is-loaded) {
+    filter: saturate(0.85) brightness(0.92) blur(16px);
+    opacity: 0;
+    transform: scale(1.06);
   }
   .pg__dither {
     position: absolute;
