@@ -187,24 +187,25 @@ function ogSvg({ w, h, kicker, title }) {
 </svg>`;
 }
 
-/** Banner overlay for LinkedIn/X: big slogan, contacts line. */
+/** Banner overlay for LinkedIn/X: big slogan, contacts line.
+    Layout constraint: LinkedIn overlays the profile photo on the banner's
+    bottom-left (and X crops differently per device), so ALL text lives in
+    the top half — slogan on a single line, contacts right below it. */
 function socialSvg({ w, h, slogan, sub }) {
   const m = Math.round(w * 0.05);
-  const size = Math.round(h * 0.14);
-  const lines = wrap(slogan, Math.floor((w * 0.62) / (size * 0.6)));
-  const lh = size * 1.2;
-  const top = h / 2 - ((lines.length - 1) * lh) / 2;
-  const texts = lines
-    .map(
-      (l, i) =>
-        `<text x="${m}" y="${top + i * lh}" font-family="Menlo, monospace" font-weight="bold" font-size="${size}" fill="${INK}">${esc(l)}</text>`
-    )
-    .join("\n");
+  // Fit the slogan on ONE line: shrink until it clears 90% of the width.
+  let size = Math.round(h * 0.15);
+  const maxW = w * 0.9;
+  while (size > 20 && slogan.length * size * 0.62 > maxW) size -= 2;
+  const subSize = Math.round(h * 0.055);
+  const ruleY = Math.round(h * 0.12);
+  const sloganY = ruleY + 26 + size;
+  const subY = sloganY + Math.round(subSize * 2);
   return `<svg width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
   <rect width="${w}" height="${h}" fill="black" opacity="0.5"/>
-  <rect x="${m}" y="${top - size - 26}" width="88" height="5" fill="${GREEN}"/>
-  ${texts}
-  <text x="${m}" y="${h - Math.round(h * 0.09)}" font-family="Menlo, monospace" font-size="${Math.round(h * 0.055)}" fill="${GREEN}">${esc(sub)}</text>
+  <rect x="${m}" y="${ruleY}" width="88" height="5" fill="${GREEN}"/>
+  <text x="${m}" y="${sloganY}" font-family="Menlo, monospace" font-weight="bold" font-size="${size}" fill="${INK}">${esc(slogan)}</text>
+  <text x="${m}" y="${subY}" font-family="Menlo, monospace" font-size="${subSize}" fill="${GREEN}">${esc(sub)}</text>
 </svg>`;
 }
 

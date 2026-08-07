@@ -13,6 +13,12 @@ export default defineConfig({
   }),
   // Dev-only: keep the toolbar pill out of visual-gauntlet screenshots.
   devToolbar: { enabled: false },
+  build: {
+    // Inline all CSS into each page's HTML. The ClientRouter swap otherwise
+    // paints the new page while its stylesheet chunk is still fetching —
+    // visible as unstyled blue links and a white header hairline.
+    inlineStylesheets: "always",
+  },
   markdown: {
     // Terminal-phosphor syntax theme — colors come from --shiki-* vars in
     // global.css so code blocks read like the rest of the site.
