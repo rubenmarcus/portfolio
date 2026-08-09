@@ -1,0 +1,48 @@
+---
+import Layout from "../layouts/Layout.astro"
+import { site } from "../config/site"
+
+interface Props {
+  title: string
+  description: string
+  heading: string
+  updated: string
+}
+
+const { title, description, heading, updated } = Astro.props
+---
+
+<Layout title={title} description={description}>
+  <main class="min-h-screen bg-black px-6 py-16 text-vesper-accent">
+    <article class="mx-auto max-w-2xl">
+      <a
+        href="/"
+        class="mb-8 inline-block font-mono text-sm text-vesper-accent/70 transition-colors hover:text-vesper-accent"
+      >
+        ← {site.brand}
+      </a>
+      <h1 class="mb-2 font-sans text-3xl font-semibold tracking-tight text-vesper-accent">
+        {heading}
+      </h1>
+      <p class="mb-10 font-mono text-xs text-vesper-accent/50">Last updated: {updated}</p>
+      <div class="prose-legal space-y-6 font-sans text-sm leading-relaxed text-vesper-accent/85">
+        <slot />
+      </div>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  .prose-legal :global(h2) {
+    @apply mt-8 text-base font-semibold text-vesper-accent;
+  }
+  .prose-legal :global(p) {
+    @apply text-vesper-accent/85;
+  }
+  .prose-legal :global(ul) {
+    @apply list-disc space-y-1 pl-5;
+  }
+  .prose-legal :global(a) {
+    @apply text-vesper-accent underline decoration-vesper-accent/30 underline-offset-2 transition-colors hover:decoration-vesper-accent;
+  }
+</style>

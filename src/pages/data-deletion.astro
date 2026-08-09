@@ -1,0 +1,58 @@
+---
+import LegalDocument from "../components/LegalDocument.astro"
+import { site } from "../config/site"
+
+const updated = "August 9, 2026"
+---
+
+<LegalDocument
+  title={`Data Deletion | ${site.brand}`}
+  description="How to request deletion of personal data held by jseramn.tech and related messaging services."
+  heading="Data Deletion Instructions"
+  updated={updated}
+>
+  <p>
+    You can request deletion of personal data that José Ramón García Del Risco controls in
+    connection with <a href={site.url}>jseramn.tech</a> or WhatsApp / Meta messaging services
+    (including AUREUS).
+  </p>
+
+  <h2>How to request deletion</h2>
+  <ol class="list-decimal space-y-2 pl-5">
+    <li>
+      Email <a href={`mailto:${site.email}`}>{site.email}</a> from the address or phone number
+      associated with your data, or message me on the same WhatsApp number you used previously.
+    </li>
+    <li>
+      Include "Data deletion request" in the subject or first line and specify what you want
+      removed (for example: contact form submission, WhatsApp conversation history I store).
+    </li>
+    <li>
+      I will confirm your identity and respond within 30 days, or sooner where required by law.
+    </li>
+  </ol>
+
+  <h2>What can be deleted</h2>
+  <ul>
+    <li>Encrypted contact form submissions and related email records I control</li>
+    <li>Message logs and conversation data stored in my systems</li>
+    <li>Any other personal data I hold that is not required for legal or security purposes</li>
+  </ul>
+
+  <h2>What I cannot delete</h2>
+  <p>
+    Data held solely by Meta/WhatsApp, Vercel, Resend, or other third-party providers must be
+    requested through those services where applicable. Aggregated analytics without personal
+    identifiers may be retained.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Operator: {site.name}<br />
+    Email: <a href={`mailto:${site.email}`}>{site.email}</a>
+  </p>
+
+  <p>
+    See also: <a href="/policy">Privacy Policy</a> · <a href="/terms">Terms of Service</a>
+  </p>
+</LegalDocument>
