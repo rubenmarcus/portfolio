@@ -1,0 +1,91 @@
+---
+import LegalDocument from "../components/LegalDocument.astro"
+import { site } from "../config/site"
+
+const updated = "August 9, 2026"
+---
+
+<LegalDocument
+  title={`Privacy Policy | ${site.brand}`}
+  description="Privacy policy for jseramn.tech and related messaging services operated by José Ramón García Del Risco."
+  heading="Privacy Policy"
+  updated={updated}
+>
+  <p>
+    This policy describes how José Ramón García Del Risco ("I", "me") collects and uses
+    information when you visit <a href={site.url}>jseramn.tech</a>, use the contact form,
+    or message me through WhatsApp or other Meta messaging channels connected to my services
+    (including the AUREUS assistant).
+  </p>
+
+  <h2>Information I collect</h2>
+  <ul>
+    <li>
+      <strong>Website visitors:</strong> pages viewed, approximate location derived from IP,
+      browser and device type, and referral source. Vercel Analytics may collect aggregated
+      usage metrics.
+    </li>
+    <li>
+      <strong>Contact form:</strong> the message you submit is encrypted in your browser before
+      transmission. I receive only ciphertext by email. Optional anti-abuse signals (for example
+      Cloudflare Turnstile and rate-limit metadata) may be processed.
+    </li>
+    <li>
+      <strong>WhatsApp / Meta messaging:</strong> your phone number, display name, message
+      content, timestamps, and delivery status as provided by Meta's WhatsApp Business Platform
+      when you contact me or use connected automations.
+    </li>
+    <li>
+      <strong>GitHub presence:</strong> public profile and contribution statistics displayed on
+      the site are fetched from GitHub's public API; I do not receive your GitHub credentials.
+    </li>
+  </ul>
+
+  <h2>How I use information</h2>
+  <p>
+    I use this data to operate and secure the site, respond to inquiries, provide messaging
+    services you request, prevent abuse, and improve reliability. I do not sell personal data.
+  </p>
+
+  <h2>Third-party services</h2>
+  <ul>
+    <li><strong>Vercel</strong> — hosting, CDN, and analytics</li>
+    <li><strong>Meta / WhatsApp</strong> — messaging delivery and Business Platform APIs</li>
+    <li><strong>Resend</strong> — encrypted contact email delivery</li>
+    <li><strong>Cloudflare</strong> — Turnstile bot protection (when enabled)</li>
+    <li><strong>Upstash</strong> — rate limiting for the contact API (when enabled)</li>
+    <li><strong>GitHub</strong> — public stats shown on the portfolio</li>
+  </ul>
+  <p>
+    These providers process data under their own terms and privacy policies. Messaging through
+    WhatsApp is also subject to
+    <a href="https://www.whatsapp.com/legal/privacy-policy" rel="noopener noreferrer">WhatsApp's Privacy Policy</a>.
+  </p>
+
+  <h2>Retention</h2>
+  <p>
+    Contact ciphertext and message logs are kept only as long as needed to respond, operate
+    services, or meet legal obligations, then deleted or anonymized where practical.
+    Server and analytics logs follow each provider's default retention periods.
+  </p>
+
+  <h2>Your rights</h2>
+  <p>
+    Depending on your location, you may request access, correction, deletion, or restriction
+    of personal data I control. To exercise these rights, email
+    <a href={`mailto:${site.email}`}>{site.email}</a> or use the
+    <a href="/data-deletion">data deletion instructions</a>. I will verify requests before acting.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Operator: {site.name}<br />
+    Email: <a href={`mailto:${site.email}`}>{site.email}</a><br />
+    Website: <a href={site.url}>jseramn.tech</a>
+  </p>
+
+  <p>
+    See also: <a href="/terms">Terms of Service</a> ·
+    <a href="/data-deletion">Data Deletion</a>
+  </p>
+</LegalDocument>

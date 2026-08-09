@@ -1,0 +1,68 @@
+---
+import LegalDocument from "../components/LegalDocument.astro"
+import { site } from "../config/site"
+
+const updated = "August 9, 2026"
+---
+
+<LegalDocument
+  title={`Terms of Service | ${site.brand}`}
+  description="Terms of service for jseramn.tech and related messaging services."
+  heading="Terms of Service"
+  updated={updated}
+>
+  <p>
+    By using <a href={site.url}>jseramn.tech</a> or messaging me through connected WhatsApp or
+    Meta channels (including AUREUS), you agree to these terms. If you do not agree, do not use
+    the services.
+  </p>
+
+  <h2>Services</h2>
+  <p>
+    This site is a personal portfolio and contact channel. Messaging features are provided for
+    legitimate communication and assistance. I may modify, suspend, or discontinue any feature
+    at any time.
+  </p>
+
+  <h2>Acceptable use</h2>
+  <ul>
+    <li>Do not send unlawful, harassing, fraudulent, or abusive content.</li>
+    <li>Do not attempt to disrupt, probe, or overload the site or APIs.</li>
+    <li>Do not use automated means to scrape or spam the contact form or messaging endpoints.</li>
+  </ul>
+
+  <h2>No warranties</h2>
+  <p>
+    The site and messaging services are provided "as is" without warranties of any kind. I do
+    not guarantee uninterrupted availability, accuracy of automated responses, or fitness for a
+    particular purpose.
+  </p>
+
+  <h2>Limitation of liability</h2>
+  <p>
+    To the fullest extent permitted by law, I am not liable for indirect, incidental, or
+    consequential damages arising from your use of the site or messaging services.
+  </p>
+
+  <h2>Third-party platforms</h2>
+  <p>
+    WhatsApp and other Meta products are governed by their own terms. Your use of those platforms
+    remains subject to Meta's policies in addition to these terms.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    I may update these terms by posting a new version on this page. Continued use after changes
+    constitutes acceptance of the updated terms.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Questions: <a href={`mailto:${site.email}`}>{site.email}</a>
+  </p>
+
+  <p>
+    See also: <a href="/policy">Privacy Policy</a> ·
+    <a href="/data-deletion">Data Deletion</a>
+  </p>
+</LegalDocument>
