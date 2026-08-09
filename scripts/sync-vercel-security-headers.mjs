@@ -14,6 +14,19 @@ const globalRule = {
   headers: securityHeaders,
 }
 
+const legalRule = {
+  source: "/(policy|terms|data-deletion)",
+  headers: [
+    { key: "Access-Control-Allow-Origin", value: "*" },
+    { key: "Cross-Origin-Resource-Policy", value: "cross-origin" },
+    {
+      key: "Content-Security-Policy",
+      value:
+        "default-src 'self'; script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://vitals.vercel-insights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors *; upgrade-insecure-requests",
+    },
+  ],
+}
+
 const apiRule = {
   source: "/api/(.*)",
   headers: [
@@ -30,7 +43,7 @@ const mapRule = {
   ],
 }
 
-vercel.headers = [globalRule, mapRule, apiRule]
+vercel.headers = [globalRule, legalRule, mapRule, apiRule]
 
 writeFileSync(vercelPath, `${JSON.stringify(vercel, null, 2)}\n`)
 console.log("[sync-vercel-security-headers] updated vercel.json")
