@@ -3,6 +3,7 @@ import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import vercel from "@astrojs/vercel";
+import { aeoAstroIntegration } from "aeo.js/astro";
 
 export default defineConfig({
   site: "https://rubenmarcus.dev",
@@ -25,6 +26,56 @@ export default defineConfig({
     shikiConfig: { theme: "css-variables" },
   },
   integrations: [
+    aeoAstroIntegration({
+      title: "Ruben Marcus — AI Fullstack Engineer",
+      description:
+        "Senior AI Fullstack Engineer building autonomous AI tooling, agents, and on-chain product surfaces. Based in Lisbon.",
+      url: "https://rubenmarcus.dev",
+      trailingSlash: "never",
+      generators: {
+        // Curated locally because aeo.js 0.0.16 does not yet support
+        // Content-Signal or preserving custom llms.txt sections.
+        robotsTxt: false,
+        llmsTxt: false,
+        llmsFullTxt: true,
+        rawMarkdown: true,
+        manifest: true,
+        sitemap: true,
+        aiIndex: true,
+        schema: true,
+      },
+      schema: {
+        enabled: true,
+        organization: {
+          name: "Ruben Marcus",
+          url: "https://rubenmarcus.dev",
+          logo: "https://rubenmarcus.dev/favicon.png",
+          sameAs: [
+            "https://github.com/rubenmarcus",
+            "https://x.com/rubenmarcus_dev",
+            "https://linkedin.com/in/rubenmarcus",
+            "https://www.npmjs.com/~rmarcus",
+          ],
+        },
+        defaultType: "WebPage",
+      },
+      og: {
+        enabled: true,
+        image: "https://rubenmarcus.dev/og/index.png",
+        twitterHandle: "@rubenmarcus_dev",
+      },
+      widget: {
+        enabled: true,
+        position: "bottom-right",
+        size: "icon-only",
+        theme: {
+          background: "rgba(5, 7, 12, 0.94)",
+          text: "#f5f1ea",
+          accent: "#00ff41",
+          badge: "#4ade80",
+        },
+      },
+    }),
     svelte(),
     tailwind({ applyBaseStyles: false }),
     // i18n block makes the sitemap emit xhtml:link hreflang alternates

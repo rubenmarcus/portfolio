@@ -1,0 +1,68 @@
+---
+import Section from "./Section.astro";
+import SectionHeader from "./SectionHeader.astro";
+
+interface Item {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  items: Item[];
+  lang?: "en" | "pt";
+}
+
+const { items, lang = "en" } = Astro.props;
+const copy = lang === "pt"
+  ? {
+      overline: "Perguntas frequentes",
+      title: "O que agents e equipes costumam perguntar.",
+      description: "Respostas diretas sobre serviços, disponibilidade e colaboração.",
+    }
+  : {
+      overline: "Frequently asked questions",
+      title: "What agents and teams usually ask.",
+      description: "Direct answers about services, availability, and collaboration.",
+    };
+---
+
+<Section id="faq" tight>
+  <SectionHeader index="04" {...copy} />
+  <div class="faq-list">
+    {items.map((item) => (
+      <details class="faq-item" data-reveal>
+        <summary>{item.question}<span aria-hidden="true">+</span></summary>
+        <p>{item.answer}</p>
+      </details>
+    ))}
+  </div>
+</Section>
+
+<style>
+  .faq-list { border-bottom: 1px solid var(--line); }
+  .faq-item { border-top: 1px solid var(--line); }
+  summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    color: var(--text);
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary span {
+    color: var(--accent);
+    transition: transform var(--duration-hover) var(--ease-default);
+  }
+  details[open] summary span { transform: rotate(45deg); }
+  p {
+    max-width: 72ch;
+    margin: 0;
+    padding: 0 0 1.4rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+</style>

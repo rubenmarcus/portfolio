@@ -1,0 +1,20 @@
+diff --git a/package.json b/package.json
+--- a/package.json
++++ b/package.json
+@@ -8,8 +8,8 @@
+   "exports": {
+     ".": {
+       "types": "./types/lexer.d.ts",
+-      "module": "./dist/lexer.js",
+-      "import": "./dist/lexer.js",
++      "module": "./dist/lexer.asm.js",
++      "import": "./dist/lexer.asm.js",
+       "require": "./dist/lexer.cjs"
+     },
+     "./js": {
+diff --git a/dist/lexer.asm.js b/dist/lexer.asm.js
+--- a/dist/lexer.asm.js
++++ b/dist/lexer.asm.js
+@@ -1 +1,2 @@
+ /* es-module-lexer 1.7.0 */
++export const init = Promise.resolve();

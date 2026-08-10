@@ -75,7 +75,10 @@
 
   <div class="container-x footer__bottom">
     <span class="overline">© {year} Ruben Marcus</span>
-    <span class="overline">Built with Astro · Svelte · Three.js · GSAP</span>
+    <span class="overline">
+      Built with Astro · Svelte · Three.js · GSAP ·
+      <a class="footer__aeo" href="https://aeojs.org" target="_blank" rel="noopener">AEO by aeo.js ↗</a>
+    </span>
     <span class="overline footer__kimi">This website was made using Kimi K3</span>
   </div>
 </footer>
@@ -213,4 +216,10 @@
     color: var(--accent-soft);
     opacity: 0.75;
   }
+
+  .footer__aeo {
+    color: var(--accent-soft);
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .footer__aeo:hover { color: var(--text); }
 </style>

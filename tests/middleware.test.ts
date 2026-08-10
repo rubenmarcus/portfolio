@@ -50,6 +50,43 @@ describe("OAuth discovery metadata", () => {
   });
 });
 
+describe("agent discovery", () => {
+  it("publishes a typed RFC 9727 API catalog", async () => {
+    const res = await onRequest(ctxFor("/.well-known/api-catalog") as never, next as never);
+    expect(res.headers.get("content-type")).toContain("application/linkset+json");
+    expect((await res.json()).linkset[0]["service-desc"][0].href).toContain("/openapi.json");
+  });
+
+  it("publishes an MCP Server Card and Agent Skills index", async () => {
+    const card = await onRequest(ctxFor("/.well-known/mcp/server-card.json") as never, next as never);
+    expect((await card.json()).transport.endpoint).toBe("https://rubenmarcus.dev/api/mcp");
+
+    const index = await onRequest(ctxFor("/.well-known/agent-skills/index.json") as never, next as never);
+    expect((await index.json()).skills[0].digest).toMatch(/^sha256:[a-f0-9]{64}$/);
+  });
+
+  it("adds discovery Link headers on the homepage", async () => {
+    const res = await onRequest(ctxFor("/") as never, next as never);
+    expect(res.headers.get("link")).toContain('rel="api-catalog"');
+    expect(res.headers.get("link")).toContain('rel="service-desc"');
+  });
+
+  it("negotiates rendered HTML to Markdown", async () => {
+    const context = ctxFor("/about") as ReturnType<typeof ctxFor>;
+    context.request = new Request("https://rubenmarcus.dev/about", {
+      headers: { accept: "text/markdown", "user-agent": "Mozilla/5.0" },
+    });
+    const res = await onRequest(
+      context as never,
+      (() => new Response("<html><head><title>About</title></head><main><h1>Hello</h1><p>World</p></main></html>", {
+        headers: { "content-type": "text/html; charset=utf-8" },
+      })) as never,
+    );
+    expect(res.headers.get("content-type")).toContain("text/markdown");
+    expect(await res.text()).toContain("# Hello");
+  });
+});
+
 describe("curl easter egg", () => {
   it("rewrites terminal clients on page routes to the text resume", async () => {
     const res = await onRequest(

@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/Section.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
+---
+
+<BaseLayout
+  title="Portfolio API documentation | Ruben Marcus"
+  description="Documentation for the public Ruben Marcus portfolio MCP, resume API, discovery metadata, and health endpoint."
+>
+  <Section id="api-docs">
+    <SectionHeader
+      index="API"
+      overline="Machine-readable portfolio"
+      title="Portfolio API documentation"
+      description="Public endpoints for agents evaluating Ruben Marcus's experience, services, and availability."
+    />
+
+    <article class="docs" data-reveal>
+      <h2>MCP server</h2>
+      <p><code>GET/POST https://rubenmarcus.dev/api/mcp</code></p>
+      <p>
+        A public Streamable HTTP-style JSON-RPC endpoint. Start with <code>initialize</code>,
+        then call <code>tools/list</code>. Authentication is not required.
+      </p>
+
+      <h2>Resume</h2>
+      <ul>
+        <li><a href="/api/resume.json"><code>/api/resume.json</code></a> — structured JSON</li>
+        <li><a href="/api/resume.txt"><code>/api/resume.txt</code></a> — plain text</li>
+      </ul>
+
+      <h2>Discovery</h2>
+      <ul>
+        <li><a href="/.well-known/api-catalog"><code>/.well-known/api-catalog</code></a> — RFC 9727 API catalog</li>
+        <li><a href="/.well-known/mcp/server-card.json"><code>/.well-known/mcp/server-card.json</code></a> — MCP Server Card</li>
+        <li><a href="/.well-known/agent-skills/index.json"><code>/.well-known/agent-skills/index.json</code></a> — Agent Skills index</li>
+        <li><a href="/openapi.json"><code>/openapi.json</code></a> — OpenAPI 3.1 description</li>
+      </ul>
+
+      <h2>Health and caching</h2>
+      <p><a href="/api/health"><code>/api/health</code></a> returns current service health. Public discovery documents may be cached; API and OAuth responses should be treated as dynamic.</p>
+    </article>
+  </Section>
+</BaseLayout>
+
+<style>
+  .docs { max-width: 76ch; color: var(--muted); line-height: 1.7; }
+  .docs h2 { margin: 2.4rem 0 0.7rem; color: var(--text); font-family: var(--font-display); }
+  .docs a { color: var(--accent); }
+  .docs code { font-family: var(--font-mono); font-size: 0.9em; }
+  .docs ul { display: grid; gap: 0.6rem; padding-left: 1.2rem; }
+</style>

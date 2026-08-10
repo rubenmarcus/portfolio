@@ -12,6 +12,7 @@ import SectionHeader from "../../components/SectionHeader.astro";
 import GlitchDivider from "../../components/GlitchDivider.svelte";
 import DitherCover from "../../components/DitherCover.svelte";
 import HireAgent from "../../components/HireAgent.svelte";
+import Faq from "../../components/Faq.astro";
 import { fetchGithubStars, fetchNpmDownloads } from "../../lib/stats-live";
 import { NPM_PACKAGES } from "../../lib/data/stats";
 
@@ -26,6 +27,24 @@ const allPosts = (await getCollection("blogPt", ({ data }) => !data.draft)).sort
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 const featuredArticles = allPosts.slice(0, 3);
+const faqItems = [
+  {
+    question: "Para que tipo de trabalho posso contratar Ruben Marcus?",
+    answer: "Agents e tooling de AI, engenharia full-stack de produto, infraestrutura para developers, produtos Web3 e trabalhos focados de arquitetura ou entrega.",
+  },
+  {
+    question: "Um agent de AI consegue avaliar a experiência do Ruben?",
+    answer: "Sim. O site publica um endpoint MCP, APIs de currículo estruturado, uma descrição OpenAPI, um catálogo de APIs e metadados de descoberta.",
+  },
+  {
+    question: "Ruben está disponível para novos projetos?",
+    answer: "A disponibilidade muda ao longo do tempo. Use a ferramenta de disponibilidade no endpoint MCP público ou entre em contato para confirmar a agenda atual.",
+  },
+  {
+    question: "Como uma equipe deve iniciar a conversa?",
+    answer: "Envie um briefing conciso com o problema, resultado desejado, stack atual, prazo e restrições para ruben@rubenmarcus.dev.",
+  },
+];
 ---
 
 <BaseLayout
@@ -33,6 +52,7 @@ const featuredArticles = allPosts.slice(0, 3);
   title="Ruben Marcus — Engenheiro AI Fullstack"
   description="Engenheiro AI Fullstack Sênior construindo AI tooling autônomo, agents e produtos on-chain. Em Lisboa."
   image="/og/index.png"
+  faq={faqItems}
 >
   <DitherBg client:load opacity={0.55} />
   <HeroScene client:load lang="pt" />
@@ -99,12 +119,14 @@ const featuredArticles = allPosts.slice(0, 3);
     <HireAgent client:visible lang="pt" />
   </Section>
 
+  <Faq items={faqItems} lang="pt" />
+
   <!-- Contact CTA -->
   <Section id="contact-cta" tight>
     <div class="cta-band" data-reveal>
       <AsciiField client:visible cell={20} density={0.18} morphRate={1.1} opacity={0.35} class="cta-ascii" />
       <div class="cta-band__inner">
-        <span class="bracket" data-reveal-item>04 / Contato</span>
+        <span class="bracket" data-reveal-item>05 / Contato</span>
         <h2 class="cta-title" data-reveal-item>
           Precisa de um engenheiro que entrega do spec ao PR?
         </h2>

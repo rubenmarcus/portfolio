@@ -1,0 +1,44 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Ruben Marcus Portfolio API",
+    "version": "1.0.0",
+    "description": "Public machine-readable access to Ruben Marcus's portfolio and MCP server."
+  },
+  "servers": [{ "url": "https://rubenmarcus.dev" }],
+  "paths": {
+    "/api/mcp": {
+      "get": {
+        "summary": "Discover the MCP endpoint",
+        "responses": { "200": { "description": "MCP server discovery document" } }
+      },
+      "post": {
+        "summary": "Send a JSON-RPC request to the public MCP server",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object" } } }
+        },
+        "responses": { "200": { "description": "JSON-RPC response" } }
+      }
+    },
+    "/api/resume.json": {
+      "get": {
+        "summary": "Get the resume as JSON",
+        "responses": { "200": { "description": "Structured resume" } }
+      }
+    },
+    "/api/resume.txt": {
+      "get": {
+        "summary": "Get the resume as plain text",
+        "responses": { "200": { "description": "Plain-text resume" } }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "summary": "Check API health",
+        "responses": { "200": { "description": "Service is operational" } }
+      }
+    }
+  }
+}
+

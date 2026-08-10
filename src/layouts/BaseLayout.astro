@@ -23,6 +23,8 @@ interface Props {
   modifiedTime?: Date | string;
   /** Canonical override — posts syndicated to dev.to/LinkedIn point there. */
   canonicalUrl?: string;
+  /** Visible FAQ entries rendered by the page; used for matching FAQPage JSON-LD. */
+  faq?: Array<{ question: string; answer: string }>;
 }
 
 const {
@@ -34,6 +36,7 @@ const {
   publishedTime,
   modifiedTime,
   canonicalUrl,
+  faq = [],
 } = Astro.props;
 
 const canonicalURL = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
@@ -122,32 +125,86 @@ const ptPath = isPt ? pathname : `/pt${pathname === "/" ? "" : pathname}`;
       type="application/ld+json"
       set:html={JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "Person",
-        name: "Ruben Marcus",
-        url: "https://rubenmarcus.dev",
-        jobTitle: "AI Fullstack Engineer",
-        description,
-        sameAs: [
-          "https://github.com/rubenmarcus",
-          "https://x.com/rubenmarcus_dev",
-          "https://linkedin.com/in/rubenmarcus",
-          "https://www.npmjs.com/~rmarcus",
-          "https://t.me/rubenmarcus",
-        ],
-        knowsAbout: [
-          "AI Engineering",
-          "Autonomous Agents",
-          "Answer Engine Optimization",
-          "Web3",
-          "Blockchain",
-          "Frontend Engineering",
-          "TypeScript",
-          "Astro",
-          "Svelte",
-          "Next.js",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://rubenmarcus.dev/#organization",
+            name: "Ruben Marcus",
+            url: "https://rubenmarcus.dev/",
+            logo: {
+              "@type": "ImageObject",
+              url: "https://rubenmarcus.dev/favicon.png",
+            },
+            founder: { "@id": "https://rubenmarcus.dev/#person" },
+          },
+          {
+            "@type": "Person",
+            "@id": "https://rubenmarcus.dev/#person",
+            name: "Ruben Marcus",
+            url: "https://rubenmarcus.dev/",
+            jobTitle: "AI Fullstack Engineer",
+            description,
+            worksFor: { "@id": "https://rubenmarcus.dev/#organization" },
+            sameAs: [
+              "https://github.com/rubenmarcus",
+              "https://x.com/rubenmarcus_dev",
+              "https://linkedin.com/in/rubenmarcus",
+              "https://www.npmjs.com/~rmarcus",
+              "https://t.me/rubenmarcus",
+            ],
+            knowsAbout: [
+              "AI Engineering",
+              "Autonomous Agents",
+              "Answer Engine Optimization",
+              "Web3",
+              "Blockchain",
+              "Frontend Engineering",
+              "TypeScript",
+              "Astro",
+              "Svelte",
+              "Next.js",
+            ],
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://rubenmarcus.dev/#website",
+            url: "https://rubenmarcus.dev/",
+            name: "Ruben Marcus",
+            publisher: { "@id": "https://rubenmarcus.dev/#organization" },
+            inLanguage: ["en", "pt-BR"],
+          },
+          {
+            "@type": "WebPage",
+            "@id": `${canonicalURL}#webpage`,
+            url: canonicalURL,
+            name: title,
+            description,
+            isPartOf: { "@id": "https://rubenmarcus.dev/#website" },
+            about: { "@id": "https://rubenmarcus.dev/#person" },
+            primaryImageOfPage: {
+              "@type": "ImageObject",
+              url: new URL(image, Astro.site).href,
+            },
+            inLanguage: lang,
+          },
         ],
       })}
     />
+
+    {faq.length > 0 && (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faq.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: { "@type": "Answer", text: item.answer },
+          })),
+        })}
+      />
+    )}
 
     <!-- Pages can inject extra head tags (e.g. BlogPosting JSON-LD). -->
     <slot name="head" />
@@ -175,6 +232,51 @@ const ptPath = isPt ? pathname : `/pt${pathname === "/" ? "" : pathname}`;
     <!-- Bottom audio deck — persisted across view transitions so the
          music keeps playing while navigating. -->
     <AudioPlayer client:load transition:persist />
+
+    <script>
+      const globalState = window as Window & { __portfolioWebMcp?: boolean };
+      const modelContext = (document as any).modelContext ?? (navigator as any).modelContext;
+
+      if (!globalState.__portfolioWebMcp && modelContext?.registerTool) {
+        globalState.__portfolioWebMcp = true;
+        const rpc = async (name: string) => {
+          const response = await fetch("/api/mcp", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: crypto.randomUUID(),
+              method: "tools/call",
+              params: { name, arguments: {} },
+            }),
+          });
+          if (!response.ok) throw new Error(`MCP request failed: ${response.status}`);
+          return response.json();
+        };
+
+        modelContext.registerTool({
+          name: "get_ruben_marcus_resume",
+          description: "Return Ruben Marcus's public resume as structured JSON.",
+          inputSchema: { type: "object", properties: {}, additionalProperties: false },
+          annotations: { readOnlyHint: true },
+          execute: async () => (await fetch("/api/resume.json")).json(),
+        });
+        modelContext.registerTool({
+          name: "get_ruben_marcus_services",
+          description: "List the AI engineering and product services offered by Ruben Marcus.",
+          inputSchema: { type: "object", properties: {}, additionalProperties: false },
+          annotations: { readOnlyHint: true },
+          execute: async () => rpc("get_services"),
+        });
+        modelContext.registerTool({
+          name: "check_ruben_marcus_availability",
+          description: "Check Ruben Marcus's current public project availability.",
+          inputSchema: { type: "object", properties: {}, additionalProperties: false },
+          annotations: { readOnlyHint: true },
+          execute: async () => rpc("check_availability"),
+        });
+      }
+    </script>
   </body>
 </html>
 

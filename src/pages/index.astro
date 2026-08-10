@@ -12,6 +12,7 @@ import SectionHeader from "../components/SectionHeader.astro";
 import GlitchDivider from "../components/GlitchDivider.svelte";
 import DitherCover from "../components/DitherCover.svelte";
 import HireAgent from "../components/HireAgent.svelte";
+import Faq from "../components/Faq.astro";
 import { fetchGithubStars, fetchNpmDownloads } from "../lib/stats-live";
 import { NPM_PACKAGES } from "../lib/data/stats";
 
@@ -26,12 +27,31 @@ const allPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 const featuredArticles = allPosts.slice(0, 3);
+const faqItems = [
+  {
+    question: "What kind of work can I hire Ruben Marcus for?",
+    answer: "AI agents and tooling, full-stack product engineering, developer infrastructure, Web3 product surfaces, and focused architecture or delivery engagements.",
+  },
+  {
+    question: "Can an AI agent evaluate Ruben's experience?",
+    answer: "Yes. The site publishes a public MCP endpoint, structured resume APIs, an OpenAPI description, an API catalog, and machine-readable discovery metadata.",
+  },
+  {
+    question: "Is Ruben available for new projects?",
+    answer: "Availability changes over time. Use the availability tool on the public MCP endpoint or contact Ruben directly for the current schedule.",
+  },
+  {
+    question: "How should a team start a conversation?",
+    answer: "Send a concise project brief with the problem, desired outcome, current stack, timing, and constraints to ruben@rubenmarcus.dev.",
+  },
+];
 ---
 
 <BaseLayout
   title="Ruben Marcus — AI Fullstack Engineer"
   description="Senior AI Fullstack Engineer building autonomous AI tooling, agents, and on-chain product surfaces. Based in Lisbon."
   image="/og/index.png"
+  faq={faqItems}
 >
   <DitherBg client:load opacity={0.55} />
   <HeroScene client:load />
@@ -98,12 +118,14 @@ const featuredArticles = allPosts.slice(0, 3);
     <HireAgent client:visible />
   </Section>
 
+  <Faq items={faqItems} />
+
   <!-- Contact CTA -->
   <Section id="contact-cta" tight>
     <div class="cta-band" data-reveal>
       <AsciiField client:visible cell={20} density={0.18} morphRate={1.1} opacity={0.35} class="cta-ascii" />
       <div class="cta-band__inner">
-        <span class="bracket" data-reveal-item>04 / Contact</span>
+        <span class="bracket" data-reveal-item>05 / Contact</span>
         <h2 class="cta-title" data-reveal-item>
           Need an engineer who can ship from spec to PR?
         </h2>
