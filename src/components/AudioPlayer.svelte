@@ -1,6 +1,6 @@
 <script lang="ts">
   /**
-   * Bottom-right audio deck — YouTube IFrame API playing a fixed playlist,
+   * Bottom-left audio deck — YouTube IFrame API playing a fixed playlist,
    * terminal-styled to match the site. Persisted across view transitions.
    *
    * Persist caveat: Astro moves persisted elements into the new document,
@@ -186,7 +186,7 @@
     };
   });
 
-  // Keep the footer's bottom-right corner clear of the floating deck.
+  // Keep the footer clear of the expanded floating deck.
   $effect(() => {
     document.body.style.paddingBottom = minimized ? "0" : "150px";
     return () => {
@@ -260,9 +260,9 @@
 
   .deck {
     position: fixed;
-    right: 1rem;
-    bottom: 1rem;
-    left: auto;
+    right: auto;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    left: max(1rem, env(safe-area-inset-left));
     z-index: 999;
     width: min(340px, calc(100vw - 2rem));
     display: flex;
@@ -405,8 +405,9 @@
 
   .deck-fab {
     position: fixed;
-    right: 1rem;
-    bottom: 1rem;
+    right: auto;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    left: max(1rem, env(safe-area-inset-left));
     z-index: 999;
     width: 40px;
     height: 40px;
