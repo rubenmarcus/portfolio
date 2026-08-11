@@ -10,26 +10,41 @@
     lang?: string;
   }
   let { lang = "en" }: Props = $props();
-  const pt = lang.startsWith("pt");
+  const pt = $derived(lang.startsWith("pt"));
 
   // pt-BR inline strings — EN default stays on siteMeta.
-  const role = pt ? "Engenheiro AI Fullstack Sênior" : siteMeta.role;
-  const base = pt ? "Lisboa · Mundial" : siteMeta.base;
-  const pagesLabel = pt ? "Páginas" : "Pages";
-  const reach = pt ? "Contato" : "Reach";
+  const role = $derived(pt ? "Engenheiro AI Fullstack" : siteMeta.role);
+  const base = $derived(pt ? "Lisboa · Mundial" : siteMeta.base);
+  const pagesLabel = $derived(pt ? "Páginas" : "Pages");
+  const socialsLabel = "Socials";
+  const madeWithAi = $derived(pt ? "Este site foi feito usando IA" : "This website was made using AI");
 
-  const pages = navItems.map((item) => ({
+  const pages = $derived(navItems.map((item) => ({
     label: pt ? (navLabelsPt[item.href] ?? item.label) : item.label,
     href: (pt ? "/pt" : "") + (item.href === "/" ? "" : item.href) || "/",
-  }));
+  })));
 
   const socials: { label: string; href: string; icon: SvgIconName }[] = [
     { label: "GitHub",   href: "https://github.com/rubenmarcus",       icon: "github" },
     { label: "X",        href: "https://x.com/rubenmarcus_dev",        icon: "xTwitter" },
     { label: "LinkedIn", href: "https://linkedin.com/in/rubenmarcus",  icon: "linkedin" },
     { label: "npm",      href: "https://www.npmjs.com/~rmarcus",       icon: "npm" },
-    { label: "Email",    href: "mailto:ruben@rubenmarcus.dev",     icon: "mail" },
     { label: "Telegram", href: "https://t.me/rubenmarcus",             icon: "telegram" },
+  ];
+
+  const products = [
+    { label: "Ralph Starter", href: "https://ralphstarter.ai" },
+    { label: "Autoresearcher", href: "https://autoresearcher.org" },
+    { label: "AEO.js", href: "https://aeojs.org" },
+    { label: "AEO Checker", href: "https://check.aeojs.org" },
+    { label: "ScanRepo", href: "https://scanrepo.dev" },
+    { label: "CS Brasil", href: "https://csbrasil.online" },
+  ];
+
+  const aiModels: { label: string; icon: SvgIconName }[] = [
+    { label: "Claude", icon: "claude" },
+    { label: "GPT / Codex", icon: "openai" },
+    { label: "Kimi", icon: "kimi" },
   ];
 </script>
 
@@ -44,12 +59,9 @@
         </p>
         <p class="footer__loc">{base}</p>
       </div>
-      <div class="footer__telemetry">
-        <HeroLiveStats />
-      </div>
     </div>
 
-    <nav class="footer__col" aria-label={pagesLabel}>
+    <nav class="footer__col footer__col--links" aria-label={pagesLabel}>
       <div class="bracket">{pagesLabel}</div>
       <ul class="footer__pages">
         {#each pages as p}
@@ -58,19 +70,36 @@
       </ul>
     </nav>
 
-    <div class="footer__col footer__col--right">
-      <div class="bracket">{reach}</div>
+    <nav class="footer__col footer__col--links" aria-label="Products">
+      <div class="bracket">Products</div>
+      <ul class="footer__projects">
+        {#each products as project}
+          <li>
+            <a href={project.href} class="footer__project" target="_blank" rel="noopener noreferrer">
+              <span>{project.label}</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+          </li>
+        {/each}
+      </ul>
+    </nav>
+
+    <div class="footer__col footer__col--links footer__col--right">
+      <div class="bracket">{socialsLabel}</div>
       <ul class="footer__socials">
         {#each socials as s}
           <li>
             <a href={s.href} class="footer__social" target="_blank" rel="noopener" aria-label={s.label}>
-              <SvgIcon name={s.icon} size={15} />
-              <span>{s.label}</span>
+              <SvgIcon name={s.icon} size={17} />
             </a>
           </li>
         {/each}
       </ul>
     </div>
+  </div>
+
+  <div class="container-x footer__telemetry">
+    <HeroLiveStats {lang} />
   </div>
 
   <div class="container-x footer__bottom">
@@ -79,7 +108,16 @@
       Built with Astro · Svelte · Three.js · GSAP ·
       <a class="footer__aeo" href="https://aeojs.org" target="_blank" rel="noopener">AEO by aeo.js ↗</a>
     </span>
-    <span class="overline footer__kimi">This website was made using Kimi K3</span>
+    <span class="overline footer__ai">
+      <span>{madeWithAi}</span>
+      <span class="footer__aiModels" aria-label="Claude, GPT / Codex and Kimi">
+        {#each aiModels as model}
+          <span class="footer__aiModel" title={model.label}>
+            <SvgIcon name={model.icon} size={18} stroke={1.1} label={model.label} />
+          </span>
+        {/each}
+      </span>
+    </span>
   </div>
 </footer>
 
@@ -103,9 +141,29 @@
 
   @media (min-width: 720px) {
     .footer__inner {
-      grid-template-columns: 1.5fr 0.8fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: start;
       gap: 2rem;
+    }
+
+    .footer__col--links {
+      align-items: center;
+      justify-self: center;
+      text-align: center;
+    }
+
+    .footer__col--links .footer__pages,
+    .footer__col--links .footer__projects {
+      justify-items: center;
+    }
+
+    .footer__col--links .footer__socials {
+      justify-content: center;
+    }
+  }
+  @media (min-width: 1080px) {
+    .footer__inner {
+      grid-template-columns: 1.2fr repeat(3, minmax(0, 1fr));
     }
   }
 
@@ -161,27 +219,61 @@
   }
   .footer__page:hover { color: var(--accent-soft); }
 
+  .footer__projects {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.12rem;
+  }
+  .footer__project {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    max-width: 100%;
+    width: max-content;
+    padding: 0.27rem 0;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .footer__project:hover { color: var(--accent-soft); }
+  .footer__project span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .footer__col--right {
+    align-items: flex-end;
+    text-align: right;
+  }
+
   .footer__socials {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem 0.8rem;
+    justify-content: flex-end;
+    gap: 0.2rem;
   }
   @media (min-width: 720px) {
-    .footer__col--right { justify-self: end; text-align: right; }
-    .footer__socials { justify-content: flex-end; }
+    .footer__col--right {
+      align-items: center;
+      justify-self: center;
+      text-align: center;
+    }
   }
 
   .footer__social {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
+    justify-content: center;
     color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    padding: 0.3rem 0.6rem;
+    width: 32px;
+    height: 32px;
     border-radius: var(--radius-pill);
     border: 1px solid transparent;
     transition:
@@ -196,26 +288,54 @@
   }
 
   .footer__telemetry {
-    margin-top: 0.9rem;
+    margin-top: 2.25rem;
   }
 
   .footer__bottom {
     margin-top: 2.25rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--line);
+    padding-top: 0.25rem;
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
     justify-content: space-between;
   }
+  .footer__bottom .overline {
+    text-decoration: none;
+  }
   @media (min-width: 720px) {
-    .footer__bottom { flex-direction: row; align-items: center; }
+    .footer__bottom {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      column-gap: 1.5rem;
+    }
+    .footer__bottom > :nth-child(2) { justify-self: center; }
+    .footer__bottom > :last-child { justify-self: end; }
   }
 
-  .footer__kimi {
+  .footer__ai {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
     color: var(--accent-soft);
     opacity: 0.75;
   }
+
+  .footer__aiModels {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .footer__aiModel {
+    display: inline-grid;
+    place-items: center;
+    color: var(--accent-soft);
+    opacity: 0.68;
+    transition: opacity var(--duration-hover) var(--ease-default);
+  }
+  .footer__aiModel:hover { opacity: 1; }
 
   .footer__aeo {
     color: var(--accent-soft);

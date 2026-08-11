@@ -4,6 +4,9 @@
  * lives at /cv.pdf.
  */
 
+import { AEO_TOTAL_SCANS, CAREER_YEARS, formatFact } from "./site-facts";
+import { serviceOffers } from "./data/services";
+
 export const EMAIL = "ruben@rubenmarcus.dev";
 
 export const RESUME = {
@@ -11,15 +14,15 @@ export const RESUME = {
   fullName: "Ruben Marcus Luz Paschoarelli",
   role: "Senior AI Fullstack Engineer",
   base: "Lisbon, Portugal — remote worldwide",
-  yearsExperience: 14,
+  yearsExperience: CAREER_YEARS,
   summary:
-    "Senior AI Fullstack Engineer building AI-native products, agent tooling, and premium web experiences. 14 years across AI dev tools, web3, fintech, and e-commerce: 4+ years deep in web3/crypto, 2+ years building AI developer tools. Built 10+ AI agents for DeFi protocols across Solana, EVM, SUI, NEAR, and Cardano.",
+    `Senior AI Fullstack Engineer building AI-native products, agent tooling, and premium web experiences. ${CAREER_YEARS} years across AI dev tools, web3, fintech, and e-commerce: 4+ years deep in web3/crypto, 2+ years building AI developer tools. Built 10+ AI agents for DeFi protocols across Solana, EVM, SUI, NEAR, and Cardano.`,
   proof: [
     "#1 on ECDSA.fail — multi-agent research harness, 9 LLM roles across 7+ providers",
     "#1 on Optimization Arena QEC decoder leaderboard (2,642 EPM)",
     "Bitte Protocol AI runtime in production: 2.85M+ messages, 24,164 users, 16,703 deployed agents",
     "CS Brasil browser FPS: 2,191 players, 154K+ kills, 27 countries",
-    "Creator of aeo.js + check.aeojs.org (4,569 AEO scans)",
+    `Creator of aeo.js + check.aeojs.org (${formatFact(AEO_TOTAL_SCANS, "en-US")} AEO scans)`,
     "34K+ all-time npm downloads",
   ],
   experience: [
@@ -114,18 +117,12 @@ export const RESUME = {
     cv: "https://rubenmarcus.dev/cv.pdf",
     github: "https://github.com/rubenmarcus",
     linkedin: "https://linkedin.com/in/rubenmarcus",
-    email: EMAIL,
   },
 };
 
-export const SERVICES = [
-  "AI product prototyping — idea to working AI product in weeks (agents, RAG, evals)",
-  "Landing pages that convert — premium marketing pages with real engineering",
-  "Interactive web experiences — Three.js, WebGL, shaders, generative art",
-  "Agentic workflows & internal tools — multi-agent systems and automation",
-  "AEO & technical SEO — the scanner gives you the score, he raises it",
-  "Frontend modernization — Next.js, SvelteKit, TypeScript, incremental",
-];
+export const SERVICES = serviceOffers.map(
+  (service) => `${service.name.en} — ${service.summary.en} (${service.duration.en}) · https://rubenmarcus.dev/services/${service.slug}`,
+);
 
 export const AVAILABILITY =
   "Selectively available for full-time roles and freelance contracts. Fixed-scope engagements preferred. Replies within a day or two.";

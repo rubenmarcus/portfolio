@@ -8,8 +8,6 @@
  * entry here (and one data entry in lab.astro + pt/lab.astro).
  */
 
-import type { Component } from "svelte";
-
 import ContourScanDemo from "./ContourScanDemo.svelte";
 import FlowFieldDemo from "./FlowFieldDemo.svelte";
 import GlyphRainDemo from "./GlyphRainDemo.svelte";
@@ -45,7 +43,10 @@ import waveInterferenceSrc from "./WaveInterferenceDemo.svelte?raw";
 import phosphorFireSrc from "./PhosphorFireDemo.svelte?raw";
 
 export interface LabDemoEntry {
-  component: Component;
+  // Astro's Svelte shim widens component props with client directives, so the
+  // native Svelte Component type is too narrow here. Every demo shares this
+  // no-required-props component shape.
+  component: typeof ContourScanDemo;
   source: string;
   filename: string;
   /** The AI prompt that regenerates this same animation. */

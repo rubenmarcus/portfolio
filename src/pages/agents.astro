@@ -35,8 +35,9 @@ const grouped = GROUPS.map((g) => ({ ...g, agents: aiAgents.filter((a) => a.grou
 >
   <DitherBg client:load />
 
-  <Section id="intro">
+  <Section id="intro" pageHeader>
     <SectionHeader
+      level={1}
       index="08"
       overline="The fleet"
       title="A fleet of AI agents that actually transact."

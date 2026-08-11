@@ -239,6 +239,7 @@
     // Wireframe scanline layer — horizontal line rows that bend around the
     // cursor. Shares the quad's uniforms. ~140 rows × 128 segments.
     const lineVerts: number[] = [];
+    const linePositions: number[] = [];
     const ROWS = 140;
     const SEGS = 128;
     for (let r = 0; r < ROWS; r++) {
@@ -247,10 +248,15 @@
         const x0 = -1 + (s / SEGS) * 2;
         const x1 = -1 + ((s + 1) / SEGS) * 2;
         lineVerts.push(x0, y, x1, y);
+        // Three.js expects the conventional `position` attribute to contain
+        // xyz triples when it derives bounds, even though this shader reads
+        // the separate vec2 `aGrid` attribute. A vec2 position made the
+        // implicit z component undefined and produced a NaN bounding sphere.
+        linePositions.push(x0, y, 0, x1, y, 0);
       }
     }
     const lineGeo = new THREE.BufferGeometry();
-    lineGeo.setAttribute("position", new THREE.Float32BufferAttribute(lineVerts, 2));
+    lineGeo.setAttribute("position", new THREE.Float32BufferAttribute(linePositions, 3));
     lineGeo.setAttribute("aGrid", new THREE.Float32BufferAttribute(lineVerts, 2));
     const lineMat = new THREE.ShaderMaterial({
       uniforms,

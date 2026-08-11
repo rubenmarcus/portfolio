@@ -6,6 +6,7 @@
  */
 
 import { aiAgents } from "./aiAgents";
+import { AEO_TOTAL_SCANS, AEO_UNIQUE_SITES } from "../site-facts";
 
 export const NPM_PACKAGES = [
   "aeo.js",
@@ -54,12 +55,12 @@ export const STATS: Stat[] = [
   },
   {
     id: "aeo-scans",
-    value: 4_569,
+    value: AEO_TOTAL_SCANS,
     label: "AEO scans run",
   },
   {
     id: "aeo-sites",
-    value: 2_259,
+    value: AEO_UNIQUE_SITES,
     label: "unique websites scanned",
   },
   {

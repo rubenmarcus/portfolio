@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import DitherBg from "../../components/DitherBg.svelte";
 import Section from "../../components/Section.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
 import PortfolioGrid from "../../components/portfolio/PortfolioGrid.svelte";
 import { projects, groupOrder } from "../../lib/data/projects";
 
@@ -19,6 +20,9 @@ const groupLabelsPt: Record<string, string> = {
 const caseStudies: Record<string, string> = {
   "ecdsa-fail": "/pt/work/ecdsa-fail",
   "bitte-ai-runtime": "/pt/work/bitte-runtime",
+  "ralph-starter": "/pt/work/ralph-starter",
+  "aeojs": "/pt/work/aeo-platform",
+  "cs-brasil": "/pt/work/cs-brasil",
 };
 
 /** Slugs with generated cover art at /art/covers/<slug>.png — the rest fall
@@ -121,7 +125,14 @@ const items = ordered.map((p) => ({
     <div class="wire-bg__floor"></div>
   </div>
 
-  <Section id="archive" tight>
+  <Section id="archive" pageHeader tight>
+    <SectionHeader
+      level={1}
+      index="01"
+      overline="Trabalho selecionado"
+      title="Produtos, sistemas e interfaces entregues em produção."
+      description="Um recorte curado de sistemas de IA, infraestrutura de agents, produtos web, experiências interativas e das decisões de engenharia por trás deles."
+    />
     <p class="see-also">
       <span class="see-also__label">veja também:</span>
       <a href="/pt/agents">AI Agents →</a> a frota por trás do trabalho recente
@@ -143,7 +154,7 @@ const items = ordered.map((p) => ({
     font-size: 0.78rem;
     color: var(--muted-soft);
     /* the removed intro header used to provide this top breathing room */
-    margin: 5.5rem 0 1.4rem;
+    margin: -1.5rem 0 1.4rem;
   }
   .see-also__label { color: var(--muted); }
   .see-also a {

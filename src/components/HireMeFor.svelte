@@ -1,128 +1,37 @@
 <script lang="ts">
   /**
    * HireMeFor — the commercial services strip right after the hero.
-   * Five fixed-scope offers as spotlight cards in the site's phosphor
+   * Three flagship offers as spotlight cards in the site's phosphor
    * language:
    *
    *   - stagger rise on first scroll-into-view (IntersectionObserver, once)
    *   - cursor spotlight — a radial green glow tracks the pointer inside
    *     each card via --mx/--my CSS vars
    *   - scanline sweep — a thin phosphor line scans down the card on hover
-   *   - whole card is the CTA → /contact?subject=<slug>
+   *   - whole card is the CTA → /services/<slug>
    *
    * prefers-reduced-motion → everything settled, no sweep, no stagger.
    */
 
   import { onMount } from "svelte";
   import VoxelIcon from "../lib/assets/VoxelIcon.svelte";
-  import type { VoxelIconName } from "../lib/assets/registry";
-
-  interface Service {
-    slug: string;
-    name: string;
-    desc: string;
-    chips: string[];
-    icon: VoxelIconName;
-  }
+  import { serviceOffers } from "../lib/data/services";
 
   interface Props {
     lang?: string;
   }
   let { lang = "en" }: Props = $props();
-  const pt = lang.startsWith("pt");
-  const base = pt ? "/pt" : "";
+  const pt = $derived(lang.startsWith("pt"));
+  const base = $derived(pt ? "/pt" : "");
 
-  const SERVICES: Service[] = [
-    {
-      slug: "ai-prototyping",
-      name: "AI product prototyping",
-      desc: "From idea to working AI product in weeks: agents, RAG, evals, and a shipping cadence you can keep.",
-      chips: ["agents", "RAG", "evals"],
-      icon: "claude",
-    },
-    {
-      slug: "landing-pages",
-      name: "Landing pages that convert",
-      desc: "Premium marketing pages with real engineering behind the visuals. Fast, measurable, easy to iterate on.",
-      chips: ["Astro / Next", "Core Web Vitals", "A/B-ready"],
-      icon: "zap",
-    },
-    {
-      slug: "interactive-experiences",
-      name: "Interactive web experiences",
-      desc: "Three.js, WebGL, shaders, and generative art that make a product memorable without wrecking the performance budget.",
-      chips: ["Three.js", "shaders", "generative"],
-      icon: "threejs",
-    },
-    {
-      slug: "agentic-workflows",
-      name: "Agentic workflows & internal tools",
-      desc: "Multi-agent systems, automation, and developer tooling that take repetitive work off your team's plate.",
-      chips: ["multi-agent", "automation", "dev tooling"],
-      icon: "mcp",
-    },
-    {
-      slug: "aeo",
-      name: "AEO & technical SEO",
-      desc: "The scanner gives you the score. I raise it. Content-layer rewrites, llms.txt, structured data and citation strategy, shipped by the person who wrote the AEO tooling.",
-      chips: ["citation strategy", "content layer", "implementation"],
-      icon: "eye",
-    },
-    {
-      slug: "frontend-modernization",
-      name: "Frontend modernization",
-      desc: "Migrate legacy stacks to Next.js, SvelteKit and TypeScript incrementally, without stopping the business.",
-      chips: ["Next.js", "Svelte", "incremental"],
-      icon: "react",
-    },
-  ];
-
-  const SERVICES_PT: Service[] = [
-    {
-      slug: "ai-prototyping",
-      name: "Prototipagem de produtos de IA",
-      desc: "Da ideia ao produto de IA funcionando em semanas: agents, RAG, evals e um ritmo de entrega que você consegue manter.",
-      chips: ["agents", "RAG", "evals"],
-      icon: "claude",
-    },
-    {
-      slug: "landing-pages",
-      name: "Landing pages que convertem",
-      desc: "Páginas de marketing premium com engenharia de verdade por trás do visual. Rápidas, mensuráveis, fáceis de iterar.",
-      chips: ["Astro / Next", "Core Web Vitals", "A/B-ready"],
-      icon: "zap",
-    },
-    {
-      slug: "interactive-experiences",
-      name: "Experiências web interativas",
-      desc: "Three.js, WebGL, shaders e arte generativa que tornam um produto memorável sem estourar o budget de performance.",
-      chips: ["Three.js", "shaders", "generative"],
-      icon: "threejs",
-    },
-    {
-      slug: "agentic-workflows",
-      name: "Agentic workflows & ferramentas internas",
-      desc: "Sistemas multi-agent, automação e developer tooling que tiram o trabalho repetitivo do prato do seu time.",
-      chips: ["multi-agent", "automation", "dev tooling"],
-      icon: "mcp",
-    },
-    {
-      slug: "aeo",
-      name: "AEO & SEO técnico",
-      desc: "O scanner te dá o score. Eu subo ele. Reescritas na camada de conteúdo, llms.txt, structured data e estratégia de citação — entregues por quem escreveu a ferramenta de AEO.",
-      chips: ["citation strategy", "content layer", "implementation"],
-      icon: "eye",
-    },
-    {
-      slug: "frontend-modernization",
-      name: "Modernização de frontend",
-      desc: "Migre stacks legadas para Next.js, SvelteKit e TypeScript de forma incremental, sem parar o negócio.",
-      chips: ["Next.js", "Svelte", "incremental"],
-      icon: "react",
-    },
-  ];
-
-  const services = $derived(pt ? SERVICES_PT : SERVICES);
+  const services = $derived(
+    serviceOffers.map((service) => ({
+      ...service,
+      name: service.name[pt ? "pt" : "en"],
+      desc: service.summary[pt ? "pt" : "en"],
+      chips: service.tags,
+    })),
+  );
 
   const copy = $derived(
     pt
@@ -131,14 +40,14 @@
           title: "Me contrate para",
           sub: "Projetos de escopo fechado, execução sênior, sem babysitting. Cada oferta abaixo é algo que já entreguei em produção.",
           book: "Agendar um projeto →",
-          cta: "iniciar um projeto",
+          cta: "ver escopo",
         }
       : {
           bracket: "01 / Hire me",
           title: "Hire me for",
           sub: "Fixed-scope engagements, senior execution, no hand-holding. Every offer below is something I've shipped in production.",
           book: "Book a project →",
-          cta: "start a project",
+          cta: "view scope",
         },
   );
 
@@ -183,7 +92,7 @@
           <p class="hire__sub">
             {copy.sub}
           </p>
-          <a class="btn btn-primary" href="{base}/contact" data-magnetic>{copy.book}</a>
+          <a class="btn btn-primary" href="{base}/contact" data-magnetic data-track="contact_view" data-track-location="home_services">{copy.book}</a>
         </div>
       </div>
     </header>
@@ -192,9 +101,11 @@
       {#each services as s, i}
         <a
           class="hire__card"
-          href={`${base}/contact?subject=${s.slug}`}
+          href={`${base}/services/${s.slug}`}
           style="--idx: {i};"
           onpointermove={spotlight}
+          data-track="service_view"
+          data-track-location="home_services"
         >
           <span class="hire__sweep" aria-hidden="true"></span>
           <div class="hire__top">

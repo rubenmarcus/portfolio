@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Bilingual Blog"
+  short_description: "Draft paired PT and EN portfolio articles"
+  default_prompt: "Use $write-bilingual-blog to draft and validate a paired Portuguese and English article for this portfolio."

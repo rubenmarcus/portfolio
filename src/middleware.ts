@@ -12,8 +12,9 @@
  *    auto-approve shim in /oauth/* so that registration succeeds.
  */
 import { defineMiddleware } from "astro:middleware";
+import { discoverableSkills } from "./lib/data/agent-skills";
 
-const PAGE = /^\/(|pt)(\/(portfolio|ai|lab|blog|about|contact|connect|agents)?)?\/?$/;
+const PAGE = /^\/(|pt)(\/(portfolio|ai|skills|lab|blog|about|contact|connect|agents)?)?\/?$/;
 const TERMINAL = /curl|wget|httpie|libcurl/i;
 
 const json = (
@@ -76,16 +77,13 @@ const wellKnown = (pathname: string, origin: string): Response | null => {
   if (pathname === "/.well-known/agent-skills/index.json") {
     return json({
       $schema: "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
-      skills: [
-        {
-          name: "portfolio-mcp",
-          type: "skill-md",
-          description:
-            "Discover Ruben Marcus's experience, services, availability, and contact options through his public portfolio MCP endpoint.",
-          url: "/.well-known/agent-skills/portfolio-mcp/SKILL.md",
-          digest: "sha256:a92c645621d60003fade5f068d5a6c0112a753b3b4d71f03405e4d59a7c39c38",
-        },
-      ],
+      skills: discoverableSkills.map((skill) => ({
+        name: skill.slug,
+        type: "skill-md",
+        description: skill.summary.en,
+        url: skill.discoveryUrl,
+        digest: skill.digest,
+      })),
     });
   }
 
@@ -181,7 +179,10 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
   const discovery = wellKnown(ctx.url.pathname, ctx.url.origin);
   if (discovery) return discovery;
 
-  const ua = ctx.request.headers.get("user-agent") ?? "";
+  // Astro executes middleware while prerendering, where request headers do
+  // not exist. Header-driven negotiation only applies to live requests.
+  const requestHeaders = ctx.isPrerendered ? null : ctx.request.headers;
+  const ua = requestHeaders?.get("user-agent") ?? "";
   if (TERMINAL.test(ua) && PAGE.test(ctx.url.pathname)) {
     return ctx.rewrite("/api/resume.txt");
   }
@@ -193,8 +194,9 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
   const contentType = headers.get("content-type") ?? "";
   if (
     ctx.request.method === "GET" &&
+    requestHeaders &&
     contentType.includes("text/html") &&
-    markdownAccepted(ctx.request.headers.get("accept") ?? "")
+    markdownAccepted(requestHeaders.get("accept") ?? "")
   ) {
     const html = await response.text();
     headers.set("content-type", "text/markdown; charset=utf-8");

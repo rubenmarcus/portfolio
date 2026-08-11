@@ -1,6 +1,7 @@
 import rss from "@astrojs/rss";
 import { getCollection } from "astro:content";
 import type { APIContext } from "astro";
+import { getBlogSlug } from "../lib/blog-routes";
 
 export async function GET(context: APIContext) {
   const posts = (await getCollection("blogPt", ({ data }) => !data.draft)).sort(
@@ -16,7 +17,7 @@ export async function GET(context: APIContext) {
       title: post.data.title,
       description: post.data.description,
       pubDate: post.data.date,
-      link: `/pt/blog/${post.id}/`,
+      link: `/pt/blog/${getBlogSlug("pt", post.id)}/`,
       categories: post.data.tags,
     })),
     customData: "<language>pt-br</language>",

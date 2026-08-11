@@ -13,7 +13,8 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
-import { AVAILABILITY, EMAIL, RESUME, SERVICES } from "../../lib/resume";
+import { AVAILABILITY, RESUME, SERVICES } from "../../lib/resume";
+import { deliverLead } from "../../lib/server/leads";
 
 // Example prompts surfaced in `instructions` so MCP clients can suggest
 // them to the user right after connecting.
@@ -134,25 +135,18 @@ export const POST: APIRoute = async ({ request }) => {
         if (!n || !contact || !brief) {
           return json(result(id, "error: name, contact and brief are required"));
         }
-        try {
-          const res = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
-            method: "POST",
-            headers: { "content-type": "application/json", accept: "application/json" },
-            body: JSON.stringify({
-              _subject: `[MCP intro] ${n} via ${agent || "mcp"}`,
-              name: String(n).slice(0, 120),
-              contact: String(contact).slice(0, 160),
-              brief: String(brief).slice(0, 4000),
-              budget: budget || "not specified",
-              agent: agent || "mcp",
-              source: "api/mcp",
-            }),
-          });
-          if (!res.ok) return json(result(id, `error: mail relay failed (${res.status})`));
-          return json(result(id, "Intro booked. Ruben replies within a day or two."));
-        } catch {
-          return json(result(id, "error: mail relay unreachable"));
-        }
+        const delivery = await deliverLead({
+          id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+          name: String(n).slice(0, 120),
+          contact: String(contact).slice(0, 160),
+          brief: String(brief).slice(0, 4000),
+          budget: String(budget || "").slice(0, 120),
+          agent: String(agent || "mcp").slice(0, 80),
+          attribution: { landing: "/api/mcp", language: "en" },
+        });
+        if (!delivery.ok) return json(result(id, `error: lead delivery unavailable; reference ${delivery.leadId}`));
+        return json(result(id, `Intro booked. Reference ${delivery.leadId}. Ruben replies within a day or two.`));
       }
       return json({ jsonrpc: "2.0", id, error: { code: -32602, message: `unknown tool: ${name}` } });
     }

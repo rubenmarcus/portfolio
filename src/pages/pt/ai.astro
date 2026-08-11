@@ -11,6 +11,7 @@ import WireCard from "../../components/WireCard.astro";
 import VoxelIcon from "../../lib/assets/VoxelIcon.svelte";
 import HeroStats from "../../components/HeroStats.svelte";
 import type { VoxelIconName } from "../../lib/assets";
+import { AEO_TOTAL_SCANS, AEO_UNIQUE_SITES, formatFact } from "../../lib/site-facts";
 
 // Voxel mark per tool — same mapping as the home AI Tools widget.
 const TOOL_ICONS: Record<string, VoxelIconName> = {
@@ -109,7 +110,7 @@ const EXPERTISE = [
     glyph: "{}",
     name: "AEO / AI search",
     desc: "Answer Engine Optimization: robots policy para AI crawlers, llms.txt e exports estruturados. Eu escrevi a ferramenta que mede o que ChatGPT, Claude e Perplexity citam.",
-    proof: "prova · criador do aeo.js + check.aeojs.org. 4.569 scans",
+    proof: `prova · criador do aeo.js + check.aeojs.org. ${formatFact(AEO_TOTAL_SCANS, "pt-BR")} scans`,
   },
   {
     glyph: ">_",
@@ -132,8 +133,9 @@ const EXPERTISE = [
     <AsciiField client:load cell={20} density={0.13} morphRate={0.9} opacity={0.24} reactive={true} />
   </div>
 
-  <Section id="intro">
+  <Section id="intro" pageHeader>
     <SectionHeader
+      level={1}
       index="01"
       overline="AI expertise"
       title="Eu construo os loops que tornam agents úteis."
@@ -252,7 +254,7 @@ const EXPERTISE = [
           Eu sou o criador do <a href="https://aeojs.org" class="link-inline" target="_blank" rel="noopener">aeo.js</a>
           (100+ downloads diários no npm) e do
           <a href="https://check.aeojs.org" class="link-inline" target="_blank" rel="noopener">check.aeojs.org</a>
-          (2.200+ sites escaneados). Eu sei exatamente o que faz ChatGPT, Claude e Perplexity
+          ({formatFact(AEO_UNIQUE_SITES, "pt-BR")} sites únicos escaneados). Eu sei exatamente o que faz ChatGPT, Claude e Perplexity
           citarem um site, porque escrevi a ferramenta que mede isso.
         </p>
       </div>
@@ -322,7 +324,7 @@ const EXPERTISE = [
       <h2 class="cta-title" data-reveal-item>Quer integrar uma dessas na sua stack?</h2>
       <p class="cta-desc" data-reveal-item>Bora conversar. São open source, mas eu costumo ajudar times a adotar.</p>
       <div class="cta-actions" data-reveal-item>
-        <a href="mailto:ruben@rubenmarcus.dev" class="btn btn-primary" data-magnetic>ruben@rubenmarcus.dev</a>
+        <a href="/pt/contact" class="btn btn-primary" data-magnetic>Iniciar conversa</a>
         <a href="https://github.com/multivmlabs" class="btn btn-secondary" target="_blank" rel="noopener" data-magnetic>Todos os repos no GitHub</a>
       </div>
     </div>

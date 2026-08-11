@@ -5,6 +5,15 @@
 /dist
 /.astro
 
+# legacy aeo.js output (the integration now writes to /dist/client)
+/public/ai-index.json
+/public/blog/
+/public/blog-pt/
+/public/docs.json
+/public/llms-full.txt
+/public/schema.json
+/public/sitemap.xml
+
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -13,6 +22,7 @@ yarn-error.log*
 
 # env files
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -29,4 +39,9 @@ yarn-error.log*
 # internal-only (not for the public repo)
 /ref/
 /launch/
-/.claude/
+/.claude/*
+!/.claude/skills/
+/.claude/skills/*
+!/.claude/skills/blog-voice/
+!/.claude/skills/write-bilingual-blog/
+!/.claude/skills/make-portfolio-blog-cover/

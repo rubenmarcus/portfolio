@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { CAREER_YEARS } from "../lib/site-facts";
   import RotatingVerb from "./RotatingVerb.svelte";
   import HeroScan from "./HeroScan.svelte";
   import HeroTerminal from "./HeroTerminal.svelte";
@@ -8,9 +9,9 @@
     lang?: string;
   }
   let { lang = "en" }: Props = $props();
-  const pt = lang.startsWith("pt");
+  const pt = $derived(lang.startsWith("pt"));
   // Internal links keep the visitor inside the PT tree.
-  const base = pt ? "/pt" : "";
+  const base = $derived(pt ? "/pt" : "");
 
   const VERBS_EN = [
     "autonomous AI agents",
@@ -36,18 +37,18 @@
     pt
       ? {
           hello: "Olá, eu sou",
-          build: "e eu",
-          buildVerb: "construo",
-          sub: "Senior Product Engineer. Produtos AI-native, experiências web premium e protótipos prontos pra startup. 13 anos de Next.js, TypeScript, sistemas de IA e developer tooling.",
+          title: "Engenheiro AI Fullstack para produtos web e sistemas de IA",
+          rotatingLead: "Eu construo",
+          sub: `AI Fullstack Engineer. Produtos AI-native, experiências web premium e sistemas prontos para produção. ${CAREER_YEARS} anos de Next.js, TypeScript, sistemas de IA e developer tooling.`,
           ctaPrimary: "Agendar um projeto",
           ctaSecondary: "Melhore o AEO da sua empresa",
           ctaAgent: "contrate via agente ↗",
         }
       : {
           hello: "Hello, I'm",
-          build: "and I",
-          buildVerb: "Build",
-          sub: "Senior Product Engineer. AI-native products, premium web experiences, and startup-ready prototypes. 13 years across Next.js, TypeScript, AI systems and developer tooling.",
+          title: "AI Fullstack Engineer for web products and agent systems",
+          rotatingLead: "I build",
+          sub: `AI Fullstack Engineer. AI-native products, premium web experiences, and production-ready systems. ${CAREER_YEARS} years across Next.js, TypeScript, AI systems and developer tooling.`,
           ctaPrimary: "Book a project",
           ctaSecondary: "Fix the AEO of your company",
           ctaAgent: "hire me via your agent ↗",
@@ -76,21 +77,22 @@
   <div class="hero__lede">
     <p class="hero__intro">
       {copy.hello} <span class="hero__introName">Ruben Marcus</span>
-      {copy.build} <span class="hero__introVerb">{copy.buildVerb}</span>
     </p>
 
-    <h1 class="hero__title">
+    <h1 class="hero__title">{copy.title}</h1>
+    <p class="hero__rotating" aria-hidden="true">
+      <span>{copy.rotatingLead}</span>
       <RotatingVerb words={verbs} interval={7000} morphMs={1800} class="hero__verb" />
-    </h1>
+    </p>
 
     <p class="hero__sub">
       {copy.sub}
     </p>
 
     <div class="hero__ctas">
-      <a href="{base}/contact" class="btn btn-primary">{copy.ctaPrimary}</a>
-      <a href="{base}/contact?subject=aeo" class="btn btn-secondary">{copy.ctaSecondary}</a>
-      <a href="{base}/connect" class="hero__agentCta">{copy.ctaAgent}</a>
+      <a href="{base}/contact" class="btn btn-primary" data-track="contact_view" data-track-location="hero">{copy.ctaPrimary}</a>
+      <a href="{base}/services/aeo" class="btn btn-secondary" data-track="service_view" data-track-location="hero">{copy.ctaSecondary}</a>
+      <a href="{base}/connect" class="hero__agentCta" data-track="agent_connect" data-track-location="hero">{copy.ctaAgent}</a>
     </div>
   </div>
 </section>
@@ -197,6 +199,7 @@
   @media (prefers-reduced-motion: no-preference) {
     .hero__intro,
     .hero__title,
+    .hero__rotating,
     .hero__sub,
     .hero__ctas {
       opacity: 0;
@@ -204,8 +207,9 @@
     }
     .hero__intro { animation-delay: 800ms; }
     .hero__title { animation-delay: 950ms; }
-    .hero__sub { animation-delay: 1050ms; }
-    .hero__ctas { animation-delay: 1150ms; }
+    .hero__rotating { animation-delay: 1020ms; }
+    .hero__sub { animation-delay: 1100ms; }
+    .hero__ctas { animation-delay: 1200ms; }
   }
   @keyframes heroRise {
     from { opacity: 0; transform: translateY(18px); }
@@ -225,8 +229,16 @@
   .hero__introName {
     color: var(--accent-soft);
   }
-  .hero__introVerb {
-    color: var(--accent-soft);
+  .hero__rotating {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45em;
+    margin: -0.65rem 0 0;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: clamp(0.78rem, 1vw, 0.92rem);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
   .hero__title {

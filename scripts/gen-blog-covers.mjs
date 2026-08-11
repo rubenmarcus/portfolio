@@ -29,6 +29,10 @@ if (!KEY) {
 const STYLE = `A dense luminous swarm of tiny phosphor-green (#00ff41) particles, sparks and hairline light-trails on a 100% pure black background, forming the motif below. Organic depth and parallax, soft phosphor bloom, subtle dot-matrix grain, cinematic contrast, wide 16:9 composition with generous black margins. STRICTLY no text, no letters, no logos, no people, no solid fills, no other colors. Dark analog occult-techno mood.`;
 
 const COVERS = {
+  "from-prompt-to-product-five-ways-to-build-with-ai":
+    "one bright particle artifact traveling through five concentric transformation gates, beginning as a loose spark cloud and emerging as one precise finished geometric object",
+  "frontend-ai-harness-prompt-to-pull-request":
+    "a glowing wireframe browser window held inside a layered particle test rig, several agent trails entering through measured checkpoints and one clean merge beam exiting",
   "automating-entire-workflows-with-ralph-starter":
     "a branching particle tree like a git graph folding back into itself through glowing loop arrows, one bright merge node at the center",
   "autoresearcher-pareto-frontier":

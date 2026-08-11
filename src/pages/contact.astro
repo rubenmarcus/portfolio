@@ -31,12 +31,13 @@ const iconMap: Record<string, SvgIconName> = {
     <AsciiField client:load cell={22} density={0.12} morphRate={1.0} opacity={0.24} reactive={true} />
   </div>
 
-  <Section id="intro">
+  <Section id="intro" pageHeader>
     <SectionHeader
+      level={1}
       index="05"
       overline="Contact"
       title="Let's talk."
-      description="Selectively available for AI tooling, agents, and Web3 product work. The form below is the fastest route to a scoped reply. Direct channels work too. I usually answer within a day or two."
+      description="Selectively available for AI products, agent systems, AI-native frontend, and AEO implementation. The form is the fastest route to a scoped reply."
     />
 
     <div class="form-shell" data-reveal>
@@ -91,7 +92,6 @@ const iconMap: Record<string, SvgIconName> = {
 
         <div class="cform__actions">
           <button type="submit" class="btn btn-primary" data-magnetic>Send inquiry →</button>
-          <a class="btn btn-ghost cform__mailto" href="mailto:ruben@rubenmarcus.dev">or plain email</a>
         </div>
       </form>
 
@@ -99,23 +99,23 @@ const iconMap: Record<string, SvgIconName> = {
         <span class="bracket">Message sent</span>
         <p class="cform-success__title">Thanks. I'll reply within a day or two.</p>
         <p class="cform-success__desc">
-          Nothing landed? Email <a class="link-inline" href="mailto:ruben@rubenmarcus.dev">ruben@rubenmarcus.dev</a> directly.
+          Prefer another channel? Find me on <a class="link-inline" href="https://linkedin.com/in/rubenmarcus" target="_blank" rel="noopener">LinkedIn</a>.
         </p>
       </div>
     </div>
 
     <div class="contact-grid">
-      <a href="mailto:ruben@rubenmarcus.dev" class="contact-card contact-card--primary" data-reveal data-magnetic>
+      <a href="https://linkedin.com/in/rubenmarcus" class="contact-card contact-card--primary" target="_blank" rel="noopener" data-reveal data-magnetic>
         <CardAscii client:visible seed="contact-primary" variant="wave" cols={12} rows={5} />
         <div class="contact-card__head">
           <span class="bracket">Primary</span>
           <SvgIcon name="arrowUpRight" size={18} class="contact-card__arrow" />
         </div>
         <div class="contact-card__valueRow">
-          <SvgIcon name="mail" size={22} class="contact-card__icon" />
-          <span class="contact-card__value">ruben@rubenmarcus.dev</span>
+          <SvgIcon name="linkedin" size={22} class="contact-card__icon" />
+          <span class="contact-card__value">LinkedIn</span>
         </div>
-        <span class="contact-card__note">Best for project inquiries, longer-form questions, or anything off-public. I usually reply within a day.</span>
+        <span class="contact-card__note">Best temporary channel for project inquiries and longer-form questions.</span>
       </a>
 
       <a href="tel:+351912892825" class="contact-card contact-card--phone" data-reveal>
@@ -476,25 +476,33 @@ const iconMap: Record<string, SvgIconName> = {
 </style>
 
 <script>
+  import { track } from "@vercel/analytics";
   /**
-   * Contact form — client-side validation, formsubmit.co AJAX submit, mailto
-   * fallback. `?subject=<slug>` pre-selects a matching interest (hero/ai/services CTAs).
+   * Contact form — client-side validation and formsubmit.co AJAX submit.
+   * `?subject=<slug>` pre-selects a matching interest (hero/ai/services CTAs).
    */
   function initContactForm() {
     const form = document.getElementById("contact-form");
     if (!(form instanceof HTMLFormElement) || form.dataset.bound) return;
     form.dataset.bound = "1";
 
-    const errorEl = form.querySelector(".cform__error");
+    const errorEl = form.querySelector<HTMLElement>(".cform__error");
     const successEl = document.querySelector(".cform-success");
-    const mailto = "ruben@rubenmarcus.dev";
+    let started = false;
+    form.addEventListener("focusin", () => {
+      if (started) return;
+      started = true;
+      track("contact_start", { language: "en", offer: subject ?? "unspecified" });
+    });
 
     // Pre-select interest from the query string (e.g. /contact?subject=aeo)
     const subject = new URLSearchParams(window.location.search).get("subject");
-    const subjectInterests = {
+    const subjectInterests: Record<string, string> = {
       aeo: "AEO",
       "ai-prototyping": "Sprint AI",
       "agentic-workflows": "Sprint AI",
+      "ai-product-systems": "Sprint AI",
+      "ai-native-frontend": "Retainer",
     };
     const interest = subject && subjectInterests[subject];
     if (interest) {
@@ -502,7 +510,7 @@ const iconMap: Record<string, SvgIconName> = {
       if (radio instanceof HTMLInputElement) radio.checked = true;
     }
 
-    const setError = (msg) => {
+    const setError = (msg: string | null) => {
       if (errorEl) {
         errorEl.textContent = msg ?? "";
         errorEl.hidden = !msg;
@@ -526,30 +534,8 @@ const iconMap: Record<string, SvgIconName> = {
       return ok;
     };
 
-    const mailtoHref = (data) => {
-      const subjectLine = `[${data.interest}] inquiry from ${data.name}`;
-      const body = [
-        `Name: ${data.name}`,
-        `Email: ${data.email}`,
-        `Company: ${data.company || "—"}`,
-        `Budget: ${data.budget}`,
-        `Interest: ${data.interest}`,
-        "",
-        data.message,
-      ].join("\n");
-      return `mailto:${mailto}?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(body)}`;
-    };
-
-    // Keep the "or plain email" fallback link in sync with the form contents.
-    const ghost = form.querySelector(".cform__mailto");
-    form.addEventListener("input", () => {
-      if (ghost instanceof HTMLAnchorElement) {
-        ghost.href = mailtoHref(readData());
-      }
-    });
-
     const readData = () => {
-      const get = (n) => {
+      const get = (n: string) => {
         const el = form.elements.namedItem(n);
         return el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement
           ? el.value.trim()
@@ -574,29 +560,46 @@ const iconMap: Record<string, SvgIconName> = {
         return;
       }
       const data = readData();
+      track("contact_submit", { language: "en", offer: subject ?? data.interest });
       const submitBtn = form.querySelector('button[type="submit"]');
       if (submitBtn instanceof HTMLButtonElement) {
         submitBtn.disabled = true;
         submitBtn.textContent = "Sending…";
       }
       try {
-        const res = await fetch(`https://formsubmit.co/ajax/${mailto}`, {
+        const res = await fetch("/api/hire", {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
           body: JSON.stringify({
-            _subject: `[${data.interest}] inquiry from ${data.name}`,
-            _captcha: "false",
-            _template: "table",
-            ...data,
+            name: data.name,
+            contact: data.email,
+            brief: [
+              `Interest: ${data.interest}`,
+              `Company: ${data.company || "—"}`,
+              "",
+              data.message,
+            ].join("\n"),
+            budget: data.budget,
+            agent: "portfolio-contact-form",
+            attribution: {
+              utm_source: new URLSearchParams(window.location.search).get("utm_source") ?? "",
+              utm_medium: new URLSearchParams(window.location.search).get("utm_medium") ?? "",
+              utm_campaign: new URLSearchParams(window.location.search).get("utm_campaign") ?? "",
+              utm_content: new URLSearchParams(window.location.search).get("utm_content") ?? "",
+              referrer: document.referrer ? new URL(document.referrer).hostname : "direct",
+              landing: window.location.pathname,
+              offer: subject ?? data.interest,
+              language: "en",
+            },
           }),
         });
-        if (!res.ok) throw new Error(`formsubmit ${res.status}`);
+        if (!res.ok) throw new Error(`hire endpoint ${res.status}`);
         form.hidden = true;
         if (successEl instanceof HTMLElement) successEl.hidden = false;
+        track("contact_success", { language: "en", offer: subject ?? data.interest });
       } catch {
-        // Fallback: open the visitor's email client with everything pre-filled.
-        window.location.href = mailtoHref(data);
-        setError("The form service didn't answer, so I'm opening your email client instead. Your message is pre-filled there.");
+        track("contact_error", { language: "en", offer: subject ?? data.interest });
+        setError("The form service didn't answer. Please reach out through LinkedIn or Telegram for now.");
         if (submitBtn instanceof HTMLButtonElement) {
           submitBtn.disabled = false;
           submitBtn.textContent = "Send inquiry →";

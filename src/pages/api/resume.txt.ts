@@ -5,6 +5,7 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
+import { AEO_TOTAL_SCANS, CAREER_YEARS, formatFact } from "../../lib/site-facts";
 
 const G = "\x1b[32m"; // green
 const B = "\x1b[1m";  // bold
@@ -15,14 +16,14 @@ const TEXT = `
 ${G}${B}rubenmarcus.dev${R} ${D}// terminal resume${R}
 
 ${B}Ruben Marcus${R} — Senior AI Fullstack Engineer
-Lisbon, Portugal · remote worldwide · 14 years shipping
+Lisbon, Portugal · remote worldwide · ${CAREER_YEARS} years shipping
 
 ${G}proof${R}
   #1 ECDSA.fail ............ multi-agent research harness (9 roles, 7+ providers)
   #1 QEC decoder ........... Optimization Arena, 2,642 EPM
   Bitte AI runtime ......... 2.85M+ messages · 24,164 users · 16,703 agents
   CS Brasil (browser FPS) .. 2,191 players · 154K+ kills · 27 countries
-  aeo.js / check.aeojs.org . 4,569 AEO scans
+  aeo.js / check.aeojs.org . ${formatFact(AEO_TOTAL_SCANS, "en-US")} AEO scans
   npm ...................... 34K+ all-time downloads
 
 ${G}open source${R}
@@ -30,7 +31,7 @@ ${G}open source${R}
   check.aeojs.org · scanrepo.dev · csbrasil.online
 
 ${G}hire me${R}
-  email  ruben@rubenmarcus.dev
+  social linkedin.com/in/rubenmarcus
   cv     GET  /cv.pdf
   api    POST /api/hire  {"name","contact","brief"}
   mcp    POST /api/mcp   (initialize · tools/list · tools/call)

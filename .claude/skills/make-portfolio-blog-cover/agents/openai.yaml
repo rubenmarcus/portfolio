@@ -1,0 +1,4 @@
+interface:
+  display_name: "Make Portfolio Blog Cover"
+  short_description: "Create matching phosphor-green blog covers"
+  default_prompt: "Use $make-portfolio-blog-cover to create and verify a cover image for a portfolio article."

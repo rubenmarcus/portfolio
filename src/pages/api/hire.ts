@@ -11,9 +11,10 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
+import { deliverLead } from "../../lib/server/leads";
 
-const EMAIL = "ruben@rubenmarcus.dev";
 const MAX = { name: 120, contact: 160, brief: 4000, budget: 120, agent: 80 };
+const ATTRIBUTION_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "referrer", "landing", "offer", "language"] as const;
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -59,23 +60,30 @@ export const POST: APIRoute = async ({ request }) => {
     }
   }
 
-  try {
-    const res = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
-      method: "POST",
-      headers: { "content-type": "application/json", accept: "application/json" },
-      body: JSON.stringify({
-        _subject: `[agent hire] ${name} via ${agent}`,
-        name,
-        contact,
-        brief,
-        budget: budget || "not specified",
-        agent,
-        source: "api/hire",
-      }),
-    });
-    if (!res.ok) return json({ ok: false, error: "mail relay failed" }, 502);
-    return json({ ok: true, message: "Brief received. Ruben replies within a day or two." });
-  } catch {
-    return json({ ok: false, error: "mail relay unreachable" }, 502);
-  }
+  const rawAttribution = data.attribution && typeof data.attribution === "object"
+    ? data.attribution as Record<string, unknown>
+    : {};
+  const attribution = Object.fromEntries(
+    ATTRIBUTION_KEYS.flatMap((key) => {
+      const value = String(rawAttribution[key] ?? "").trim().slice(0, 240);
+      return value ? [[key, value]] : [];
+    }),
+  );
+
+  const delivery = await deliverLead({
+    id: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+    name,
+    contact,
+    brief,
+    budget,
+    agent,
+    attribution,
+  });
+  if (!delivery.ok) return json({ ok: false, error: "lead delivery unavailable", leadId: delivery.leadId }, 502);
+  return json({
+    ok: true,
+    leadId: delivery.leadId,
+    message: "Brief received. Ruben replies within a day or two.",
+  });
 };

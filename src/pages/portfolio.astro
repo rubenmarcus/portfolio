@@ -2,12 +2,16 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import DitherBg from "../components/DitherBg.svelte";
 import Section from "../components/Section.astro";
+import SectionHeader from "../components/SectionHeader.astro";
 import PortfolioGrid from "../components/portfolio/PortfolioGrid.svelte";
 import { projects, groupLabels, groupOrder } from "../lib/data/projects";
 
 const caseStudies: Record<string, string> = {
   "ecdsa-fail": "/work/ecdsa-fail",
   "bitte-ai-runtime": "/work/bitte-runtime",
+  "ralph-starter": "/work/ralph-starter",
+  "aeojs": "/work/aeo-platform",
+  "cs-brasil": "/work/cs-brasil",
 };
 
 /** Slugs with generated cover art at /art/covers/<slug>.png — the rest fall
@@ -74,7 +78,14 @@ const items = ordered.map((p) => ({
     <div class="wire-bg__floor"></div>
   </div>
 
-  <Section id="archive" tight>
+  <Section id="archive" pageHeader tight>
+    <SectionHeader
+      level={1}
+      index="01"
+      overline="Selected work"
+      title="Products, systems, and interfaces shipped in production."
+      description="A curated record of AI systems, agent infrastructure, web products, interactive experiences, and the engineering decisions behind them."
+    />
     <p class="see-also">
       <span class="see-also__label">see also:</span>
       <a href="/agents">AI Agents →</a> the fleet behind the recent work
@@ -94,8 +105,7 @@ const items = ordered.map((p) => ({
     font-family: var(--font-mono);
     font-size: 0.78rem;
     color: var(--muted-soft);
-    /* the removed intro header used to provide this top breathing room */
-    margin: 5.5rem 0 1.4rem;
+    margin: -1.5rem 0 1.4rem;
   }
   .see-also__label { color: var(--muted); }
   .see-also a {

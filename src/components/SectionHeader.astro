@@ -6,6 +6,7 @@ interface Props {
   description?: string;
   align?: "left" | "center";
   class?: string;
+  level?: 1 | 2;
 }
 
 const {
@@ -15,7 +16,9 @@ const {
   description,
   align = "left",
   class: className = "",
+  level = 2,
 } = Astro.props;
+const Heading = level === 1 ? "h1" : "h2";
 ---
 
 <header class:list={["section-header", `section-header--${align}`, className]} data-reveal>
@@ -29,7 +32,7 @@ const {
     )}
   </div>
 
-  <h2 class="section-header__title" data-reveal-item>{title}</h2>
+  <Heading class="section-header__title" data-reveal-item>{title}</Heading>
 
   {description && (
     <p class="section-header__desc" data-reveal-item>{description}</p>

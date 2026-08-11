@@ -23,7 +23,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe("GET discovery", () => {
   it("lists the four tools and is never cached", async () => {
-    const res = GET({} as never);
+    const res = await GET({} as never);
     expect(res.headers.get("cache-control")).toBe("no-store");
     const body = await res.json();
     expect(body.tools).toEqual([
@@ -36,8 +36,8 @@ describe("GET discovery", () => {
 });
 
 describe("CORS preflight", () => {
-  it("OPTIONS answers 200, not 204 (204 breaks the edge re-wrap)", () => {
-    const res = OPTIONS({} as never);
+  it("OPTIONS answers 200, not 204 (204 breaks the edge re-wrap)", async () => {
+    const res = await OPTIONS({} as never);
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("no-store");
     expect(res.headers.get("access-control-allow-origin")).toBe("*");
@@ -92,7 +92,7 @@ describe("tools", () => {
     ).json();
     const resume = JSON.parse(body.result.content[0].text);
     expect(resume.name).toBe("Ruben Marcus");
-    expect(resume.links.email).toBe("ruben@rubenmarcus.dev");
+    expect(resume.links.email).toBeUndefined();
   });
 
   it("get_services and check_availability return text", async () => {
@@ -162,7 +162,7 @@ describe("book_intro", () => {
         arguments: { name: "Ada", contact: "ada@x.co", brief: "Build a thing" },
       })
     ).json();
-    expect(body.result.content[0].text).toContain("mail relay failed");
+    expect(body.result.content[0].text).toContain("lead delivery unavailable");
 
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down")));
     const body2 = await (
@@ -171,6 +171,6 @@ describe("book_intro", () => {
         arguments: { name: "Ada", contact: "ada@x.co", brief: "Build a thing" },
       })
     ).json();
-    expect(body2.result.content[0].text).toContain("mail relay unreachable");
+    expect(body2.result.content[0].text).toContain("lead delivery unavailable");
   });
 });

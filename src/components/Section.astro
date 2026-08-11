@@ -4,9 +4,11 @@ interface Props {
   class?: string;
   /** Tighter top/bottom padding. */
   tight?: boolean;
+  /** Canonical top spacing for the first header block on internal pages. */
+  pageHeader?: boolean;
 }
 
-const { id, class: className = "", tight = false } = Astro.props;
+const { id, class: className = "", tight = false, pageHeader = false } = Astro.props;
 ---
 
 <section
@@ -14,6 +16,7 @@ const { id, class: className = "", tight = false } = Astro.props;
   class:list={[
     "section-y",
     tight && "section-y--tight",
+    pageHeader && "section-y--page-header",
     className,
   ]}
 >
@@ -26,9 +29,15 @@ const { id, class: className = "", tight = false } = Astro.props;
   .section-y--tight {
     padding-block: 3.5rem;
   }
+  .section-y--page-header {
+    padding-top: var(--section-y-mobile);
+  }
   @media (min-width: 768px) {
     .section-y--tight {
       padding-block: 5rem;
+    }
+    .section-y--page-header {
+      padding-top: var(--section-y-desktop);
     }
   }
 </style>

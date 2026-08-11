@@ -7,6 +7,7 @@ import Divider from "../components/Divider.astro";
 import CardAscii from "../components/CardAscii.svelte";
 import WireCard from "../components/WireCard.astro";
 import DitherCover from "../components/DitherCover.svelte";
+import { AEO_UNIQUE_SITES, CAREER_YEARS, formatFact } from "../lib/site-facts";
 
 const timeline = [
   {
@@ -119,21 +120,22 @@ const education = [
 
 <BaseLayout
   title="About | Ruben Marcus"
-  description="Senior AI Fullstack Engineer based in Lisbon. 13 years building scalable apps across web3, fintech, and e-commerce."
+  description={`Senior AI Fullstack Engineer based in Lisbon. ${CAREER_YEARS} years building scalable apps across web3, fintech, and e-commerce.`}
   image="/og/about.png"
 >
   <DitherBg client:load opacity={0.55} />
-  <Section id="intro">
+  <Section id="intro" pageHeader>
     <SectionHeader
+      level={1}
       index="04"
       overline="About"
-      title="Brazilian engineer, Lisbon-based. 13 years shipping."
+      title={`Brazilian engineer, Lisbon-based. ${CAREER_YEARS} years shipping.`}
     />
 
     <div class="about-grid">
       <div class="about-body" data-reveal>
         <p data-reveal-item>
-          I'm a Senior AI Full Stack Engineer with 13 years of experience building scalable
+          I'm a Senior AI Fullstack Engineer with {CAREER_YEARS} years of experience building scalable
           applications across web3, fintech, and e-commerce. 4+ years deep in Web3 / Crypto,
           2+ years building AI developer tools. Based in Lisbon, work worldwide.
         </p>
@@ -155,7 +157,7 @@ const education = [
           On the AEO side I also take on <a href="/contact?subject=aeo" class="link-inline">AEO engagements</a>:
           fixed-scope projects that end with a before/after score report from
           <a href="https://check.aeojs.org" class="link-inline" target="_blank" rel="noopener">check.aeojs.org</a>
-          (2,200+ sites scanned and counting).
+          ({formatFact(AEO_UNIQUE_SITES, "en-US")} unique sites scanned and counting).
         </p>
         <p data-reveal-item>
           I care about the seams: how spec becomes code, how research becomes a product,
@@ -182,7 +184,6 @@ const education = [
             <div><dt>Based</dt><dd>Lisbon, Portugal</dd></div>
             <div><dt>Role</dt><dd>Sr. AI Fullstack Engineer</dd></div>
             <div><dt>Years</dt><dd>13 (4+ web3, 2+ AI tools)</dd></div>
-            <div><dt>Email</dt><dd><a href="mailto:ruben@rubenmarcus.dev" class="link-inline">ruben@rubenmarcus.dev</a></dd></div>
             <div><dt>CV</dt><dd><a href="/cv.pdf" class="link-inline" target="_blank" rel="noopener">Download PDF ↓</a></dd></div>
             <div><dt>Phone</dt><dd>+351 912 892 825</dd></div>
           </dl>

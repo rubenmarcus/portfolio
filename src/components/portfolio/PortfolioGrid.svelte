@@ -60,6 +60,7 @@
           noMatchesDesc: "Nenhum projeto bate com essa combinação de filtros.",
           resetFilters: "Limpar filtros",
           visit: "visitar",
+          caseStudy: "estudo de caso",
           highlighted: "Projeto em destaque",
         }
       : {
@@ -74,6 +75,7 @@
           noMatchesDesc: "No projects match this filter combination.",
           resetFilters: "Reset filters",
           visit: "visit",
+          caseStudy: "case study",
           highlighted: "Highlighted project",
         },
   );
@@ -252,12 +254,19 @@
         {/each}
       </ul>
     {/if}
-    {#if p.url}
+    {#if p.caseStudy}
+      <span class="pg__actions">
+        <a class="pg__case" href={p.caseStudy}>{copy.caseStudy} →</a>
+        {#if p.url}
+          <a class="pg__cta" href={p.url} target="_blank" rel="noopener noreferrer">
+            {copy.visit} <span class="pg__arrow" aria-hidden="true">↗</span>
+          </a>
+        {/if}
+      </span>
+    {:else if p.url}
       <span class="pg__cta">
         {copy.visit} <span class="pg__arrow" aria-hidden="true">↗</span>
       </span>
-    {:else if p.caseStudy}
-      <a class="pg__case" href={p.caseStudy}>case study →</a>
     {/if}
   </div>
 {/snippet}
@@ -328,7 +337,7 @@
     <ul class="pg__grid">
       {#each filtered as p, i (p.slug)}
         <li class="pg__item" style="--idx: {i};">
-          {#if p.url}
+          {#if p.url && !p.caseStudy}
             <a
               class="pg__card"
               class:pg__card--hl={p.highlight}
@@ -708,8 +717,6 @@
   .pg__card:hover .pg__arrow { transform: translate(2px, -2px); }
 
   .pg__case {
-    margin-top: auto;
-    padding-top: 0.6rem;
     font-family: var(--font-mono);
     font-size: 0.7rem;
     letter-spacing: 0.06em;
@@ -722,6 +729,15 @@
     opacity: 1;
     text-shadow: 0 0 12px rgba(0, 255, 65, 0.45);
   }
+  .pg__actions {
+    margin-top: auto;
+    padding-top: 0.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem 1rem;
+  }
+  .pg__actions .pg__cta { margin-top: 0; padding-top: 0; }
 
   /* ── empty state ────────────────────────────────────────────────── */
   .pg__empty {

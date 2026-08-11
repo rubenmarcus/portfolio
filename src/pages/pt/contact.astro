@@ -23,7 +23,7 @@ const iconMap: Record<string, SvgIconName> = {
 <BaseLayout
   lang="pt-br"
   title="Contato — Ruben Marcus"
-  description="Fale com Ruben Marcus. Seletivamente disponível para AI tooling, agents e trabalho em Web3."
+  description="Fale com Ruben Marcus sobre produtos de IA, sistemas de agents, frontend AI-native e implementação de AEO."
   image="/og/pt-contact.png"
 >
   <DitherBg client:load opacity={0.55} />
@@ -32,12 +32,13 @@ const iconMap: Record<string, SvgIconName> = {
     <AsciiField client:load cell={22} density={0.12} morphRate={1.0} opacity={0.24} reactive={true} />
   </div>
 
-  <Section id="intro">
+  <Section id="intro" pageHeader>
     <SectionHeader
+      level={1}
       index="05"
       overline="Contato"
       title="Bora conversar."
-      description="Seletivamente disponível para AI tooling, agents e produtos Web3. O formulário abaixo é o caminho mais rápido pra uma resposta com escopo. Canais diretos também funcionam. Normalmente respondo em um ou dois dias."
+      description="Seletivamente disponível para produtos de IA, sistemas de agents, frontend AI-native e implementação de AEO. O formulário é o caminho mais rápido para uma resposta com escopo."
     />
 
     <div class="form-shell" data-reveal>
@@ -92,7 +93,6 @@ const iconMap: Record<string, SvgIconName> = {
 
         <div class="cform__actions">
           <button type="submit" class="btn btn-primary" data-magnetic>Enviar mensagem →</button>
-          <a class="btn btn-ghost cform__mailto" href="mailto:ruben@rubenmarcus.dev">ou email direto</a>
         </div>
       </form>
 
@@ -100,23 +100,23 @@ const iconMap: Record<string, SvgIconName> = {
         <span class="bracket">Mensagem enviada</span>
         <p class="cform-success__title">Valeu. Respondo em um ou dois dias.</p>
         <p class="cform-success__desc">
-          Não chegou nada? Escreve direto para <a class="link-inline" href="mailto:ruben@rubenmarcus.dev">ruben@rubenmarcus.dev</a>.
+          Prefere outro canal? Fale comigo pelo <a class="link-inline" href="https://linkedin.com/in/rubenmarcus" target="_blank" rel="noopener">LinkedIn</a>.
         </p>
       </div>
     </div>
 
     <div class="contact-grid">
-      <a href="mailto:ruben@rubenmarcus.dev" class="contact-card contact-card--primary" data-reveal data-magnetic>
+      <a href="https://linkedin.com/in/rubenmarcus" class="contact-card contact-card--primary" target="_blank" rel="noopener" data-reveal data-magnetic>
         <CardAscii client:visible seed="contact-primary" variant="wave" cols={12} rows={5} />
         <div class="contact-card__head">
           <span class="bracket">Principal</span>
           <SvgIcon name="arrowUpRight" size={18} class="contact-card__arrow" />
         </div>
         <div class="contact-card__valueRow">
-          <SvgIcon name="mail" size={22} class="contact-card__icon" />
-          <span class="contact-card__value">ruben@rubenmarcus.dev</span>
+          <SvgIcon name="linkedin" size={22} class="contact-card__icon" />
+          <span class="contact-card__value">LinkedIn</span>
         </div>
-        <span class="contact-card__note">Melhor para propostas de projeto, perguntas mais longas ou qualquer coisa fora do público. Normalmente respondo em um dia.</span>
+        <span class="contact-card__note">Canal temporário para propostas de projeto e conversas mais longas.</span>
       </a>
 
       <a href="tel:+351912892825" class="contact-card contact-card--phone" data-reveal>
@@ -477,25 +477,33 @@ const iconMap: Record<string, SvgIconName> = {
 </style>
 
 <script>
+  import { track } from "@vercel/analytics";
   /**
-   * Contact form — client-side validation, formsubmit.co AJAX submit, mailto
-   * fallback. `?subject=<slug>` pre-selects a matching interest (hero/ai/services CTAs).
+   * Contact form — client-side validation and formsubmit.co AJAX submit.
+   * `?subject=<slug>` pre-selects a matching interest (hero/ai/services CTAs).
    */
   function initContactForm() {
     const form = document.getElementById("contact-form");
     if (!(form instanceof HTMLFormElement) || form.dataset.bound) return;
     form.dataset.bound = "1";
 
-    const errorEl = form.querySelector(".cform__error");
+    const errorEl = form.querySelector<HTMLElement>(".cform__error");
     const successEl = document.querySelector(".cform-success");
-    const mailto = "ruben@rubenmarcus.dev";
+    let started = false;
+    form.addEventListener("focusin", () => {
+      if (started) return;
+      started = true;
+      track("contact_start", { language: "pt", offer: subject ?? "unspecified" });
+    });
 
     // Pre-select interest from the query string (e.g. /pt/contact?subject=aeo)
     const subject = new URLSearchParams(window.location.search).get("subject");
-    const subjectInterests = {
+    const subjectInterests: Record<string, string> = {
       aeo: "AEO",
       "ai-prototyping": "Sprint AI",
       "agentic-workflows": "Sprint AI",
+      "ai-product-systems": "Sprint AI",
+      "ai-native-frontend": "Retainer",
     };
     const interest = subject && subjectInterests[subject];
     if (interest) {
@@ -503,7 +511,7 @@ const iconMap: Record<string, SvgIconName> = {
       if (radio instanceof HTMLInputElement) radio.checked = true;
     }
 
-    const setError = (msg) => {
+    const setError = (msg: string | null) => {
       if (errorEl) {
         errorEl.textContent = msg ?? "";
         errorEl.hidden = !msg;
@@ -527,30 +535,8 @@ const iconMap: Record<string, SvgIconName> = {
       return ok;
     };
 
-    const mailtoHref = (data) => {
-      const subjectLine = `[${data.interest}] contato de ${data.name}`;
-      const body = [
-        `Nome: ${data.name}`,
-        `Email: ${data.email}`,
-        `Empresa: ${data.company || "—"}`,
-        `Orçamento: ${data.budget}`,
-        `Interesse: ${data.interest}`,
-        "",
-        data.message,
-      ].join("\n");
-      return `mailto:${mailto}?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(body)}`;
-    };
-
-    // Keep the "ou email direto" fallback link in sync with the form contents.
-    const ghost = form.querySelector(".cform__mailto");
-    form.addEventListener("input", () => {
-      if (ghost instanceof HTMLAnchorElement) {
-        ghost.href = mailtoHref(readData());
-      }
-    });
-
     const readData = () => {
-      const get = (n) => {
+      const get = (n: string) => {
         const el = form.elements.namedItem(n);
         return el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement
           ? el.value.trim()
@@ -575,29 +561,46 @@ const iconMap: Record<string, SvgIconName> = {
         return;
       }
       const data = readData();
+      track("contact_submit", { language: "pt", offer: subject ?? data.interest });
       const submitBtn = form.querySelector('button[type="submit"]');
       if (submitBtn instanceof HTMLButtonElement) {
         submitBtn.disabled = true;
         submitBtn.textContent = "Enviando…";
       }
       try {
-        const res = await fetch(`https://formsubmit.co/ajax/${mailto}`, {
+        const res = await fetch("/api/hire", {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
           body: JSON.stringify({
-            _subject: `[${data.interest}] contato de ${data.name}`,
-            _captcha: "false",
-            _template: "table",
-            ...data,
+            name: data.name,
+            contact: data.email,
+            brief: [
+              `Interesse: ${data.interest}`,
+              `Empresa: ${data.company || "—"}`,
+              "",
+              data.message,
+            ].join("\n"),
+            budget: data.budget,
+            agent: "portfolio-contact-form",
+            attribution: {
+              utm_source: new URLSearchParams(window.location.search).get("utm_source") ?? "",
+              utm_medium: new URLSearchParams(window.location.search).get("utm_medium") ?? "",
+              utm_campaign: new URLSearchParams(window.location.search).get("utm_campaign") ?? "",
+              utm_content: new URLSearchParams(window.location.search).get("utm_content") ?? "",
+              referrer: document.referrer ? new URL(document.referrer).hostname : "direct",
+              landing: window.location.pathname,
+              offer: subject ?? data.interest,
+              language: "pt",
+            },
           }),
         });
-        if (!res.ok) throw new Error(`formsubmit ${res.status}`);
+        if (!res.ok) throw new Error(`hire endpoint ${res.status}`);
         form.hidden = true;
         if (successEl instanceof HTMLElement) successEl.hidden = false;
+        track("contact_success", { language: "pt", offer: subject ?? data.interest });
       } catch {
-        // Fallback: open the visitor's email client with everything pre-filled.
-        window.location.href = mailtoHref(data);
-        setError("O serviço de formulário não respondeu, então estou abrindo seu cliente de email. Sua mensagem já está preenchida lá.");
+        track("contact_error", { language: "pt", offer: subject ?? data.interest });
+        setError("O serviço de formulário não respondeu. Por enquanto, fale comigo pelo LinkedIn ou Telegram.");
         if (submitBtn instanceof HTMLButtonElement) {
           submitBtn.disabled = false;
           submitBtn.textContent = "Enviar mensagem →";

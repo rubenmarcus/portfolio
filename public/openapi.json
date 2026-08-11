@@ -38,7 +38,35 @@
         "summary": "Check API health",
         "responses": { "200": { "description": "Service is operational" } }
       }
+    },
+    "/api/hire": {
+      "post": {
+        "summary": "Submit a project brief",
+        "description": "Delivers a project inquiry through the configured private lead destinations.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "contact", "brief"],
+                "properties": {
+                  "name": { "type": "string", "maxLength": 120 },
+                  "contact": { "type": "string", "maxLength": 160 },
+                  "brief": { "type": "string", "maxLength": 4000 },
+                  "budget": { "type": "string", "maxLength": 120 },
+                  "agent": { "type": "string", "maxLength": 80 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Lead accepted and delivered" },
+          "400": { "description": "Invalid request" },
+          "502": { "description": "No lead destination accepted the request" }
+        }
+      }
     }
   }
 }
-

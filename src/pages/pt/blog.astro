@@ -6,6 +6,7 @@ import SectionHeader from "../../components/SectionHeader.astro";
 import DitherBg from "../../components/DitherBg.svelte";
 import DitherCover from "../../components/DitherCover.svelte";
 import WireCard from "../../components/WireCard.astro";
+import { getBlogSlug } from "../../lib/blog-routes";
 
 const posts = (await getCollection("blogPt", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
@@ -21,8 +22,9 @@ const posts = (await getCollection("blogPt", ({ data }) => !data.draft)).sort(
   <!-- Ordered-dither atmosphere — the blog page's generative identity -->
   <DitherBg client:load />
 
-  <Section id="intro">
+  <Section id="intro" pageHeader>
     <SectionHeader
+      level={1}
       index="03"
       overline="Escritos"
       title="Notas de dentro do loop."
@@ -33,7 +35,7 @@ const posts = (await getCollection("blogPt", ({ data }) => !data.draft)).sort(
       {posts.map((post, i) => (
         <li data-reveal-item>
           <WireCard class="article-card" glyph={String(i + 1).padStart(2, "0")}>
-            <a class="article-link" href={`/pt/blog/${post.id}`}>
+            <a class="article-link" href={`/pt/blog/${getBlogSlug("pt", post.id)}`}>
               <DitherCover
                 client:visible
                 src={post.data.cover ?? ""}

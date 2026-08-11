@@ -44,15 +44,15 @@ describe("register (RFC 7591 DCR)", () => {
 });
 
 describe("authorize (auto-approve)", () => {
-  const call = (qs: string) =>
+  const call = async (qs: string) =>
     authorize({
       url: new URL(`https://rubenmarcus.dev/oauth/authorize?${qs}`),
       redirect: (to: string, status: number) =>
         new Response(null, { status, headers: { location: to } }),
     } as never);
 
-  it("302s back with code and state", () => {
-    const res = call(
+  it("302s back with code and state", async () => {
+    const res = await call(
       "response_type=code&client_id=x&redirect_uri=https%3A%2F%2Fclaude.ai%2Fcb%3Ffoo%3D1&state=abc",
     );
     expect(res.status).toBe(302);
@@ -64,12 +64,12 @@ describe("authorize (auto-approve)", () => {
     expect(target.searchParams.get("foo")).toBe("1");
   });
 
-  it("rejects http redirect URIs", () => {
-    expect(call("redirect_uri=http://evil.local/cb").status).toBe(400);
+  it("rejects http redirect URIs", async () => {
+    expect((await call("redirect_uri=http://evil.local/cb")).status).toBe(400);
   });
 
-  it("rejects a missing redirect_uri", () => {
-    expect(call("response_type=code").status).toBe(400);
+  it("rejects a missing redirect_uri", async () => {
+    expect((await call("response_type=code")).status).toBe(400);
   });
 });
 

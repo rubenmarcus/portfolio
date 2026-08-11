@@ -5,9 +5,10 @@
 
   interface Props {
     currentPath?: string;
+    alternatePaths?: { en: string; pt: string };
   }
 
-  let { currentPath = "/" }: Props = $props();
+  let { currentPath = "/", alternatePaths }: Props = $props();
 
   let menuOpen = $state(false);
   let scrolled = $state(false);
@@ -25,12 +26,12 @@
   // Language toggle target — /x ↔ /pt/x. Blog posts mirror one-to-one, so
   // the toggle deep-links to the same post in the other language.
   const enPath = $derived(
-    isPt ? currentPath.replace(/^\/pt/, "") || "/" : currentPath,
+    alternatePaths?.en ?? (isPt ? currentPath.replace(/^\/pt/, "") || "/" : currentPath),
   );
   const ptPath = $derived(
-    isPt
+    alternatePaths?.pt ?? (isPt
       ? currentPath
-      : `/pt${currentPath === "/" ? "" : currentPath}`,
+      : `/pt${currentPath === "/" ? "" : currentPath}`),
   );
   const homeHref = $derived(isPt ? "/pt" : "/");
 
@@ -116,9 +117,6 @@
         </a>
         <a href="https://linkedin.com/in/rubenmarcus" target="_blank" rel="noopener" aria-label="LinkedIn" class="header__socialIcon">
           <SvgIcon name="linkedin" size={18} />
-        </a>
-        <a href="mailto:ruben@rubenmarcus.dev" aria-label="Email" class="header__socialIcon">
-          <SvgIcon name="mail" size={18} stroke={1.7} />
         </a>
         <a href="https://www.npmjs.com/~rmarcus" target="_blank" rel="noopener" aria-label="npm" class="header__socialIcon">
           <SvgIcon name="npm" size={18} stroke={1.7} />

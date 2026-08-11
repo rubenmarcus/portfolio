@@ -1,7 +1,7 @@
 /**
  * /api/hire — the agent-facing hiring endpoint behind the contact form.
  */
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { it, expect, vi, afterEach } from "vitest";
 import { POST, OPTIONS } from "../src/pages/api/hire";
 
 const call = (body: unknown) =>
@@ -17,8 +17,8 @@ const valid = { name: "Ada", contact: "ada@x.co", brief: "Build a thing" };
 
 afterEach(() => vi.unstubAllGlobals());
 
-it("OPTIONS answers 200 with no-store (204 broke the edge re-wrap)", () => {
-  const res = OPTIONS({} as never);
+it("OPTIONS answers 200 with no-store (204 broke the edge re-wrap)", async () => {
+  const res = await OPTIONS({} as never);
   expect(res.status).toBe(200);
   expect(res.headers.get("cache-control")).toBe("no-store");
 });

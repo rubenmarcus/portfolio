@@ -6,6 +6,7 @@ import SectionHeader from "../../components/SectionHeader.astro";
 import DitherCover from "../../components/DitherCover.svelte";
 import WireCard from "../../components/WireCard.astro";
 import { aiAgents, type AgentGroup } from "../../lib/data/aiAgents";
+import { getBlogPathsFromPathname } from "../../lib/blog-routes";
 
 // Fleet groups, in display order — subheadings per origin.
 const GROUPS: { id: AgentGroup; overline: string; title: string; blurb?: string }[] = [
@@ -26,6 +27,7 @@ const GROUPS: { id: AgentGroup; overline: string; title: string; blurb?: string 
   { id: "bitte", overline: "Bitte Protocol", title: "Bitte Protocol — a frota de produção" },
 ];
 const grouped = GROUPS.map((g) => ({ ...g, agents: aiAgents.filter((a) => a.group === g.id) }));
+const ptHref = (href: string) => getBlogPathsFromPathname(href)?.pt ?? `/pt${href}`;
 
 // pt-BR copy for the agent cards — the data source stays EN for the EN pages.
 const AGENTS_PT: Record<string, { tagline: string; description: string }> = {
@@ -165,8 +167,9 @@ const AGENTS_PT: Record<string, { tagline: string; description: string }> = {
 >
   <DitherBg client:load />
 
-  <Section id="intro">
+  <Section id="intro" pageHeader>
     <SectionHeader
+      level={1}
       index="08"
       overline="A frota"
       title="Uma frota de agentes de IA que transacionam de verdade."
@@ -203,7 +206,7 @@ const AGENTS_PT: Record<string, { tagline: string; description: string }> = {
                     {agent.tags.map((t) => <span class="agent-tag">{t}</span>)}
                   </div>
                   {agent.link && (
-                    <a class="agent-link" href={`/pt${agent.link.href}`}>Leia a história →</a>
+                    <a class="agent-link" href={ptHref(agent.link.href)}>Leia a história →</a>
                   )}
                 </div>
               </div>

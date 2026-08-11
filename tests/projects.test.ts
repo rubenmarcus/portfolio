@@ -4,7 +4,7 @@
  * work pages) and dead-site links must not come back (everything up to and
  * including the Bitte era is offline, so those entries carry no url).
  */
-import { describe, it, expect } from "vitest";
+import { it, expect } from "vitest";
 import { projects, groupLabels, groupOrder } from "../src/lib/data/projects";
 
 it("slugs are unique", () => {

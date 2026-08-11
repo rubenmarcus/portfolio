@@ -1,0 +1,59 @@
+---
+import CaseShell from "./CaseShell.astro";
+import Section from "../Section.astro";
+import Divider from "../Divider.astro";
+import BigStat from "./BigStat.astro";
+import type { OutcomeCaseStudy as CaseData } from "../../lib/data/case-studies";
+
+interface Props { study: CaseData; lang?: "en" | "pt" }
+const { study, lang = "en" } = Astro.props;
+const pt = lang === "pt";
+const l = pt ? "pt" : "en";
+---
+
+<CaseShell
+  title={study.title[l]}
+  description={study.description[l]}
+  index={study.index}
+  overline={study.overline[l]}
+  heading={study.heading[l]}
+  meta={study.meta[l]}
+  lang={pt ? "pt-BR" : "en"}
+>
+  <Fragment slot="lede"><p>{study.lede[l]}</p></Fragment>
+  <Fragment slot="stats">
+    {study.stats[l].map((stat) => <BigStat value={stat.value} label={stat.label} sub={stat.sub} />)}
+  </Fragment>
+
+  <Divider index={`${study.index}.1`} label={pt ? "O problema" : "The problem"} />
+  <Section id="problem" tight><p class="case-copy" data-reveal>{study.challenge[l]}</p></Section>
+
+  <Divider index={`${study.index}.2`} label={pt ? "O sistema" : "The system"} />
+  <Section id="system" tight>
+    <ol class="system-list" data-reveal>
+      {study.system[l].map((item, index) => <li data-reveal-item><span>{String(index + 1).padStart(2, "0")}</span><p>{item}</p></li>)}
+    </ol>
+  </Section>
+
+  <Divider index={`${study.index}.3`} label={pt ? "Resultado" : "Outcome"} />
+  <Section id="outcome" tight>
+    <div class="case-outcome" data-reveal>
+      <p>{study.outcome[l]}</p>
+      <div class="case-links">
+        {study.links.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer" data-track="case_external" data-track-location={`case:${study.slug}`}>{link.label} ↗</a>)}
+      </div>
+    </div>
+  </Section>
+</CaseShell>
+
+<style>
+  .case-copy { max-width: 72ch; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.35rem); line-height: 1.72; }
+  .system-list { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
+  .system-list li { display: grid; grid-template-columns: 3rem 1fr; gap: 1rem; padding: 1.4rem 0; border-bottom: 1px solid var(--line); }
+  .system-list span { color: var(--accent-soft); font: .7rem var(--font-mono); }
+  .system-list p { max-width: 68ch; color: var(--muted); line-height: 1.65; }
+  .case-outcome { max-width: 820px; display: flex; flex-direction: column; gap: 1.5rem; }
+  .case-outcome > p { color: var(--text); font-size: clamp(1.25rem, 2.5vw, 1.8rem); line-height: 1.5; }
+  .case-links { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .case-links a { color: var(--accent-soft); font: .78rem var(--font-mono); text-transform: uppercase; letter-spacing: .05em; }
+</style>

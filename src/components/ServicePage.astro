@@ -1,0 +1,88 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "./Section.astro";
+import Divider from "./Divider.astro";
+import type { ServiceOffer } from "../lib/data/services";
+
+interface Props { service: ServiceOffer; lang?: "en" | "pt" }
+const { service, lang = "en" } = Astro.props;
+const pt = lang === "pt";
+const base = pt ? "/pt" : "";
+const l = pt ? "pt" : "en";
+const pageTitle = `${service.name[l]} — Ruben Marcus`;
+const description = service.summary[l];
+const canonical = new URL(`${base}/services/${service.slug}`, Astro.site).href;
+const serviceLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": `${canonical}#service`,
+  name: service.name[l],
+  description,
+  url: canonical,
+  provider: { "@id": "https://rubenmarcus.dev/#person" },
+  areaServed: "Worldwide",
+  availableChannel: { "@type": "ServiceChannel", serviceUrl: `${new URL(`${base}/contact?subject=${service.slug}`, Astro.site).href}` },
+};
+---
+
+<BaseLayout title={pageTitle} description={description} lang={pt ? "pt-BR" : "en"}>
+  <script type="application/ld+json" set:html={JSON.stringify(serviceLd)} slot="head" />
+  <article class="service-page">
+    <Section id="intro" pageHeader>
+      <header class="service-hero" data-reveal>
+        <p class="bracket" data-reveal-item>{pt ? "Serviço / escopo fechado" : "Service / fixed scope"}</p>
+        <h1 data-reveal-item>{service.name[l]}</h1>
+        <p class="service-hero__summary" data-reveal-item>{service.summary[l]}</p>
+        <p class="service-hero__fit" data-reveal-item>{service.fit[l]}</p>
+        <div class="service-hero__actions" data-reveal-item>
+          <a class="btn btn-primary" href={`${base}/contact?subject=${service.slug}`} data-track="service_inquiry" data-track-location={`service:${service.slug}`}>
+            {pt ? "Discutir este projeto →" : "Discuss this project →"}
+          </a>
+          <span>{service.duration[l]}</span>
+        </div>
+      </header>
+    </Section>
+
+    <Divider index="01" label={pt ? "O que você recebe" : "What you receive"} />
+    <Section id="deliverables" tight>
+      <ol class="deliverables" data-reveal>
+        {service.deliverables[l].map((item, index) => (
+          <li data-reveal-item><span>{String(index + 1).padStart(2, "0")}</span><p>{item}</p></li>
+        ))}
+      </ol>
+    </Section>
+
+    <Divider index="02" label={pt ? "Evidência relevante" : "Relevant evidence"} />
+    <Section id="proof" tight>
+      <div class="proof-grid" data-reveal>
+        {service.proof[l].map((item) => (
+          <div class="proof" data-reveal-item><strong>{item.value}</strong><span>{item.label}</span></div>
+        ))}
+      </div>
+      <div class="service-close" data-reveal>
+        <p>{pt ? "Se o problema é real mas o escopo ainda não está claro, eu posso começar pelo diagnóstico." : "If the problem is real but the scope is still fuzzy, I can start with the diagnosis."}</p>
+        <a class="link-inline" href={`${base}/portfolio`} data-track="service_proof" data-track-location={`service:${service.slug}`}>{pt ? "Ver trabalho selecionado →" : "See selected work →"}</a>
+      </div>
+    </Section>
+  </article>
+</BaseLayout>
+
+<style>
+  .service-hero { max-width: 900px; display: flex; flex-direction: column; gap: 1.5rem; }
+  .service-hero h1 { font-family: var(--font-display); font-size: clamp(2.7rem, 7vw, 6rem); line-height: .96; letter-spacing: -.03em; text-wrap: balance; }
+  .service-hero__summary { max-width: 66ch; color: var(--text); font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.5; }
+  .service-hero__fit { max-width: 70ch; color: var(--muted); line-height: 1.7; }
+  .service-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: .5rem; }
+  .service-hero__actions span { color: var(--muted-soft); font: .75rem var(--font-mono); letter-spacing: .06em; text-transform: uppercase; }
+  .deliverables { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr; border-top: 1px solid var(--line); }
+  .deliverables li { display: grid; grid-template-columns: 3rem 1fr; gap: 1rem; padding: 1.35rem 0; border-bottom: 1px solid var(--line); }
+  .deliverables span { color: var(--accent-soft); font: .72rem var(--font-mono); }
+  .deliverables p { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--text); }
+  .proof-grid { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .proof { background: var(--bg-1); padding: 1.5rem; display: flex; flex-direction: column; gap: .45rem; }
+  .proof strong { color: var(--accent); font: clamp(1.8rem, 4vw, 3.2rem) var(--font-display); }
+  .proof span { color: var(--muted); line-height: 1.45; }
+  .service-close { margin-top: 3rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding-top: 1.4rem; border-top: 1px solid var(--line); }
+  .service-close p { color: var(--muted); max-width: 60ch; }
+  @media (min-width: 760px) { .deliverables { grid-template-columns: 1fr 1fr; } .deliverables li:nth-child(odd) { padding-right: 2rem; } .deliverables li:nth-child(even) { padding-left: 2rem; border-left: 1px solid var(--line); } .proof-grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

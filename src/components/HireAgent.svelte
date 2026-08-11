@@ -48,8 +48,8 @@ Services: AI product prototyping, landing pages,
 interactive WebGL, agentic workflows, AEO, frontend
 modernization (Next.js / Svelte / TypeScript).
 
-Replies within a day or two. Or email
-ruben@rubenmarcus.dev directly.`;
+Replies within a day or two. Ruben is also available on
+LinkedIn and Telegram.`;
 
   async function copy() {
     try {

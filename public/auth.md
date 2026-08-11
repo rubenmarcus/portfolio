@@ -15,5 +15,4 @@ Tokens issued by this compatibility flow do not grant additional access and are 
 - Protected Resource Metadata: `https://rubenmarcus.dev/.well-known/oauth-protected-resource`
 - Authorization Server Metadata: `https://rubenmarcus.dev/.well-known/oauth-authorization-server`
 - MCP Server Card: `https://rubenmarcus.dev/.well-known/mcp/server-card.json`
-- Contact: `mailto:ruben@rubenmarcus.dev`
-
+- Contact: `https://linkedin.com/in/rubenmarcus`

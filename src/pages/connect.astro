@@ -50,7 +50,7 @@ const clients: { name: string; icon: SvgIconName; steps: string[] }[] = [
 
 const tools = [
   { name: "get_resume", desc: "full resume: experience, skills, proof points, links" },
-  { name: "get_services", desc: "the six fixed-scope offers" },
+  { name: "get_services", desc: "the three flagship fixed-scope offers" },
   { name: "check_availability", desc: "current engagement status" },
   { name: "book_intro", desc: "posts a project brief to my inbox" },
 ];
@@ -71,8 +71,9 @@ const prompts = [
 >
   <DitherBg client:load opacity={0.55} />
 
-  <Section id="intro">
+  <Section id="intro" pageHeader>
     <SectionHeader
+      level={1}
       index="07"
       overline="Connect"
       title="This site speaks MCP."

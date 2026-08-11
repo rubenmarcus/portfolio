@@ -1,7 +1,7 @@
-# Ruben Marcus: Senior AI Fullstack Engineer
+# Ruben Marcus: AI Fullstack Engineer
 
-> Personal site of Ruben Marcus, a senior AI fullstack engineer based in Lisbon
-> (remote worldwide). 13 years across AI tooling, Web3, fintech, and e-commerce.
+> Personal site of Ruben Marcus, an AI fullstack engineer based in Lisbon
+> (remote worldwide). 14+ years across AI tooling, web products, Web3, fintech, and e-commerce.
 > Builds autonomous AI agent systems, evaluation harnesses, AEO tooling, and
 > premium web experiences. Available for full-time roles and freelance contracts.
 
@@ -10,10 +10,17 @@
 - [Index](https://rubenmarcus.dev/): Hero, services (hire me for), proof-in-numbers stats, open-source tools, selected work.
 - [Portfolio](https://rubenmarcus.dev/portfolio): Filterable 14-year project archive. Filter by era/company and technology.
 - [AI](https://rubenmarcus.dev/ai): AI expertise (agent orchestration, evaluation design, AEO, production LLM features) and the open-source tools that prove it.
+- [Agent Skills](https://rubenmarcus.dev/skills): Versioned operating methods created for verifiable frontend, writing, debugging, games, and agent systems.
 - [Agents](https://rubenmarcus.dev/agents): The autonomous agent fleet behind this site and client work — roles, orchestration model, and what each agent ships.
 - [Blog](https://rubenmarcus.dev/blog): Technical articles on agents, benchmarks, WebGL, and the stack.
 - [About](https://rubenmarcus.dev/about): Bio, timeline, contact details.
-- [Contact](https://rubenmarcus.dev/contact): Project inquiries for AI tooling, agents, AEO, Web3.
+- [Contact](https://rubenmarcus.dev/contact): Project inquiries for AI products, agent systems, AI-native frontend, and AEO.
+
+## Services
+
+- [AI products & agent systems](https://rubenmarcus.dev/services/ai-product-systems): Architecture, working product slices, model routing, evals, observability, and cost controls.
+- [AI-native frontend & design engineering](https://rubenmarcus.dev/services/ai-native-frontend): Responsive production interfaces, interactive experiences, performance, and visual regression.
+- [AEO audit & implementation](https://rubenmarcus.dev/services/aeo): Technical SEO/AEO, entities, canonical discovery, structured data, content, and citation surfaces.
 
 ## Latest writing
 
@@ -29,12 +36,20 @@
 - [English feed](https://rubenmarcus.dev/rss.xml): All English blog posts.
 - [Feed em português](https://rubenmarcus.dev/rss-pt.xml): Posts do blog em PT-BR.
 
-## Open-source tools
+## Products and tools
 
 - [Ralph Starter](https://ralphstarter.ai): AI coding orchestration platform. Multi-agent swarms over isolated git worktrees, MCP server.
 - [Autoresearcher](https://autoresearcher.org): Benchmark-driven autonomous research CLI. Multi-agent co-evolution with a Pareto frontier.
 - [AEO.js](https://aeojs.org): Answer Engine Optimization framework. AI-crawler policy analysis, llms.txt and ai-index.json exports.
 - [check.aeojs.org](https://check.aeojs.org): Free AEO scanner. 4,500+ sites scanned.
+- [ScanRepo](https://scanrepo.dev): Repository intelligence product.
+- [CS Brasil](https://csbrasil.online): Browser FPS and AI-native product engineering testbed.
+
+## Selected technical case studies
+
+- [Ralph Starter](https://rubenmarcus.dev/work/ralph-starter): Multi-agent delivery harness using isolated worktrees, race, consensus, and pipeline modes.
+- [AEO.js + AEO Checker](https://rubenmarcus.dev/work/aeo-platform): Diagnosis and implementation treated as one verifiable AEO system.
+- [CS Brasil](https://rubenmarcus.dev/work/cs-brasil): Three.js browser FPS built with repository skills, visual QA, regression gates, and product telemetry.
 
 ## Proof points
 
@@ -45,7 +60,6 @@
 
 ## Contact
 
-- Email: ruben@rubenmarcus.dev
 - GitHub: https://github.com/rubenmarcus
 - LinkedIn: https://linkedin.com/in/rubenmarcus
 - npm: https://www.npmjs.com/~rmarcus (primary package profile; dev.to presence is being retired)

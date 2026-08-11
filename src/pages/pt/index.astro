@@ -15,6 +15,7 @@ import HireAgent from "../../components/HireAgent.svelte";
 import Faq from "../../components/Faq.astro";
 import { fetchGithubStars, fetchNpmDownloads } from "../../lib/stats-live";
 import { NPM_PACKAGES } from "../../lib/data/stats";
+import { getBlogSlug } from "../../lib/blog-routes";
 
 // Live stats resolved at build time — visitors get exact numbers without
 // hitting the GitHub/npm rate limits. Null on failure → client-side fetch.
@@ -30,7 +31,7 @@ const featuredArticles = allPosts.slice(0, 3);
 const faqItems = [
   {
     question: "Para que tipo de trabalho posso contratar Ruben Marcus?",
-    answer: "Agents e tooling de AI, engenharia full-stack de produto, infraestrutura para developers, produtos Web3 e trabalhos focados de arquitetura ou entrega.",
+    answer: "Produtos de IA e sistemas de agents, frontend e design engineering AI-native, e auditorias de AEO com implementação. Cada serviço tem escopo e contrato de entrega definidos.",
   },
   {
     question: "Um agent de AI consegue avaliar a experiência do Ruben?",
@@ -42,7 +43,7 @@ const faqItems = [
   },
   {
     question: "Como uma equipe deve iniciar a conversa?",
-    answer: "Envie um briefing conciso com o problema, resultado desejado, stack atual, prazo e restrições para ruben@rubenmarcus.dev.",
+    answer: "Use a página de contato para enviar um briefing conciso com o problema, resultado desejado, stack atual, prazo e restrições.",
   },
 ];
 ---
@@ -50,7 +51,7 @@ const faqItems = [
 <BaseLayout
   lang="pt-br"
   title="Ruben Marcus — Engenheiro AI Fullstack"
-  description="Engenheiro AI Fullstack Sênior construindo AI tooling autônomo, agents e produtos on-chain. Em Lisboa."
+  description="Engenheiro AI Fullstack construindo produtos de IA, sistemas de agents, infraestrutura AEO e experiências web de alta performance. Em Lisboa."
   image="/og/index.png"
   faq={faqItems}
 >
@@ -82,7 +83,7 @@ const faqItems = [
     <ul class="article-list">
       {featuredArticles.map((post, i) => (
         <li class="article-row" data-reveal>
-          <a class="article-link" href={`/pt/blog/${post.id}`}>
+          <a class="article-link" href={`/pt/blog/${getBlogSlug("pt", post.id)}`}>
             <span class="article-index">{String(i + 1).padStart(2, "0")}</span>
             <DitherCover
               client:visible
@@ -131,11 +132,11 @@ const faqItems = [
           Precisa de um engenheiro que entrega do spec ao PR?
         </h2>
         <p class="cta-desc" data-reveal-item>
-          Estou seletivamente disponível para AI tooling, agents e produtos Web3.
+          Estou seletivamente disponível para produtos de IA, sistemas de agents, frontend AI-native e AEO.
         </p>
         <div class="cta-actions" data-reveal-item>
-          <a href="mailto:ruben@rubenmarcus.dev" class="btn btn-primary" data-magnetic>ruben@rubenmarcus.dev</a>
-          <a href="/pt/contact" class="btn btn-secondary" data-magnetic>Todos os canais de contato</a>
+          <a href="/pt/contact" class="btn btn-primary" data-magnetic data-track="contact_view" data-track-location="home_bottom">Iniciar conversa</a>
+          <a href="https://linkedin.com/in/rubenmarcus" class="btn btn-secondary" target="_blank" rel="noopener" data-magnetic data-track="social_contact" data-track-location="home_bottom">LinkedIn ↗</a>
         </div>
       </div>
     </div>

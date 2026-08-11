@@ -95,7 +95,7 @@
   });
 </script>
 
-<span class={`rotating ${className}`} aria-live="polite">{display}</span>
+<span class={`rotating ${className}`} aria-hidden="true">{display}</span>
 
 <style>
   .rotating {

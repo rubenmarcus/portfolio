@@ -10,6 +10,7 @@ import ScrollFx from "../components/ScrollFx.svelte";
 import IceFlowBg from "../components/IceFlowBg.svelte";
 import Analytics from "@vercel/analytics/astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
+import FunnelAnalytics from "../components/FunnelAnalytics.astro";
 
 interface Props {
   title?: string;
@@ -23,19 +24,22 @@ interface Props {
   modifiedTime?: Date | string;
   /** Canonical override — posts syndicated to dev.to/LinkedIn point there. */
   canonicalUrl?: string;
+  /** Explicit locale pair for routes whose translated slugs differ. */
+  alternatePaths?: { en: string; pt: string };
   /** Visible FAQ entries rendered by the page; used for matching FAQPage JSON-LD. */
   faq?: Array<{ question: string; answer: string }>;
 }
 
 const {
   title = "Ruben Marcus — AI Fullstack Engineer",
-  description = "Senior AI Fullstack Engineer building autonomous AI tooling, agents, and on-chain product surfaces. Based in Lisbon.",
+  description = "AI Fullstack Engineer building AI products, agent systems, AEO infrastructure, and high-performance web experiences. Based in Lisbon.",
   image = "/og/index.png",
   lang = "en",
   type = "website",
   publishedTime,
   modifiedTime,
   canonicalUrl,
+  alternatePaths,
   faq = [],
 } = Astro.props;
 
@@ -50,8 +54,9 @@ const toIso = (d: Date | string) => (d instanceof Date ? d.toISOString() : d);
 // hreflang pairs — /x ↔ /pt/x (home / ↔ /pt), x-default points at EN.
 const pathname = Astro.url.pathname;
 const isPt = pathname === "/pt" || pathname.startsWith("/pt/");
-const enPath = isPt ? pathname.replace(/^\/pt/, "") || "/" : pathname;
-const ptPath = isPt ? pathname : `/pt${pathname === "/" ? "" : pathname}`;
+const pagePath = (value: string) => value === "/" || value.endsWith("/") ? value : `${value}/`;
+const enPath = pagePath(alternatePaths?.en ?? (isPt ? pathname.replace(/^\/pt/, "") || "/" : pathname));
+const ptPath = pagePath(alternatePaths?.pt ?? (isPt ? pathname : `/pt${pathname === "/" ? "" : pathname}`));
 
 /* No custom view-transition animation: the cross-fade snapshots misbehave
    across browsers (stuck overlays, old page bleeding into the new one).
@@ -143,7 +148,7 @@ const ptPath = isPt ? pathname : `/pt${pathname === "/" ? "" : pathname}`;
             name: "Ruben Marcus",
             url: "https://rubenmarcus.dev/",
             jobTitle: "AI Fullstack Engineer",
-            description,
+            description: "AI Fullstack Engineer building AI products, agent systems, AEO infrastructure, and high-performance web experiences.",
             worksFor: { "@id": "https://rubenmarcus.dev/#organization" },
             sameAs: [
               "https://github.com/rubenmarcus",
@@ -217,7 +222,7 @@ const ptPath = isPt ? pathname : `/pt${pathname === "/" ? "" : pathname}`;
          persisted across view transitions so the WebGL context survives. -->
     <IceFlowBg client:load transition:persist />
 
-    <Header client:load currentPath={Astro.url.pathname} />
+    <Header client:load currentPath={Astro.url.pathname} alternatePaths={alternatePaths} />
 
     <!-- Availability strip — site-wide, scrolling above all content,
          pinned to the very top edge over the header zone. -->
@@ -227,7 +232,8 @@ const ptPath = isPt ? pathname : `/pt${pathname === "/" ? "" : pathname}`;
       <slot />
     </main>
 
-    <Footer lang={lang} />
+    <Footer client:visible lang={lang} />
+    <FunnelAnalytics />
 
     <!-- Bottom audio deck — persisted across view transitions so the
          music keeps playing while navigating. -->

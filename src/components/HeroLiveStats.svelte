@@ -1,316 +1,239 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { fetchGithubStars } from "../lib/stats-live";
+  import SvgIcon from "../lib/assets/SvgIcon.svelte";
+  import type { GithubCommitStats } from "../lib/github-stats";
 
-  const GH_USER = "rubenmarcus";
-  const ESTIMATED_FOLLOWERS = { linkedin: 33253, twitter: 480, devto: 45 };
-
-  let commits = $state<{ today: number; month: number; year: number } | null>(null);
-  let stars = $state<number | null>(null);
-  let followers = $state<number | null>(null);
-
-  // ── HUD reveal state ─────────────────────────────────────────────────
-  // Blocks materialise sequentially (COMMITS → STARS → FOLLOWERS, ~250ms
-  // apart), each value scrambling for ~400ms as it lands. Once on mount —
-  // never loops. Reduced motion → everything settles instantly.
-  const reduced =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  let shownBlocks = $state(reduced ? 3 : 0);
-  let disp = $state({ year: "———", stars: "———", followers: "———" });
-  const scrambled = { commits: false, stars: false, followers: false };
-
-  const GLYPHS = "ABCDEFGHKMNPRSTUVWXYZ0123456789#$%&/<>";
-
-  function scrambleTo(key: keyof typeof disp, final: string, duration = 400) {
-    if (reduced) {
-      disp[key] = final;
-      return;
-    }
-    const start = performance.now();
-    const tick = () => {
-      const p = Math.min(1, (performance.now() - start) / duration);
-      const keep = Math.floor(p * final.length);
-      let out = final.slice(0, keep);
-      for (let i = keep; i < final.length; i++) {
-        out += GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-      }
-      disp[key] = out;
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
+  interface Props {
+    lang?: string;
   }
 
-  function fmt(n: number): string {
-    if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, "") + "k";
-    return String(n);
-  }
+  let { lang = "en" }: Props = $props();
+  const pt = $derived(lang.startsWith("pt"));
+  let stats = $state<GithubCommitStats | null>(null);
+  let unavailable = $state(false);
 
-  // Scramble each value in once — either when its block is revealed (data
-  // already here) or when the data lands (block already revealed).
-  $effect(() => {
-    if (commits && shownBlocks >= 1 && !scrambled.commits) {
-      scrambled.commits = true;
-      scrambleTo("year", fmt(commits.year));
-    }
-  });
-  $effect(() => {
-    if (stars !== null && shownBlocks >= 2 && !scrambled.stars) {
-      scrambled.stars = true;
-      scrambleTo("stars", fmt(stars));
-    }
-  });
-  $effect(() => {
-    if (followers !== null && shownBlocks >= 3 && !scrambled.followers) {
-      scrambled.followers = true;
-      scrambleTo("followers", fmt(followers));
-    }
+  const copy = $derived(pt ? {
+    label: "Atividade pública no GitHub",
+    total: "total",
+    month: "este mês",
+    today: "hoje",
+    latest: "Último commit público",
+    unavailable: "GitHub temporariamente indisponível",
+  } : {
+    label: "Public GitHub activity",
+    total: "total",
+    month: "this month",
+    today: "today",
+    latest: "Latest public commit",
+    unavailable: "GitHub temporarily unavailable",
   });
 
-  // Resource meters — commit throughput, each bar relative to the largest
-  // of the three windows (so the year bar always reads full-scale).
-  const meters = $derived.by(() => {
-    const t = commits?.today ?? 0;
-    const m = commits?.month ?? 0;
-    const y = commits?.year ?? 0;
-    const max = Math.max(t, m, y, 1);
-    return [
-      { label: "TDY", value: commits ? String(t) : "—", pct: (t / max) * 100 },
-      { label: "MON", value: commits ? String(m) : "—", pct: (m / max) * 100 },
-      { label: "YER", value: commits ? String(y) : "—", pct: (y / max) * 100 },
-    ];
-  });
+  const formatNumber = (value: number | null | undefined) =>
+    typeof value === "number" ? value.toLocaleString(pt ? "pt-BR" : "en-US") : "—";
 
-  onMount(() => {
-    // Sequential block reveal — 250ms apart
-    if (!reduced) {
-      const timers = [0, 250, 500].map((d, i) =>
-        setTimeout(() => {
-          shownBlocks = i + 1;
-        }, d),
-      );
-      void timers;
+  const formatDate = (value: string) =>
+    new Intl.DateTimeFormat(pt ? "pt-BR" : "en-US", {
+      timeZone: "Europe/Lisbon",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(value));
+
+  onMount(async () => {
+    try {
+      const response = await fetch("/api/github-stats.json");
+      if (!response.ok) throw new Error(String(response.status));
+      stats = await response.json();
+      unavailable = stats.total === null && stats.month === null && stats.today === null;
+    } catch {
+      unavailable = true;
     }
-
-    const now = new Date();
-    const todayStr = now.toISOString().slice(0, 10);
-    const month = now.getMonth();
-    const year = now.getFullYear();
-
-    fetch(`https://github-contributions-api.jogruber.de/v4/${GH_USER}?y=last`)
-      .then((r) => r.json())
-      .then((data) => {
-        const contributions: { date: string; count: number }[] = data?.contributions ?? [];
-        let t = 0, m = 0, y = 0;
-        for (const c of contributions) {
-          const d = new Date(c.date);
-          if (c.date === todayStr) t = c.count;
-          if (d.getMonth() === month && d.getFullYear() === year) m += c.count;
-          if (d.getFullYear() === year) y += c.count;
-        }
-        commits = { today: t, month: m, year: y };
-      })
-      .catch(() => {});
-
-    (async () => {
-      try {
-        const user = await fetch(`https://api.github.com/users/${GH_USER}`).then((r) => r.json());
-        const ghFollowers = typeof user?.followers === "number" ? user.followers : 0;
-        followers = ghFollowers + ESTIMATED_FOLLOWERS.linkedin + ESTIMATED_FOLLOWERS.twitter + ESTIMATED_FOLLOWERS.devto;
-
-        const total = await fetchGithubStars();
-        if (total !== null) stars = total;
-      } catch {}
-    })();
   });
 </script>
 
-<div class="hud" aria-label="Live stats">
-  <div class="hud__block" class:hud__block--on={shownBlocks >= 1}>
-    <div class="hud__labelRow">
-      <span class="hud__label">commits</span>
-      <span class="hud__value">{disp.year}<span class="hud__sub"> /yr</span></span>
-    </div>
-    <div class="hud__meters">
-      {#each meters as meter}
-        <div class="hud__meter">
-          <span class="hud__meterLabel">{meter.label}</span>
-          <span class="hud__track">
-            <span class="hud__fill" style={`width: ${meter.pct.toFixed(1)}%`}></span>
-          </span>
-          <span class="hud__meterVal">{meter.value}</span>
-        </div>
-      {/each}
-    </div>
+<section class="github-stats" aria-label={copy.label} aria-live="polite">
+  <div class="github-stats__head">
+    <span class="github-stats__title">
+      <SvgIcon name="github" size={14} />
+      {copy.label}
+    </span>
+    <span class="github-stats__live" class:github-stats__live--off={unavailable} aria-hidden="true"></span>
   </div>
 
-  <div class="hud__block" class:hud__block--on={shownBlocks >= 2}>
-    <div class="hud__labelRow">
-      <span class="hud__label">stars</span>
-      <span class="hud__value">{disp.stars}</span>
+  <dl class="github-stats__grid">
+    <div class="github-stats__metric">
+      <dt>{copy.total}</dt>
+      <dd>{formatNumber(stats?.total)}</dd>
     </div>
-  </div>
-
-  <div class="hud__block" class:hud__block--on={shownBlocks >= 3}>
-    <div class="hud__labelRow">
-      <span class="hud__label">followers</span>
-      <span class="hud__value">{disp.followers}</span>
+    <div class="github-stats__metric">
+      <dt>{copy.month}</dt>
+      <dd>{formatNumber(stats?.month)}</dd>
     </div>
-  </div>
+    <div class="github-stats__metric">
+      <dt>{copy.today}</dt>
+      <dd>{formatNumber(stats?.today)}</dd>
+    </div>
+  </dl>
 
-  <div class="hud__cursorLine" class:hud__block--on={shownBlocks >= 3}>
-    <span class="hud__prompt">&gt;</span>
-    <span class="hud__cursor" aria-hidden="true">▌</span>
-  </div>
-</div>
+  {#if stats?.latest}
+    <a class="github-stats__commit" href={stats.latest.url} target="_blank" rel="noopener noreferrer">
+      <span class="github-stats__commitLabel">{copy.latest}</span>
+      <span class="github-stats__commitMessage">{stats.latest.message}</span>
+      <span class="github-stats__commitMeta">
+        {stats.latest.repository} · {stats.latest.sha} ·
+        <time datetime={stats.latest.authoredAt}>{formatDate(stats.latest.authoredAt)}</time>
+      </span>
+    </a>
+  {:else if unavailable}
+    <p class="github-stats__fallback">{copy.unavailable}</p>
+  {:else}
+    <div class="github-stats__commit github-stats__commit--loading" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+  {/if}
+</section>
 
 <style>
-  .hud {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 236px;
+  .github-stats {
+    width: 100%;
     font-family: var(--font-mono);
-    font-size: 0.72rem;
-    line-height: 1.4;
-    color: var(--muted-soft);
-    /* bare lines on the black stage — no card, no border, no blur */
-    padding: 0.2rem 0;
+    color: var(--muted);
   }
 
-  .hud__head {
+  .github-stats__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 0.45rem;
-    border-bottom: 1px solid rgba(0, 255, 65, 0.18);
+    gap: 1rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.2);
   }
 
-  .hud__title {
-    color: rgba(0, 255, 65, 0.55);
-    font-size: 0.62rem;
-    letter-spacing: 0.14em;
+  .github-stats__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: rgba(0, 255, 65, 0.72);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
   }
 
-  .hud__dot {
+  .github-stats__live {
     width: 6px;
     height: 6px;
     border-radius: 50%;
     background: var(--accent);
-    box-shadow: 0 0 6px rgba(0, 255, 65, 0.8);
+    box-shadow: 0 0 7px rgba(0, 255, 65, 0.8);
+  }
+  .github-stats__live--off {
+    background: var(--muted-soft);
+    box-shadow: none;
   }
 
-  /* Blocks are always laid out (no footprint shift); they materialise via
-     opacity + a 2px settle, staggered by the reveal timers. */
-  .hud__block {
-    opacity: 0;
-    transform: translateY(2px);
-    transition:
-      opacity 240ms var(--ease-default),
-      transform 240ms var(--ease-default);
-  }
-  .hud__block--on {
-    opacity: 1;
-    transform: none;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hud__block { transition: none; }
+  .github-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.15);
   }
 
-  .hud__labelRow {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.6rem;
+  .github-stats__metric {
+    min-width: 0;
+    padding: 0.65rem 0.55rem 0.65rem 0;
   }
-
-  .hud__label {
-    color: rgba(0, 255, 65, 0.5);
+  .github-stats__metric + .github-stats__metric {
+    padding-left: 0.65rem;
+    border-left: 1px solid rgba(0, 255, 65, 0.12);
+  }
+  .github-stats__metric dt {
+    color: var(--muted-soft);
+    font-size: 0.56rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    white-space: nowrap;
+  }
+  .github-stats__metric dd {
+    margin: 0.18rem 0 0;
+    color: var(--text);
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .github-stats__commit {
+    display: grid;
+    gap: 0.18rem;
+    padding-top: 0.7rem;
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .github-stats__commit:hover .github-stats__commitMessage { color: var(--accent-soft); }
+  .github-stats__commitLabel {
+    color: rgba(0, 255, 65, 0.52);
+    font-size: 0.56rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .github-stats__commitMessage {
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 0.7rem;
+    line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color var(--duration-hover) var(--ease-default);
+  }
+  .github-stats__commitMeta {
+    overflow: hidden;
+    color: var(--muted-soft);
+    font-size: 0.58rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .github-stats__commit--loading span {
+    display: block;
+    width: 100%;
+    height: 0.45rem;
+    background: rgba(0, 255, 65, 0.08);
+  }
+  .github-stats__commit--loading span:nth-child(2) { width: 82%; }
+  .github-stats__commit--loading span:nth-child(3) { width: 58%; }
+
+  .github-stats__fallback {
+    margin: 0;
+    padding-top: 0.7rem;
+    color: var(--muted-soft);
     font-size: 0.62rem;
   }
 
-  .hud__value {
-    color: var(--text);
-    font-size: 0.85rem;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
+  @media (min-width: 720px) {
+    .github-stats {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
+    .github-stats__head {
+      grid-column: 1 / -1;
+    }
+    .github-stats__grid {
+      border-right: 1px solid rgba(0, 255, 65, 0.15);
+      border-bottom: 0;
+    }
+    .github-stats__commit,
+    .github-stats__fallback {
+      align-content: center;
+      min-width: 0;
+      padding: 0.65rem 0 0.65rem 1.25rem;
+    }
   }
 
-  .hud__sub {
-    color: var(--muted-soft);
-    font-size: 0.66rem;
+  @media (prefers-reduced-motion: no-preference) {
+    .github-stats__commit--loading span {
+      animation: github-pulse 1.4s ease-in-out infinite alternate;
+    }
   }
-
-  .hud__meters {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    margin-top: 0.4rem;
-  }
-
-  .hud__meter {
-    display: grid;
-    grid-template-columns: 2.1rem 1fr 2.2rem;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .hud__meterLabel {
-    color: rgba(0, 255, 65, 0.4);
-    font-size: 0.58rem;
-    letter-spacing: 0.1em;
-  }
-
-  .hud__track {
-    height: 4px;
-    background: rgba(0, 255, 65, 0.1);
-    border: 1px solid rgba(0, 255, 65, 0.16);
-    overflow: hidden;
-  }
-
-  .hud__fill {
-    display: block;
-    height: 100%;
-    background: var(--accent);
-    box-shadow: 0 0 6px rgba(0, 255, 65, 0.55);
-    transition: width 700ms var(--ease-emphasis);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hud__fill { transition: none; }
-  }
-
-  .hud__meterVal {
-    color: var(--muted);
-    font-size: 0.64rem;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .hud__cursorLine {
-    display: flex;
-    gap: 0.35rem;
-    align-items: baseline;
-    padding-top: 0.35rem;
-    border-top: 1px solid rgba(0, 255, 65, 0.18);
-    color: rgba(0, 255, 65, 0.6);
-  }
-
-  .hud__prompt { font-size: 0.66rem; }
-
-  .hud__cursor {
-    font-size: 0.72rem;
-    animation: hud-blink 1.1s steps(1) infinite;
-  }
-  @keyframes hud-blink {
-    0%, 55% { opacity: 1; }
-    56%, 100% { opacity: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hud__cursor { animation: none; }
+  @keyframes github-pulse {
+    to { opacity: 0.35; }
   }
 </style>

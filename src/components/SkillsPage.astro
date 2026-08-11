@@ -1,0 +1,271 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DitherBg from "./DitherBg.svelte";
+import DitherCover from "./DitherCover.svelte";
+import Section from "./Section.astro";
+import SectionHeader from "./SectionHeader.astro";
+import WireCard from "./WireCard.astro";
+import { agentSkills } from "../lib/data/agent-skills";
+
+const { lang = "en" } = Astro.props;
+const pt = lang.startsWith("pt");
+const groups = ["products", "ecdsa-fail", "cs-brasil", "portfolio", "general"] as const;
+const groupNames = pt
+  ? { products: "Produtos e plataformas", "ecdsa-fail": "ECDSA.fail Command Center", "cs-brasil": "CS Brasil", portfolio: "Este portfólio", general: "Métodos reutilizáveis" }
+  : { products: "Products and platforms", "ecdsa-fail": "ECDSA.fail Command Center", "cs-brasil": "CS Brasil", portfolio: "This portfolio", general: "Reusable methods" };
+const statusNames = pt
+  ? { public: "pública", documented: "documentada", internal: "interna" }
+  : { public: "public", documented: "documented", internal: "internal" };
+const base = pt ? "/pt" : "";
+const filters = ["all", ...groups] as const;
+const filterNames = pt
+  ? { all: "Todas", products: "Produtos", "ecdsa-fail": "Pesquisa ECDSA", "cs-brasil": "CS Brasil", portfolio: "Portfólio", general: "Reutilizáveis" }
+  : { all: "All", products: "Products", "ecdsa-fail": "ECDSA research", "cs-brasil": "CS Brasil", portfolio: "Portfolio", general: "Reusable" };
+const filterCount = (filter: typeof filters[number]) => filter === "all"
+  ? agentSkills.length
+  : agentSkills.filter((skill) => skill.scope === filter).length;
+
+const classifications: Record<string, { en: string; pt: string }> = {
+  "ralph-starter-orchestration": { en: "orchestration", pt: "orquestração" },
+  "autoresearch-benchmark-loop": { en: "autonomous research", pt: "pesquisa autônoma" },
+  "aeo-delivery-system": { en: "AI discovery", pt: "descoberta por IA" },
+  "benchmark-frontier-archaeology": { en: "frontier analysis", pt: "análise de fronteira" },
+  "ecdsa-route-spec": { en: "research specification", pt: "especificação de pesquisa" },
+  "circuit-engineer-factory": { en: "worker orchestration", pt: "orquestração de workers" },
+  "circuit-optimization": { en: "circuit engineering", pt: "engenharia de circuitos" },
+  "reversible-circuit-validation": { en: "correctness", pt: "correção" },
+  "peak-qubit-reduction": { en: "space optimization", pt: "otimização de espaço" },
+  "toffoli-reduction": { en: "gate optimization", pt: "otimização de gates" },
+  "island-hunting": { en: "GPU research", pt: "pesquisa em GPU" },
+  "multi-agent-research-collaboration": { en: "collaboration", pt: "colaboração" },
+  "csbrasil-content-pipeline": { en: "content pipeline", pt: "pipeline de conteúdo" },
+  "faction-pipeline": { en: "game production", pt: "produção de jogo" },
+  "asset-review": { en: "visual review", pt: "revisão visual" },
+  regua: { en: "evaluation", pt: "avaliação" },
+  "csbrasil-pr-triage": { en: "release risk", pt: "risco de release" },
+  "csbrasil-smoke-check": { en: "playable QA", pt: "QA jogável" },
+  "gauntlet-fps": { en: "visual QA", pt: "QA visual" },
+  "bug-hunt": { en: "debugging", pt: "debugging" },
+  "blog-voice": { en: "editorial", pt: "editorial" },
+  "bilingual-publishing": { en: "publishing", pt: "publicação" },
+  "portfolio-cover-system": { en: "visual system", pt: "sistema visual" },
+  "frontend-delivery-harness": { en: "frontend delivery", pt: "entrega frontend" },
+  "portfolio-mcp": { en: "agent interface", pt: "interface para agents" },
+};
+const classificationFor = (slug: string) => classifications[slug] ?? { en: "operating method", pt: "método operacional" };
+const csAuthoredTotal = agentSkills.filter((skill) => skill.scope === "cs-brasil").length;
+---
+
+<BaseLayout
+  lang={pt ? "pt-br" : "en"}
+  title={pt ? "Skills de agentes — Ruben Marcus" : "Agent Skills — Ruben Marcus"}
+  description={pt
+    ? "Skills e métodos operacionais criados por Ruben Marcus para produtos de IA, pesquisa autônoma, AEO, frontend verificável, debugging, jogos e sistemas de agentes."
+    : "Agent skills and operating methods created by Ruben Marcus for AI products, autonomous research, AEO, verifiable frontend, debugging, games, and agent systems."}
+>
+  <DitherBg client:load opacity={0.45} />
+  <Section id="skills" pageHeader tight>
+    <SectionHeader
+      level={1}
+      index="02"
+      overline="Agent Skills"
+      title={pt ? "Método versionado, não prompt solto." : "Versioned method, not loose prompts."}
+      description={pt
+        ? "Eu transformo decisões recorrentes em contratos que agents conseguem executar, verificar e melhorar. Algumas skills são públicas; outras expõem o método sem publicar ativos internos."
+        : "I turn recurring decisions into contracts agents can execute, verify, and improve. Some skills are public; others expose the method without publishing internal assets."}
+    />
+
+    <div class="skills-overview" data-reveal>
+      <div class="skills-stat" data-reveal-item>
+        <strong>{agentSkills.length}</strong>
+        <span>{pt ? "métodos autorais catalogados" : "authored methods catalogued"}</span>
+      </div>
+      <div class="skills-stat" data-reveal-item>
+        <strong>{csAuthoredTotal}</strong>
+        <span>{pt ? "skills autorais do CS Brasil" : "authored CS Brasil skills"}</span>
+      </div>
+      <div class="skills-stat" data-reveal-item>
+        <strong>45</strong>
+        <span><code>/game</code> · {pt ? "6 autorais + 39 upstream" : "6 authored + 39 upstream"}</span>
+      </div>
+      <div class="skills-stat" data-reveal-item>
+        <strong>45</strong>
+        <span><code>/game2</code> · {pt ? "6 específicas + 39 upstream" : "6 repository-specific + 39 upstream"}</span>
+      </div>
+    </div>
+    <p class="skills-inventory-note">
+      {pt
+        ? "48 skills únicas encontradas nas duas bases. O catálogo abaixo destaca apenas métodos autorais ou operacionais que posso sustentar com evidência; dependências de terceiros não são apresentadas como criação minha."
+        : "48 unique skills found across both codebases. The catalogue below highlights only authored or evidence-backed operating methods; third-party dependencies are not presented as my work."}
+    </p>
+
+    <div class="skills-browser" data-skill-root>
+      <div class="skill-filters" role="group" aria-label={pt ? "Filtrar skills" : "Filter skills"}>
+        {filters.map((filter) => (
+          <button
+            type="button"
+            class="skill-filter"
+            data-skill-filter={filter}
+            aria-pressed={filter === "all" ? "true" : "false"}
+          >
+            <span>{filterNames[filter]}</span>
+            <strong>{filterCount(filter)}</strong>
+          </button>
+        ))}
+      </div>
+      <p class="skill-filter-status" data-skill-status aria-live="polite">
+        {pt ? `Mostrando ${agentSkills.length} skills` : `Showing ${agentSkills.length} skills`}
+      </p>
+
+      <ul class="skill-list" data-reveal>
+        {agentSkills.map((skill, index) => {
+          const classification = classificationFor(skill.slug);
+          return (
+            <li class="skill-item" data-skill-item data-scope={skill.scope} data-reveal-item>
+              <WireCard class="skill-card" glyph={String(index + 1).padStart(2, "0")}>
+                <div class="skill-inner">
+                  <DitherCover
+                    client:visible
+                    src={skill.thumbnail}
+                    seed={skill.name}
+                    alt={`${pt ? "Thumbnail da skill" : "Skill thumbnail"}: ${skill.name}`}
+                    class="skill-cover"
+                    invert
+                  />
+                  <article class="skill-body">
+                    <header class="skill-card__head">
+                      <span class="skill-card__category">
+                        {pt ? classification.pt : classification.en} · {groupNames[skill.scope]}
+                      </span>
+                      <span class={`skill-card__status skill-card__status--${skill.status}`}>{statusNames[skill.status]}</span>
+                    </header>
+                    <h2>{skill.name}</h2>
+                    <p class="skill-card__summary">{pt ? skill.summary.pt : skill.summary.en}</p>
+                    <dl>
+                      <div><dt>{pt ? "Contrato" : "Contract"}</dt><dd>{pt ? skill.contract.pt : skill.contract.en}</dd></div>
+                      <div><dt>{pt ? "Evidência" : "Evidence"}</dt><dd>{pt ? skill.evidence.pt : skill.evidence.en}</dd></div>
+                    </dl>
+                    {(skill.article || skill.discoveryUrl) && (
+                      <footer>
+                        {skill.article && <a href={pt ? skill.article.pt : skill.article.en}>{pt ? "Ver a prova →" : "See the proof →"}</a>}
+                        {skill.discoveryUrl && <a href={skill.discoveryUrl}>{pt ? "Abrir SKILL.md →" : "Open SKILL.md →"}</a>}
+                      </footer>
+                    )}
+                  </article>
+                </div>
+              </WireCard>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+
+    <div class="skills-cta">
+      <p>{pt ? "Quer esse nível de método no seu produto ou time?" : "Want this level of operating method in your product or team?"}</p>
+      <a class="btn btn-primary" href={`${base}/contact?subject=ai-product-systems`} data-track="contact_view" data-track-location="skills_bottom">{pt ? "Iniciar um projeto" : "Start a project"}</a>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .skills-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 3.5rem;
+  }
+  @media (min-width: 860px) { .skills-overview { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .skills-stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 8.5rem;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    background: rgba(3, 6, 5, 0.74);
+  }
+  .skills-stat strong {
+    color: var(--accent-soft);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.6rem);
+    line-height: 1;
+  }
+  .skills-stat span { color: var(--muted); font-family: var(--font-mono); font-size: 0.7rem; line-height: 1.45; }
+  .skills-stat code { color: var(--text); }
+  .skills-inventory-note { max-width: 84ch; margin-top: 1rem; color: var(--muted-soft); font-size: 0.78rem; line-height: 1.55; }
+  .skills-browser { margin-top: 2.5rem; }
+  .skill-filters { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+  .skill-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    background: rgba(3, 6, 5, 0.72);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: color var(--duration-hover) var(--ease-default), border-color var(--duration-hover) var(--ease-default), background var(--duration-hover) var(--ease-default);
+  }
+  .skill-filter strong { color: var(--muted-soft); font-weight: 500; }
+  .skill-filter[aria-pressed="true"] { border-color: rgba(0, 255, 65, 0.55); background: rgba(0, 255, 65, 0.09); color: var(--accent-soft); }
+  .skill-filter[aria-pressed="true"] strong { color: var(--accent); }
+  .skill-filter-status { margin: 1rem 0; color: var(--muted-soft); font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .skill-list { display: flex; flex-direction: column; gap: 1rem; margin: 0; padding: 0; list-style: none; }
+  .skill-item[hidden] { display: none; }
+  :global(.skill-card) { padding: 0; border-radius: clamp(1rem, 2vw, 1.5rem); background: rgba(3, 6, 5, 0.84); }
+  .skill-inner { display: grid; grid-template-columns: 1fr; min-width: 0; }
+  @media (min-width: 760px) { .skill-inner { grid-template-columns: minmax(230px, 30%) 1fr; } }
+  :global(.skill-cover) { min-height: 220px; aspect-ratio: 16 / 8; border-radius: 0; }
+  @media (min-width: 760px) { :global(.skill-cover) { height: 100%; min-height: 270px; aspect-ratio: auto; border-radius: 0; } }
+  .skill-inner:hover :global(.dither-cover__dither) { opacity: 1; }
+  .skill-body { min-width: 0; padding: clamp(1.3rem, 3vw, 2rem); }
+  .skill-card__head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.6rem 1rem; }
+  .skill-card__category, .skill-card__status, dt { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .skill-card__category { color: var(--muted-soft); }
+  .skill-card__status { color: var(--muted); }
+  .skill-card__status--public { color: var(--accent-soft); }
+  .skill-body h2 { margin-top: 0.85rem; font-family: var(--font-display); font-size: clamp(1.45rem, 2.8vw, 2rem); line-height: 1.08; }
+  .skill-card__summary { margin-top: 0.65rem; color: var(--text); line-height: 1.6; }
+  .skill-body dl { display: grid; gap: 1rem; margin-top: 1.25rem; }
+  @media (min-width: 1040px) { .skill-body dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .skill-body dl div { display: grid; align-content: start; gap: 0.35rem; }
+  .skill-body dt { color: rgba(0, 255, 65, 0.62); }
+  .skill-body dd { color: var(--muted); font-size: 0.86rem; line-height: 1.55; }
+  .skill-body footer { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.3rem; }
+  .skill-body footer a { color: var(--accent-soft); font-family: var(--font-mono); font-size: 0.72rem; }
+  .skills-cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+  .skills-cta p { color: var(--text); font-family: var(--font-display); font-size: clamp(1.25rem, 2vw, 1.8rem); }
+</style>
+
+<script>
+  const initSkillFilters = () => {
+    const root = document.querySelector<HTMLElement>("[data-skill-root]");
+    if (!root || root.dataset.filtersReady === "true") return;
+    root.dataset.filtersReady = "true";
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-skill-filter]"));
+    const items = Array.from(root.querySelectorAll<HTMLElement>("[data-skill-item]"));
+    const status = root.querySelector<HTMLElement>("[data-skill-status]");
+    const pt = document.documentElement.lang.toLowerCase().startsWith("pt");
+
+    root.addEventListener("click", (event) => {
+      const button = (event.target as Element).closest<HTMLButtonElement>("[data-skill-filter]");
+      if (!button) return;
+      const filter = button.dataset.skillFilter ?? "all";
+      let visible = 0;
+      for (const item of items) {
+        const show = filter === "all" || item.dataset.scope === filter;
+        item.hidden = !show;
+        if (show) visible += 1;
+      }
+      for (const candidate of buttons) candidate.setAttribute("aria-pressed", String(candidate === button));
+      if (status) status.textContent = pt ? `Mostrando ${visible} skills` : `Showing ${visible} skills`;
+    });
+  };
+
+  initSkillFilters();
+  document.addEventListener("astro:page-load", initSkillFilters);
+</script>

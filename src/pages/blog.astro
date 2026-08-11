@@ -20,8 +20,9 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   <!-- Ordered-dither atmosphere — the blog page's generative identity -->
   <DitherBg client:load />
 
-  <Section id="intro">
+  <Section id="intro" pageHeader>
     <SectionHeader
+      level={1}
       index="03"
       overline="Writing"
       title="Notes from the loop."

@@ -5,17 +5,19 @@ import Section from "../../../components/Section.astro";
 import DitherBg from "../../../components/DitherBg.svelte";
 import ShareLinks from "../../../components/blog/ShareLinks.svelte";
 import ViewCounter from "../../../components/blog/ViewCounter.svelte";
+import { getBlogPaths, getBlogSlug } from "../../../lib/blog-routes";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blogPt", ({ data }) => !data.draft);
   return posts.map((post) => ({
-    params: { slug: post.id },
+    params: { slug: getBlogSlug("pt", post.id) },
     props: { post },
   }));
 }
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+const alternatePaths = getBlogPaths(post.id);
 
 const allPosts = (await getCollection("blogPt", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
@@ -41,7 +43,7 @@ const formattedDate = post.data.date.toLocaleDateString("pt-BR", {
   day: "numeric",
 });
 
-const postUrl = new URL(`/pt/blog/${post.id}/`, Astro.site).href;
+const postUrl = new URL(`${alternatePaths.pt}/`, Astro.site).href;
 
 // View counter only mounts when the Supabase public env vars are configured;
 // the component also self-guards and renders nothing without them.
@@ -82,11 +84,12 @@ const blogPostingLd = {
   publishedTime={post.data.date}
   modifiedTime={post.data.updated}
   canonicalUrl={post.data.canonical}
+  alternatePaths={alternatePaths}
 >
   <script type="application/ld+json" set:html={JSON.stringify(blogPostingLd)} slot="head" />
   <article class="post">
     <DitherBg client:load opacity={0.35} />
-    <Section id="post-head">
+    <Section id="post-head" pageHeader>
       <header class="post-head">
         <a class="post-back" href="/pt/blog">← Todos os posts</a>
 
@@ -149,7 +152,7 @@ const blogPostingLd = {
           <span class="overline">Leia também</span>
           <div class="post-related__grid">
             {related.map((r) => (
-              <a href={`/pt/blog/${r.id}`} class="post-nav__card">
+              <a href={`/pt/blog/${getBlogSlug("pt", r.id)}`} class="post-nav__card">
                 <span class="post-related__tag">#{r.data.tags[0]}</span>
                 <span class="post-nav__title">{r.data.title}</span>
               </a>
@@ -159,14 +162,14 @@ const blogPostingLd = {
       )}
       <nav class="post-nav" aria-label="Outros posts">
         {prevPost ? (
-          <a href={`/pt/blog/${prevPost.id}`} class="post-nav__card">
+          <a href={`/pt/blog/${getBlogSlug("pt", prevPost.id)}`} class="post-nav__card">
             <span class="overline">Mais antigo</span>
             <span class="post-nav__title">{prevPost.data.title}</span>
           </a>
         ) : <span></span>}
 
         {nextPost ? (
-          <a href={`/pt/blog/${nextPost.id}`} class="post-nav__card post-nav__card--right">
+          <a href={`/pt/blog/${getBlogSlug("pt", nextPost.id)}`} class="post-nav__card post-nav__card--right">
             <span class="overline">Mais novo</span>
             <span class="post-nav__title">{nextPost.data.title}</span>
           </a>
@@ -220,10 +223,6 @@ const blogPostingLd = {
 </script>
 
 <style>
-  .post {
-    padding-top: 5rem;
-  }
-
   .post-head {
     display: flex;
     flex-direction: column;

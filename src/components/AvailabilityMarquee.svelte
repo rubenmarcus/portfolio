@@ -2,21 +2,21 @@
   /**
    * Availability marquee — slim terminal strip directly under the hero.
    * Infinite CSS-scroll loop, monospace terminal green on near-black with
-   * 1px green hairlines. Pauses on hover; static when the user prefers
-   * reduced motion. The track is duplicated so translateX(-50%) loops
-   * seamlessly.
+   * 1px green hairlines. Pauses on hover or focus; static when the user
+   * prefers reduced motion. The track is duplicated so translateX(-50%)
+   * loops seamlessly.
    */
 
   interface Props {
     lang?: string;
   }
   let { lang = "en" }: Props = $props();
-  const pt = lang.startsWith("pt");
+  const pt = $derived(lang.startsWith("pt"));
 
   const ITEMS_EN = [
     "AVAILABLE FOR FULL-TIME ROLES",
     "OPEN TO FREELANCE CONTRACTS",
-    "SENIOR PRODUCT ENGINEER · AGENTIC AI",
+    "AI FULLSTACK ENGINEER · AGENTIC AI",
     "AI AGENTS · LLM TOOLING · EVALS",
     "NEXT.JS · TYPESCRIPT · REACT",
     "BASED IN LISBON · REMOTE WORLDWIDE",
@@ -25,7 +25,7 @@
   const ITEMS_PT = [
     "DISPONÍVEL PARA VAGAS FULL-TIME",
     "ABERTO A CONTRATOS FREELANCE",
-    "SENIOR PRODUCT ENGINEER · AGENTIC AI",
+    "AI FULLSTACK ENGINEER · AGENTIC AI",
     "AI AGENTS · LLM TOOLING · EVALS",
     "NEXT.JS · TYPESCRIPT · REACT",
     "EM LISBOA · REMOTO PARA O MUNDO",
@@ -34,7 +34,12 @@
   const items = $derived(pt ? ITEMS_PT : ITEMS_EN);
 </script>
 
-<div class="marquee-band" aria-label="Availability">
+<!-- svelte-ignore a11y_no_noninteractive_tabindex (focus intentionally pauses potentially fatiguing motion) -->
+<div
+  class="marquee-band"
+  aria-label={pt ? "Disponibilidade profissional. Passe o mouse ou foque para pausar." : "Professional availability. Hover or focus to pause."}
+  tabindex="0"
+>
   <div class="marquee-band__track">
     {#each [0, 1] as copy (copy)}
       <div class="marquee-band__group" aria-hidden={copy === 1}>
@@ -75,10 +80,19 @@
   .marquee-band__track {
     display: flex;
     width: max-content;
-    animation: marquee-band-scroll 30s linear infinite;
+    /* Deliberately slow: the strip communicates availability, it is not a
+       speed-reading test. 52s keeps the ambient motion without forcing the eye. */
+    animation: marquee-band-scroll 52s linear infinite;
   }
-  .marquee-band:hover .marquee-band__track {
+  .marquee-band:hover .marquee-band__track,
+  .marquee-band:focus-visible .marquee-band__track,
+  .marquee-band:focus-within .marquee-band__track {
     animation-play-state: paused;
+  }
+
+  .marquee-band:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: -2px;
   }
 
   .marquee-band__group {

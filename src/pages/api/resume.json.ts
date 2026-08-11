@@ -26,7 +26,6 @@ export const GET: APIRoute = () =>
         open_source: RESUME.openSource,
         links: RESUME.links,
         contact: {
-          email: RESUME.links.email,
           github: RESUME.links.github,
           linkedin: RESUME.links.linkedin,
           hire_api: "https://rubenmarcus.dev/api/hire",

@@ -7,6 +7,7 @@ import Divider from "../../components/Divider.astro";
 import CardAscii from "../../components/CardAscii.svelte";
 import WireCard from "../../components/WireCard.astro";
 import DitherCover from "../../components/DitherCover.svelte";
+import { AEO_UNIQUE_SITES, CAREER_YEARS, formatFact } from "../../lib/site-facts";
 
 const timeline = [
   {
@@ -120,21 +121,22 @@ const education = [
 <BaseLayout
   lang="pt-br"
   title="Sobre | Ruben Marcus"
-  description="Engenheiro AI Fullstack Sênior em Lisboa. 13 anos construindo apps escaláveis em web3, fintech e e-commerce."
+  description={`AI Fullstack Engineer Sênior em Lisboa. ${CAREER_YEARS} anos construindo apps escaláveis em web3, fintech e e-commerce.`}
   image="/og/pt-about.png"
 >
   <DitherBg client:load opacity={0.55} />
-  <Section id="intro">
+  <Section id="intro" pageHeader>
     <SectionHeader
+      level={1}
       index="04"
       overline="Sobre"
-      title="Engenheiro brasileiro, em Lisboa. 13 anos entregando."
+      title={`Engenheiro brasileiro, em Lisboa. ${CAREER_YEARS} anos entregando.`}
     />
 
     <div class="about-grid">
       <div class="about-body" data-reveal>
         <p data-reveal-item>
-          Sou um Senior AI Full Stack Engineer com 13 anos de experiência construindo
+          Sou um Senior AI Fullstack Engineer com {CAREER_YEARS} anos de experiência construindo
           aplicações escaláveis em web3, fintech e e-commerce. 4+ anos a fundo em Web3 / Crypto,
           2+ anos construindo AI developer tools. Em Lisboa, trabalho para o mundo todo.
         </p>
@@ -156,7 +158,7 @@ const education = [
           No lado do AEO eu também pego <a href="/pt/contact?subject=aeo" class="link-inline">projetos de AEO</a>:
           escopo fechado, terminando com um relatório de antes/depois do
           <a href="https://check.aeojs.org" class="link-inline" target="_blank" rel="noopener">check.aeojs.org</a>
-          (2.200+ sites escaneados e contando).
+          ({formatFact(AEO_UNIQUE_SITES, "pt-BR")} sites únicos escaneados e contando).
         </p>
         <p data-reveal-item>
           Eu me importo com as costuras: como spec vira código, como pesquisa vira produto,
@@ -183,7 +185,6 @@ const education = [
             <div><dt>Base</dt><dd>Lisboa, Portugal</dd></div>
             <div><dt>Cargo</dt><dd>Sr. AI Fullstack Engineer</dd></div>
             <div><dt>Anos</dt><dd>13 (4+ web3, 2+ AI tools)</dd></div>
-            <div><dt>Email</dt><dd><a href="mailto:ruben@rubenmarcus.dev" class="link-inline">ruben@rubenmarcus.dev</a></dd></div>
             <div><dt>CV</dt><dd><a href="/cv.pdf" class="link-inline" target="_blank" rel="noopener">Baixar PDF ↓</a></dd></div>
             <div><dt>Telefone</dt><dd>+351 912 892 825</dd></div>
           </dl>

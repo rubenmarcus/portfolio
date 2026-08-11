@@ -5,6 +5,7 @@ import Section from "../../components/Section.astro";
 import DitherBg from "../../components/DitherBg.svelte";
 import ShareLinks from "../../components/blog/ShareLinks.svelte";
 import ViewCounter from "../../components/blog/ViewCounter.svelte";
+import { getBlogPaths } from "../../lib/blog-routes";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -16,6 +17,7 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+const alternatePaths = getBlogPaths(post.id);
 
 const allPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
@@ -41,7 +43,7 @@ const formattedDate = post.data.date.toLocaleDateString("en-US", {
   day: "numeric",
 });
 
-const postUrl = new URL(`/blog/${post.id}/`, Astro.site).href;
+const postUrl = new URL(`${alternatePaths.en}/`, Astro.site).href;
 
 // View counter only mounts when the Supabase public env vars are configured;
 // the component also self-guards and renders nothing without them.
@@ -80,11 +82,12 @@ const blogPostingLd = {
   publishedTime={post.data.date}
   modifiedTime={post.data.updated}
   canonicalUrl={post.data.canonical}
+  alternatePaths={alternatePaths}
 >
   <script type="application/ld+json" set:html={JSON.stringify(blogPostingLd)} slot="head" />
   <article class="post">
     <DitherBg client:load opacity={0.35} />
-    <Section id="post-head">
+    <Section id="post-head" pageHeader>
       <header class="post-head">
         <a class="post-back" href="/blog">← All writing</a>
 
@@ -218,10 +221,6 @@ const blogPostingLd = {
 </script>
 
 <style>
-  .post {
-    padding-top: 5rem;
-  }
-
   .post-head {
     display: flex;
     flex-direction: column;
