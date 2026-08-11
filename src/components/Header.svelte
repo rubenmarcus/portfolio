@@ -211,10 +211,11 @@
     justify-content: center;
   }
 
-  @media (min-width: 880px) {
+  @media (min-width: 1220px) {
     .header__nav {
       display: inline-flex;
       align-items: center;
+      gap: clamp(1rem, 1.55vw, 2rem);
     }
   }
 
@@ -319,7 +320,7 @@
     align-items: center;
     gap: 0.4rem;
   }
-  @media (min-width: 880px) {
+  @media (min-width: 1220px) {
     .header__socials {
       display: inline-flex;
     }
@@ -372,7 +373,7 @@
     transform: translateY(-3.2px) rotate(-45deg);
   }
 
-  @media (min-width: 880px) {
+  @media (min-width: 1220px) {
     .header__burger { display: none; }
   }
 

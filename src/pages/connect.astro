@@ -66,7 +66,7 @@ const prompts = [
 
 <BaseLayout
   title="Connect — Ruben Marcus"
-  description="This site speaks MCP. Add rubenmarcus.dev as a connector in Claude, ChatGPT, Cursor or Kimi and let your agent read the resume, check availability, and book a project intro."
+  description="Agent-ready, humans welcome. Add rubenmarcus.dev as an MCP connector in Claude, ChatGPT, Cursor or Kimi so an agent can evaluate experience, check availability, and book an intro."
   image="/og/connect.png"
 >
   <DitherBg client:load opacity={0.55} />
@@ -74,10 +74,10 @@ const prompts = [
   <Section id="intro" pageHeader>
     <SectionHeader
       level={1}
-      index="07"
-      overline="Connect"
+      index="08"
+      overline="Agent-ready · MCP"
       title="This site speaks MCP."
-      description="Add it as a connector and your agent can read the resume, check availability, and book a project intro. No account, no auth, no signup."
+      description="Agent-ready, humans welcome. Add this portfolio as a connector and your agent can evaluate my work, check availability, and book a project intro. No account, auth, or signup."
     />
 
     <div class="url-bar" data-reveal>
@@ -204,8 +204,11 @@ const prompts = [
     gap: 1.25rem;
     margin-bottom: 3rem;
   }
-  @media (min-width: 880px) {
-    .client-grid { grid-template-columns: repeat(3, 1fr); }
+  @media (min-width: 680px) {
+    .client-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1120px) {
+    .client-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   }
 
   .client-card {

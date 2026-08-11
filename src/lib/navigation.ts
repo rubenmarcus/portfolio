@@ -15,6 +15,7 @@ export const navItems: NavItem[] = [
   { label: "About",     href: "/about",     index: "05" },
   { label: "Contact",   href: "/contact",   index: "06" },
   { label: "Agents",    href: "/agents",    index: "07" },
+  { label: "MCP",       href: "/connect",   index: "08" },
 ];
 
 /** pt-BR labels keyed by EN href — Header swaps them in on /pt routes. */
@@ -27,6 +28,7 @@ export const navLabelsPt: Record<string, string> = {
   "/about": "Sobre",
   "/contact": "Contato",
   "/agents": "Agentes",
+  "/connect": "MCP",
 };
 
 export const socialLinks = [

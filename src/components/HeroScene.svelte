@@ -42,7 +42,7 @@
           sub: `AI Fullstack Engineer. Produtos AI-native, experiências web premium e sistemas prontos para produção. ${CAREER_YEARS} anos de Next.js, TypeScript, sistemas de IA e developer tooling.`,
           ctaPrimary: "Agendar um projeto",
           ctaSecondary: "Melhore o AEO da sua empresa",
-          ctaAgent: "contrate via agente ↗",
+          ctaAgent: "conecte via MCP",
         }
       : {
           hello: "Hello, I'm",
@@ -51,7 +51,7 @@
           sub: `AI Fullstack Engineer. AI-native products, premium web experiences, and production-ready systems. ${CAREER_YEARS} years across Next.js, TypeScript, AI systems and developer tooling.`,
           ctaPrimary: "Book a project",
           ctaSecondary: "Fix the AEO of your company",
-          ctaAgent: "hire me via your agent ↗",
+          ctaAgent: "connect via MCP",
         },
   );
 </script>
@@ -92,7 +92,13 @@
     <div class="hero__ctas">
       <a href="{base}/contact" class="btn btn-primary" data-track="contact_view" data-track-location="hero">{copy.ctaPrimary}</a>
       <a href="{base}/services/aeo" class="btn btn-secondary" data-track="service_view" data-track-location="hero">{copy.ctaSecondary}</a>
-      <a href="{base}/connect" class="hero__agentCta" data-track="agent_connect" data-track-location="hero">{copy.ctaAgent}</a>
+      <a href="{base}/connect" class="hero__agentCta" data-track="agent_connect" data-track-location="hero">
+        <span class="hero__agentDot" aria-hidden="true"></span>
+        <strong>AGENT-READY</strong>
+        <span aria-hidden="true">·</span>
+        <span>{copy.ctaAgent}</span>
+        <span aria-hidden="true">↗</span>
+      </a>
     </div>
   </div>
 </section>
@@ -280,18 +286,38 @@
     align-items: center;
   }
 
-  /* Agent channel — quiet mono chip next to the real CTAs */
+  /* Agent channel — the brand motto doubles as a direct MCP entry point. */
   .hero__agentCta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
     font-family: var(--font-mono);
-    font-size: 0.74rem;
+    font-size: 0.68rem;
     letter-spacing: 0.06em;
     color: var(--accent-soft);
-    opacity: 0.75;
+    border: 1px solid rgba(0, 255, 65, 0.25);
+    border-radius: var(--radius-pill);
+    background: rgba(0, 12, 5, 0.58);
+    padding: 0.52rem 0.78rem;
+    opacity: 0.88;
     transition: opacity var(--duration-hover) var(--ease-default),
-      text-shadow var(--duration-hover) var(--ease-default);
+      text-shadow var(--duration-hover) var(--ease-default),
+      border-color var(--duration-hover) var(--ease-default),
+      background var(--duration-hover) var(--ease-default);
+  }
+  .hero__agentCta strong { font-weight: 600; }
+  .hero__agentDot {
+    width: 6px;
+    height: 6px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 9px rgba(0, 255, 65, 0.8);
   }
   .hero__agentCta:hover {
     opacity: 1;
+    border-color: rgba(0, 255, 65, 0.52);
+    background: rgba(0, 255, 65, 0.08);
     text-shadow: 0 0 12px rgba(0, 255, 65, 0.45);
   }
   /* Four CTAs stay a clean wrapped row on small screens */

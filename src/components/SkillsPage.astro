@@ -75,6 +75,28 @@ const csAuthoredTotal = agentSkills.filter((skill) => skill.scope === "cs-brasil
         : "I turn recurring decisions into contracts agents can execute, verify, and improve. Some skills are public; others expose the method without publishing internal assets."}
     />
 
+    <a
+      class="agent-ready-proof"
+      href={`${base}/connect`}
+      data-reveal
+      data-track="agent_connect"
+      data-track-location="skills_intro"
+    >
+      <div class="agent-ready-proof__copy">
+        <span class="agent-ready-proof__motto"><i aria-hidden="true"></i> AGENT-READY · HUMANS WELCOME</span>
+        <h2>{pt ? "Este portfólio também é uma interface para agents." : "This portfolio is also an interface for agents."}</h2>
+        <p>{pt
+          ? "Conecte pelo MCP para um agent avaliar evidências, consultar serviços e disponibilidade ou enviar um briefing — sem precisar interpretar a interface visual."
+          : "Connect over MCP so an agent can evaluate evidence, inspect services and availability, or submit a brief — without having to interpret the visual interface."}</p>
+      </div>
+      <div class="agent-ready-proof__protocols" aria-label={pt ? "Recursos agent-ready" : "Agent-ready capabilities"}>
+        <span>MCP</span>
+        <span>Agent Skills</span>
+        <span>OpenAPI</span>
+        <code>/api/mcp ↗</code>
+      </div>
+    </a>
+
     <div class="skills-overview" data-reveal>
       <div class="skills-stat" data-reveal-item>
         <strong>{agentSkills.length}</strong>
@@ -168,11 +190,76 @@ const csAuthoredTotal = agentSkills.filter((skill) => skill.scope === "cs-brasil
 </BaseLayout>
 
 <style>
+  .agent-ready-proof {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-top: 3.5rem;
+    padding: clamp(1.2rem, 3vw, 2rem);
+    border: 1px solid rgba(0, 255, 65, 0.28);
+    border-radius: clamp(1rem, 2vw, 1.5rem);
+    background: linear-gradient(110deg, rgba(0, 255, 65, 0.075), rgba(3, 6, 5, 0.82) 45%);
+    color: var(--text);
+    transition: border-color var(--duration-hover) var(--ease-default), background var(--duration-hover) var(--ease-default);
+  }
+  .agent-ready-proof:hover {
+    border-color: rgba(0, 255, 65, 0.52);
+    background: linear-gradient(110deg, rgba(0, 255, 65, 0.11), rgba(3, 6, 5, 0.9) 45%);
+  }
+  @media (min-width: 880px) {
+    .agent-ready-proof { grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
+  }
+  .agent-ready-proof__motto {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--accent-soft);
+    font-family: var(--font-mono);
+    font-size: 0.67rem;
+    letter-spacing: 0.12em;
+  }
+  .agent-ready-proof__motto i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.85);
+  }
+  .agent-ready-proof h2 {
+    max-width: 24ch;
+    margin: 0.7rem 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    line-height: 1.1;
+  }
+  .agent-ready-proof p {
+    max-width: 68ch;
+    margin: 0.85rem 0 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .agent-ready-proof__protocols {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .agent-ready-proof__protocols span,
+  .agent-ready-proof__protocols code {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    padding: 0.38rem 0.65rem;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    white-space: nowrap;
+  }
+  .agent-ready-proof__protocols code { color: var(--accent-soft); }
   .skills-overview {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.75rem;
-    margin-top: 3.5rem;
+    margin-top: 1rem;
   }
   @media (min-width: 860px) { .skills-overview { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   .skills-stat {

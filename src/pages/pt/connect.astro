@@ -59,7 +59,7 @@ const tools = [
 <BaseLayout
   lang="pt-br"
   title="Conectar — Ruben Marcus"
-  description="Este site fala MCP. Adicione rubenmarcus.dev como conector no Claude, ChatGPT, Cursor ou Kimi e deixe seu agente ler o currículo, checar disponibilidade e agendar uma intro de projeto."
+  description="Agent-ready, humans welcome. Adicione rubenmarcus.dev como conector MCP no Claude, ChatGPT, Cursor ou Kimi para seu agent avaliar experiência, checar disponibilidade e agendar uma conversa."
   image="/og/pt-connect.png"
 >
   <DitherBg client:load opacity={0.55} />
@@ -67,10 +67,10 @@ const tools = [
   <Section id="intro" pageHeader>
     <SectionHeader
       level={1}
-      index="07"
-      overline="Conectar"
+      index="08"
+      overline="Agent-ready · MCP"
       title="Este site fala MCP."
-      description="Adicione como conector e seu agente consegue ler o currículo, checar disponibilidade e agendar uma intro de projeto. Sem conta, sem auth, sem signup."
+      description="Agent-ready, humans welcome. Adicione este portfólio como conector e seu agent consegue avaliar meu trabalho, checar disponibilidade e agendar uma conversa. Sem conta, auth ou signup."
     />
 
     <div class="url-bar" data-reveal>
@@ -185,8 +185,11 @@ const tools = [
     gap: 1.25rem;
     margin-bottom: 3rem;
   }
-  @media (min-width: 880px) {
-    .client-grid { grid-template-columns: repeat(3, 1fr); }
+  @media (min-width: 680px) {
+    .client-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1120px) {
+    .client-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   }
 
   .client-card {

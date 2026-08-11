@@ -2,7 +2,7 @@
 
 ![rubenmarcus.dev — the first portfolio made for agents](public/art/social/readme-cover.png)
 
-Personal portfolio. Terminal-green, agent-first: a cinematic 3D hero, a blog
+Personal portfolio. **Agent-ready · humans welcome.** Terminal-green and agent-first: a cinematic 3D hero, a blog
 written for humans and machines, and an MCP server so AI agents can read the
 resume and book a call without ever rendering the page.
 

@@ -1,5 +1,7 @@
 # Ruben Marcus: AI Fullstack Engineer
 
+> AGENT-READY · HUMANS WELCOME
+>
 > Personal site of Ruben Marcus, an AI fullstack engineer based in Lisbon
 > (remote worldwide). 14+ years across AI tooling, web products, Web3, fintech, and e-commerce.
 > Builds autonomous AI agent systems, evaluation harnesses, AEO tooling, and
@@ -12,6 +14,7 @@
 - [AI](https://rubenmarcus.dev/ai): AI expertise (agent orchestration, evaluation design, AEO, production LLM features) and the open-source tools that prove it.
 - [Agent Skills](https://rubenmarcus.dev/skills): Versioned operating methods created for verifiable frontend, writing, debugging, games, and agent systems.
 - [Agents](https://rubenmarcus.dev/agents): The autonomous agent fleet behind this site and client work — roles, orchestration model, and what each agent ships.
+- [MCP / Connect](https://rubenmarcus.dev/connect): Connect this portfolio to an AI client so an agent can inspect evidence, check availability, and book an intro.
 - [Blog](https://rubenmarcus.dev/blog): Technical articles on agents, benchmarks, WebGL, and the stack.
 - [About](https://rubenmarcus.dev/about): Bio, timeline, contact details.
 - [Contact](https://rubenmarcus.dev/contact): Project inquiries for AI products, agent systems, AI-native frontend, and AEO.
