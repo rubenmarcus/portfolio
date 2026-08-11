@@ -5,21 +5,25 @@
 
 <script>
   import { track } from "@vercel/analytics";
+  import { getFirstTouchAttribution, getFunnelEventProperties } from "../lib/attribution";
 
   type FunnelWindow = Window & { __portfolioFunnelBound?: boolean };
   const state = window as FunnelWindow;
 
   if (!state.__portfolioFunnelBound) {
     state.__portfolioFunnelBound = true;
+    // Capture the external referrer/UTMs before client-side navigation can
+    // replace document.referrer with an internal portfolio URL.
+    getFirstTouchAttribution();
     document.addEventListener("click", (event) => {
       const target = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-track]") : null;
       if (!target) return;
       const name = target.dataset.track;
       if (!name) return;
-      track(name, {
-        location: target.dataset.trackLocation ?? "unknown",
-        language: document.documentElement.lang || "unknown",
-      });
+      track(name, getFunnelEventProperties(
+        target.dataset.trackLocation ?? "unknown",
+        document.documentElement.lang || "unknown",
+      ));
     });
   }
 </script>

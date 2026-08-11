@@ -14,7 +14,7 @@ import type { APIRoute } from "astro";
 import { deliverLead } from "../../lib/server/leads";
 
 const MAX = { name: 120, contact: 160, brief: 4000, budget: 120, agent: 80 };
-const ATTRIBUTION_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "referrer", "landing", "offer", "language"] as const;
+const ATTRIBUTION_KEYS = ["source", "utm_source", "utm_medium", "utm_campaign", "utm_content", "referrer", "landing", "conversion_path", "offer", "language"] as const;
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {

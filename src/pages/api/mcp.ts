@@ -143,7 +143,13 @@ export const POST: APIRoute = async ({ request }) => {
           brief: String(brief).slice(0, 4000),
           budget: String(budget || "").slice(0, 120),
           agent: String(agent || "mcp").slice(0, 80),
-          attribution: { landing: "/api/mcp", language: "en" },
+          attribution: {
+            source: "mcp",
+            referrer: "mcp",
+            landing: "/api/mcp",
+            conversion_path: "/api/mcp",
+            language: "en",
+          },
         });
         if (!delivery.ok) return json(result(id, `error: lead delivery unavailable; reference ${delivery.leadId}`));
         return json(result(id, `Intro booked. Reference ${delivery.leadId}. Ruben replies within a day or two.`));

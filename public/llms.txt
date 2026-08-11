@@ -44,7 +44,7 @@
 - [Ralph Starter](https://ralphstarter.ai): AI coding orchestration platform. Multi-agent swarms over isolated git worktrees, MCP server.
 - [Autoresearcher](https://autoresearcher.org): Benchmark-driven autonomous research CLI. Multi-agent co-evolution with a Pareto frontier.
 - [AEO.js](https://aeojs.org): Answer Engine Optimization framework. AI-crawler policy analysis, llms.txt and ai-index.json exports.
-- [check.aeojs.org](https://check.aeojs.org): Free AEO scanner. 4,500+ sites scanned.
+- [check.aeojs.org](https://check.aeojs.org): Free AEO scanner. 4,569 scans across 2,259 unique sites.
 - [ScanRepo](https://scanrepo.dev): Repository intelligence product.
 - [CS Brasil](https://csbrasil.online): Browser FPS and AI-native product engineering testbed.
 

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { aiTools } from "../lib/data/aiTools";
+  import { AEO_TOTAL_SCANS, AEO_UNIQUE_SITES, formatFact } from "../lib/site-facts";
   import VoxelIcon from "../lib/assets/VoxelIcon.svelte";
   import DitherCover from "./DitherCover.svelte";
   import type { VoxelIconName } from "../lib/assets/registry";
@@ -44,7 +45,7 @@
     {
       slug: "aeo-checker",
       name: "AEO Checker",
-      tagline: "Free AEO scanner. 4,500+ sites checked.",
+      tagline: `Free AEO scanner. ${formatFact(AEO_TOTAL_SCANS, "en-US")} scans across ${formatFact(AEO_UNIQUE_SITES, "en-US")} unique sites.`,
       features: ["Instant AEO score", "AI-crawler policy report"],
       status: "shipping",
       site: "https://check.aeojs.org",
@@ -93,7 +94,7 @@
       features: ["Análise de robots policy p/ AI crawlers", "Exports prontos p/ LLM"],
     },
     "aeo-checker": {
-      tagline: "Scanner de AEO grátis. 4.500+ sites verificados.",
+      tagline: `Scanner de AEO grátis. ${formatFact(AEO_TOTAL_SCANS, "pt-BR")} scans em ${formatFact(AEO_UNIQUE_SITES, "pt-BR")} sites únicos.`,
       features: ["Score de AEO instantâneo", "Relatório de AI-crawler policy"],
     },
     scanrepo: {

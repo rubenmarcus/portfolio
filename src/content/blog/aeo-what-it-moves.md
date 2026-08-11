@@ -1,6 +1,6 @@
 ---
 title: "How AEO can help your business grow"
-description: "AEO is the plumbing that lets ChatGPT, Perplexity and friends read and cite your business. I built a free scanner that has checked 4,569 sites; the same 3 failures show up everywhere. Here is what llms.txt, structured data and ai-index.json actually move, with a concrete before and after."
+description: "AEO is the plumbing that lets ChatGPT, Perplexity and friends read and cite your business. I built a free scanner that has run 4,569 scans across 2,259 unique sites; the same 3 failures show up everywhere."
 date: 2026-07-27
 readTime: "11 min"
 tags: ["aeo", "seo", "llm", "web"]

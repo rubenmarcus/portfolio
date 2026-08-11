@@ -477,6 +477,7 @@ const iconMap: Record<string, SvgIconName> = {
 
 <script>
   import { track } from "@vercel/analytics";
+  import { getFirstTouchAttribution } from "../lib/attribution";
   /**
    * Contact form — client-side validation and formsubmit.co AJAX submit.
    * `?subject=<slug>` pre-selects a matching interest (hero/ai/services CTAs).
@@ -552,6 +553,18 @@ const iconMap: Record<string, SvgIconName> = {
       };
     };
 
+    const firstTouch = getFirstTouchAttribution();
+    const eventProperties = (offer: string) => ({
+      source: firstTouch.source,
+      landing: firstTouch.landing,
+      offer,
+      language: "en",
+    });
+    form.addEventListener("focusin", () => {
+      const data = readData();
+      track("contact_start", eventProperties(subject ?? data.interest));
+    }, { once: true });
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       setError(null);
@@ -560,7 +573,7 @@ const iconMap: Record<string, SvgIconName> = {
         return;
       }
       const data = readData();
-      track("contact_submit", { language: "en", offer: subject ?? data.interest });
+      track("contact_submit", eventProperties(subject ?? data.interest));
       const submitBtn = form.querySelector('button[type="submit"]');
       if (submitBtn instanceof HTMLButtonElement) {
         submitBtn.disabled = true;
@@ -582,12 +595,8 @@ const iconMap: Record<string, SvgIconName> = {
             budget: data.budget,
             agent: "portfolio-contact-form",
             attribution: {
-              utm_source: new URLSearchParams(window.location.search).get("utm_source") ?? "",
-              utm_medium: new URLSearchParams(window.location.search).get("utm_medium") ?? "",
-              utm_campaign: new URLSearchParams(window.location.search).get("utm_campaign") ?? "",
-              utm_content: new URLSearchParams(window.location.search).get("utm_content") ?? "",
-              referrer: document.referrer ? new URL(document.referrer).hostname : "direct",
-              landing: window.location.pathname,
+              ...firstTouch,
+              conversion_path: window.location.pathname,
               offer: subject ?? data.interest,
               language: "en",
             },
@@ -596,9 +605,9 @@ const iconMap: Record<string, SvgIconName> = {
         if (!res.ok) throw new Error(`hire endpoint ${res.status}`);
         form.hidden = true;
         if (successEl instanceof HTMLElement) successEl.hidden = false;
-        track("contact_success", { language: "en", offer: subject ?? data.interest });
+        track("contact_success", eventProperties(subject ?? data.interest));
       } catch {
-        track("contact_error", { language: "en", offer: subject ?? data.interest });
+        track("contact_error", eventProperties(subject ?? data.interest));
         setError("The form service didn't answer. Please reach out through LinkedIn or Telegram for now.");
         if (submitBtn instanceof HTMLButtonElement) {
           submitBtn.disabled = false;

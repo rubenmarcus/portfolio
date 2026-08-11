@@ -44,6 +44,11 @@ const formattedDate = post.data.date.toLocaleDateString("pt-BR", {
 });
 
 const postUrl = new URL(`${alternatePaths.pt}/`, Astro.site).href;
+const commercialSubject = post.data.tags.includes("aeo")
+  ? "aeo"
+  : post.data.tags.some((tag) => ["frontend", "react", "nextjs", "svelte", "threejs", "webgl", "design"].includes(tag))
+    ? "ai-native-frontend"
+    : "ai-product-systems";
 
 // View counter only mounts when the Supabase public env vars are configured;
 // the component also self-guards and renders nothing without them.
@@ -178,7 +183,13 @@ const blogPostingLd = {
 
       <div class="post-foot">
         <a href="/pt/blog" class="btn btn-secondary" data-magnetic>← Todos os posts</a>
-        <a href="/pt/contact" class="btn btn-ghost" data-magnetic>Falar sobre este post →</a>
+        <a
+          href={`/pt/contact?subject=${commercialSubject}`}
+          class="btn btn-ghost"
+          data-magnetic
+          data-track="contact_view"
+          data-track-location={`blog:${post.id}`}
+        >Discutir um projeto relacionado →</a>
       </div>
     </Section>
   </article>

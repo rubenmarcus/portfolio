@@ -1,6 +1,6 @@
 ---
 title: "Como AEO pode fazer seu negócio crescer"
-description: "AEO é o encanamento que permite ao ChatGPT, Perplexity e afins lerem e citarem seu negócio. Construí um scanner gratuito que já verificou 4.569 sites; as mesmas 3 falhas aparecem em todo lugar. Aqui está o que llms.txt, structured data e ai-index.json realmente movem, com um antes e depois concreto."
+description: "AEO permite ao ChatGPT, Perplexity e afins lerem e citarem seu negócio. Meu scanner gratuito já rodou 4.569 scans em 2.259 sites únicos; as mesmas falhas aparecem em todo lugar."
 date: 2026-07-27
 readTime: "11 min"
 tags: ["aeo", "seo", "llm", "web"]

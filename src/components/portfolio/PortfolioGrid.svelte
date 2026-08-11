@@ -256,9 +256,21 @@
     {/if}
     {#if p.caseStudy}
       <span class="pg__actions">
-        <a class="pg__case" href={p.caseStudy}>{copy.caseStudy} →</a>
+        <a
+          class="pg__case"
+          href={p.caseStudy}
+          data-track="case_view"
+          data-track-location={`portfolio:${p.slug}`}
+        >{copy.caseStudy} →</a>
         {#if p.url}
-          <a class="pg__cta" href={p.url} target="_blank" rel="noopener noreferrer">
+          <a
+            class="pg__cta"
+            href={p.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-track="case_external"
+            data-track-location={`portfolio:${p.slug}`}
+          >
             {copy.visit} <span class="pg__arrow" aria-hidden="true">↗</span>
           </a>
         {/if}
@@ -344,6 +356,8 @@
               href={p.url}
               target="_blank"
               rel="noopener noreferrer"
+              data-track="case_external"
+              data-track-location={`portfolio:${p.slug}`}
               onpointermove={spotlight}
             >
               {@render cardInner(p)}
