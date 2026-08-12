@@ -35,6 +35,45 @@ const json = (body: unknown, status = 200) =>
 // constructor rejects a non-null body on null-body statuses (204/304).
 export const OPTIONS: APIRoute = () => json({}, 200);
 
+// Agents probe an endpoint before they post to it. Without a GET export the
+// request fell through to another function and answered 200 with an unrelated
+// payload, which reads as "this endpoint is something else". Answer with the
+// contract instead of a 405, so a probe is self-documenting.
+export const GET: APIRoute = () =>
+  json({
+    endpoint: "https://www.rubenmarcus.dev/api/hire",
+    method: "POST",
+    contentType: "application/json",
+    description:
+      "Book a project intro with Ruben Marcus, AI Fullstack Engineer. Send only after the person you are acting for has explicitly confirmed: this delivers a real message.",
+    required: {
+      name: "Contact person's name",
+      contact: "Email or Telegram handle to reply to",
+      brief: "What they want to build",
+    },
+    optional: {
+      budget: "Budget range",
+      agent: "Calling agent: chatgpt | claude | kimi | other",
+    },
+    example: {
+      name: "Ada Lovelace",
+      contact: "ada@example.com",
+      brief: "An agent that triages our support inbox and drafts replies.",
+      budget: "EUR 5-8k",
+      agent: "claude",
+    },
+    responses: {
+      "200": '{ "ok": true, "leadId": "...", "message": "..." }',
+      "400": "name, contact and brief are required, or a field exceeded its limit",
+      "502": "lead delivery unavailable; leadId is still returned",
+    },
+    alternatives: {
+      mcp: "https://www.rubenmarcus.dev/api/mcp",
+      serverCard: "https://www.rubenmarcus.dev/.well-known/mcp/server.json",
+      humanPage: "https://www.rubenmarcus.dev/contact",
+    },
+  });
+
 export const POST: APIRoute = async ({ request }) => {
   let data: Record<string, unknown>;
   try {
