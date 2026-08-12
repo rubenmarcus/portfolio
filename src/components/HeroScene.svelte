@@ -79,7 +79,7 @@
       {copy.hello} <span class="hero__introName">Ruben Marcus</span>
     </p>
 
-    <h1 class="hero__title">{copy.title}</h1>
+    <h1 class="hero__title" class:hero__title--pt={pt}>{copy.title}</h1>
     <p class="hero__rotating" aria-hidden="true">
       <span>{copy.rotatingLead}</span>
       <RotatingVerb words={verbs} interval={7000} morphMs={1800} class="hero__verb" />
@@ -257,6 +257,16 @@
     color: var(--text);
     display: block;
     text-wrap: balance;
+  }
+
+  /* The PT headline is a longer string with a wider longest token
+     ("Engenheiro", 10 chars) than the EN one. At the shared lede measure it
+     wraps to 4 lines where EN wraps to 3, and because .hero__lede is anchored
+     to the bottom, that extra line pushes the whole block upward and breaks
+     the composition. Scaling PT down ~9% puts it back on 3 lines, so both
+     locales occupy the same box. Keep the two in step if either string changes. */
+  .hero__title--pt {
+    font-size: clamp(2.36rem, 4.45vw, 4rem);
   }
 
   /* Green glow lives on the rotating verb */
