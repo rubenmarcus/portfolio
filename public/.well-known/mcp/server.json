@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.rubenmarcus/portfolio",
+  "title": "Ruben Marcus — Agent-Ready Portfolio",
+  "description": "Public portfolio MCP for resume, services, availability, project evidence, and introductions.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/rubenmarcus/portfolio",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://www.rubenmarcus.dev/api/mcp"
+    }
+  ]
+}

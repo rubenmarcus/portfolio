@@ -18,14 +18,14 @@ export const aiTools: AITool[] = [
     name: "Ralph Starter",
     tagline: "Specs drive code. AI handles the rest.",
     description:
-      "An open-source AI coding orchestration platform. Multi-agent swarm mode runs race, consensus, or pipeline strategies over isolated git worktrees; an MCP server exposes the whole loop to any MCP client; and a Figma→code visual validation pipeline closes the design loop. 100+ daily npm downloads.",
+      "An open-source AI coding orchestration platform. Multi-agent swarm mode runs race, consensus, or pipeline strategies over isolated git worktrees; an MCP server exposes the whole loop to any MCP client; and a Figma→code visual validation pipeline closes the design loop.",
     features: [
       "Multi-agent swarms: race · consensus · pipeline over isolated git worktrees",
       "MCP server: the full orchestration loop exposed to any MCP client",
       "Figma→code visual validation pipeline",
       "5 spec sources: OpenSpec · Figma · GitHub · Linear · Notion",
       "Auto-runs tests, lint, build, captures errors shift-left",
-      "100+ daily npm downloads",
+      "190+ npm downloads a month",
     ],
     url: "https://ralphstarter.ai",
     repo: "https://github.com/rubenmarcus/ralph-starter",
@@ -59,14 +59,14 @@ export const aiTools: AITool[] = [
     name: "AEO.js",
     tagline: "Answer Engine Optimization for the modern web.",
     description:
-      "An open-source Answer Engine Optimization framework. Analyses your robots policy for AI crawlers and generates LLM-ready site exports (llms.txt, ai-index.json) so ChatGPT, Claude, Perplexity, and any LLM can discover and cite your site. Free, no signup, 100+ daily npm downloads.",
+      "An open-source Answer Engine Optimization framework. Analyses your robots policy for AI crawlers and generates LLM-ready site exports (llms.txt, ai-index.json) so ChatGPT, Claude, Perplexity, and any LLM can discover and cite your site. Free, no signup.",
     features: [
       "AI-crawler robots policy analysis: who can see what, and why",
       "LLM-ready exports: llms.txt · ai-index.json · per-page Markdown",
       "First-class plugins: Astro · Next.js · Vite · Nuxt · Angular · Webpack",
       "Standalone CLI mode",
       "Human/AI toggle widget, drop-in",
-      "100+ daily npm downloads",
+      "1,300+ npm downloads a month",
     ],
     url: "https://aeojs.org",
     repo: "https://github.com/rubenmarcus/aeo.js",

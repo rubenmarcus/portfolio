@@ -33,7 +33,7 @@ export const RESUME = {
       location: "Remote",
       highlights: [
         "Core frontend engineer for Quantum, a post-quantum secure L1: main web app + developer-facing interfaces",
-        "Built Ralph Starter from scratch: AI coding orchestrator with Figma / GitHub / Linear / Notion integrations (100+ daily npm downloads)",
+        "Built Ralph Starter from scratch: AI coding orchestrator with Figma / GitHub / Linear / Notion integrations (190+ npm downloads a month)",
         "Created AEO.js: Answer Engine Optimization for JS, makes sites discoverable by ChatGPT, Claude, Perplexity",
         "Built Autoresearcher, a benchmark-driven autonomous research loop CLI, and a SUI AI Agent for DeFi",
       ],

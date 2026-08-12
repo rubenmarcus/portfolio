@@ -26,7 +26,7 @@ export const projects: Project[] = [
     period: "Jan 2026 — Present",
     year: 2026,
     description:
-      "Open-source AI coding orchestration platform. Multi-agent swarm mode (race / consensus / pipeline over isolated git worktrees), an MCP server, and a Figma→code visual validation pipeline. 100+ daily npm downloads.",
+      "Open-source AI coding orchestration platform. Multi-agent swarm mode (race / consensus / pipeline over isolated git worktrees), an MCP server, and a Figma→code visual validation pipeline. 190+ npm downloads a month.",
     url: "https://ralphstarter.ai",
     stack: ["TypeScript", "Node", "MCP", "LLM"],
     group: "ai",
@@ -54,7 +54,7 @@ export const projects: Project[] = [
     period: "Feb 2026 — Present",
     year: 2026,
     description:
-      "Open-source Answer Engine Optimization framework. AI-crawler robots policy analysis and LLM-ready site exports (llms.txt, ai-index.json). 100+ daily npm downloads.",
+      "Open-source Answer Engine Optimization framework. AI-crawler robots policy analysis and LLM-ready site exports (llms.txt, ai-index.json). 1,300+ npm downloads a month.",
     url: "https://aeojs.org",
     stack: ["TypeScript", "Astro plugin", "Next plugin"],
     group: "ai",
