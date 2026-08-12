@@ -45,6 +45,12 @@ const {
 
 const canonicalURL = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
 
+// The positioning belongs on every page, not just the home page, and applying it
+// here means a new page cannot forget it or word it differently. Pages that
+// already carry the phrase are left alone so it is never doubled.
+const MOTTO = "Agent-Ready Portfolio";
+const pageTitle = title.includes(MOTTO) ? title : `${title} · ${MOTTO}`;
+
 // og:locale — only en_US / pt_BR exist on this site.
 const ogLocale = lang.startsWith("pt") ? "pt_BR" : "en_US";
 const ogLocaleAlternate = lang.startsWith("pt") ? "en_US" : "pt_BR";
@@ -68,7 +74,7 @@ const ptPath = pagePath(alternatePaths?.pt ?? (isPt ? pathname : `/pt${pathname 
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
+    <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0c0d10" />
     <meta name="author" content="Ruben Marcus" />
@@ -86,7 +92,7 @@ const ptPath = pagePath(alternatePaths?.pt ?? (isPt ? pathname : `/pt${pathname 
 
     <meta property="og:type" content={type} />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(image, Astro.site)} />
     <meta property="og:image:width" content="1200" />
@@ -102,7 +108,7 @@ const ptPath = pagePath(alternatePaths?.pt ?? (isPt ? pathname : `/pt${pathname 
     )}
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
+    <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:creator" content="@rubenmarcus_dev" />
     <meta name="twitter:image" content={new URL(image, Astro.site)} />
@@ -182,7 +188,7 @@ const ptPath = pagePath(alternatePaths?.pt ?? (isPt ? pathname : `/pt${pathname 
             "@type": "WebPage",
             "@id": `${canonicalURL}#webpage`,
             url: canonicalURL,
-            name: title,
+            name: pageTitle,
             description,
             isPartOf: { "@id": "https://www.rubenmarcus.dev/#website" },
             about: { "@id": "https://www.rubenmarcus.dev/#person" },

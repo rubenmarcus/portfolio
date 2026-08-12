@@ -9,41 +9,44 @@ import type { SvgIconName } from "../../lib/assets";
 
 const MCP_URL = "https://www.rubenmarcus.dev/api/mcp";
 
-const clients: { name: string; icon: SvgIconName; steps: string[] }[] = [
+// Uma etapa é texto, opcionalmente seguido do endpoint como bloco copiável.
+// Interpolar a URL na frase criava um token longo e inquebrável que estourava
+// a lateral do card em colunas estreitas.
+type Step = { text: string; url?: boolean };
+
+const clients: { name: string; icon: SvgIconName; steps: Step[] }[] = [
   {
     name: "Claude",
     icon: "claude",
     steps: [
-      "Abra as configurações do Claude → Connectors → Add custom connector.",
-      `Dê o nome rubenmarcus e cole a URL: ${MCP_URL}`,
-      "Conecte. Depois pergunte: o que o Ruben já publicou?",
+      { text: "Abra as configurações do Claude → Connectors → Add custom connector." },
+      { text: "Dê o nome rubenmarcus e cole a URL:", url: true },
+      { text: "Conecte. Depois pergunte: o que o Ruben já publicou?" },
     ],
   },
   {
     name: "ChatGPT",
     icon: "openai",
     steps: [
-      "Settings → Apps & Connectors → developer mode → Create.",
-      `Cole a URL: ${MCP_URL} e salve.`,
-      "Peça ao ChatGPT pra chamar get_resume ou book_intro.",
+      { text: "Settings → Apps & Connectors → developer mode → Create." },
+      { text: "Cole a URL e salve:", url: true },
+      { text: "Peça ao ChatGPT pra chamar get_resume ou book_intro." },
     ],
   },
   {
     name: "Kimi",
     icon: "kimi",
     steps: [
-      "Adicione um servidor MCP streamable-HTTP (ou cole a URL nas configurações de MCP do Kimi).",
-      `URL: ${MCP_URL}`,
-      "Rode tools/list pra ver as quatro tools.",
+      { text: "Adicione um servidor MCP streamable-HTTP, ou cole a URL nas configurações de MCP do Kimi:", url: true },
+      { text: "Rode tools/list pra ver as quatro tools." },
     ],
   },
   {
     name: "Cursor / qualquer client MCP",
     icon: "cursor",
     steps: [
-      "Adicione um servidor MCP streamable-HTTP.",
-      `URL: ${MCP_URL}`,
-      "Rode tools/list pra ver as quatro tools.",
+      { text: "Adicione um servidor MCP streamable-HTTP:", url: true },
+      { text: "Rode tools/list pra ver as quatro tools." },
     ],
   },
 ];
@@ -88,7 +91,17 @@ const tools = [
           </div>
           <h2 class="client-card__name">{c.name}</h2>
           <ol class="client-card__steps">
-            {c.steps.map((s) => <li>{s}</li>)}
+            {c.steps.map((s) => (
+              <li>
+                {s.text}
+                {s.url && (
+                  <span class="step-url">
+                    <code class="step-url__code">{MCP_URL}</code>
+                    <button class="step-url__copy" data-copy={MCP_URL} aria-label={`Copiar o endpoint MCP para ${c.name}`}>copiar</button>
+                  </span>
+                )}
+              </li>
+            ))}
           </ol>
         </div>
       ))}
@@ -222,6 +235,47 @@ const tools = [
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+  }
+
+  /* O endpoint é um token longo e inquebrável. Recebe a própria linha dentro da
+     etapa, pode quebrar em qualquer ponto, e o botão de copiar não é espremido. */
+  .step-url {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid rgba(0, 255, 65, 0.18);
+    border-radius: var(--radius-sm, 6px);
+    background: rgba(0, 12, 5, 0.5);
+  }
+  .step-url__code {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.35;
+    color: var(--accent);
+    overflow-wrap: anywhere;
+    word-break: break-all;
+    min-width: 0;
+    flex: 1;
+  }
+  .step-url__copy {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    background: none;
+    border: 1px solid rgba(0, 255, 65, 0.25);
+    border-radius: var(--radius-pill, 999px);
+    padding: 0.2rem 0.5rem;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .step-url__copy:hover {
+    color: var(--accent);
+    border-color: rgba(0, 255, 65, 0.55);
   }
 
   .tools-list {

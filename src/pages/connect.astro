@@ -9,41 +9,44 @@ import type { SvgIconName } from "../lib/assets";
 
 const MCP_URL = "https://www.rubenmarcus.dev/api/mcp";
 
-const clients: { name: string; icon: SvgIconName; steps: string[] }[] = [
+// A step is prose, optionally followed by the endpoint rendered as a copyable
+// code block. Interpolating the URL into the sentence made it one long
+// unbreakable token that overflowed the card on narrow columns.
+type Step = { text: string; url?: boolean };
+
+const clients: { name: string; icon: SvgIconName; steps: Step[] }[] = [
   {
     name: "Claude",
     icon: "claude",
     steps: [
-      "Open Claude settings → Connectors → Add custom connector.",
-      `Name it rubenmarcus and paste the URL: ${MCP_URL}`,
-      "Connect. Then ask: what has Ruben shipped?",
+      { text: "Open Claude settings → Connectors → Add custom connector." },
+      { text: "Name it rubenmarcus and paste the URL:", url: true },
+      { text: "Connect. Then ask: what has Ruben shipped?" },
     ],
   },
   {
     name: "ChatGPT",
     icon: "openai",
     steps: [
-      "Settings → Apps & Connectors → developer mode → Create.",
-      `Paste the URL: ${MCP_URL} and save.`,
-      "Ask ChatGPT to call get_resume or book_intro.",
+      { text: "Settings → Apps & Connectors → developer mode → Create." },
+      { text: "Paste the URL and save:", url: true },
+      { text: "Ask ChatGPT to call get_resume or book_intro." },
     ],
   },
   {
     name: "Kimi",
     icon: "kimi",
     steps: [
-      "Add a streamable-HTTP MCP server (or paste the URL in Kimi's MCP settings).",
-      `URL: ${MCP_URL}`,
-      "Run tools/list to see the four tools.",
+      { text: "Add a streamable-HTTP MCP server, or paste the URL in Kimi's MCP settings:", url: true },
+      { text: "Run tools/list to see the four tools." },
     ],
   },
   {
     name: "Cursor / any MCP client",
     icon: "cursor",
     steps: [
-      "Add a streamable-HTTP MCP server.",
-      `URL: ${MCP_URL}`,
-      "Run tools/list to see the four tools.",
+      { text: "Add a streamable-HTTP MCP server:", url: true },
+      { text: "Run tools/list to see the four tools." },
     ],
   },
 ];
@@ -95,7 +98,17 @@ const prompts = [
           </div>
           <h2 class="client-card__name">{c.name}</h2>
           <ol class="client-card__steps">
-            {c.steps.map((s) => <li>{s}</li>)}
+            {c.steps.map((s) => (
+              <li>
+                {s.text}
+                {s.url && (
+                  <span class="step-url">
+                    <code class="step-url__code">{MCP_URL}</code>
+                    <button class="step-url__copy" data-copy={MCP_URL} aria-label={`Copy the MCP endpoint for ${c.name}`}>copy</button>
+                  </span>
+                )}
+              </li>
+            ))}
           </ol>
         </div>
       ))}
@@ -241,6 +254,47 @@ const prompts = [
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+  }
+
+  /* The endpoint is one long unbreakable token. Give it its own row inside the
+     step, let it break anywhere, and keep the copy button from being squeezed. */
+  .step-url {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid rgba(0, 255, 65, 0.18);
+    border-radius: var(--radius-sm, 6px);
+    background: rgba(0, 12, 5, 0.5);
+  }
+  .step-url__code {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.35;
+    color: var(--accent);
+    overflow-wrap: anywhere;
+    word-break: break-all;
+    min-width: 0;
+    flex: 1;
+  }
+  .step-url__copy {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    background: none;
+    border: 1px solid rgba(0, 255, 65, 0.25);
+    border-radius: var(--radius-pill, 999px);
+    padding: 0.2rem 0.5rem;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .step-url__copy:hover {
+    color: var(--accent);
+    border-color: rgba(0, 255, 65, 0.55);
   }
 
   .tools-list {
