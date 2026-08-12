@@ -65,15 +65,15 @@ Dois arquivos, dois trabalhos diferentes. As pessoas os confundem, e o segundo n
 
 ## Pages
 
-- [Blog](https://rubenmarcus.dev/blog)
-- [About](https://rubenmarcus.dev/about)
+- [Blog](https://www.rubenmarcus.dev/blog)
+- [About](https://www.rubenmarcus.dev/about)
 
 ## Quick Links
 
-- Full Documentation: https://rubenmarcus.dev/llms-full.txt
-- Documentation Manifest: https://rubenmarcus.dev/docs.json
-- AI-Optimized Index: https://rubenmarcus.dev/ai-index.json
-- Sitemap: https://rubenmarcus.dev/sitemap.xml
+- Full Documentation: https://www.rubenmarcus.dev/llms-full.txt
+- Documentation Manifest: https://www.rubenmarcus.dev/docs.json
+- AI-Optimized Index: https://www.rubenmarcus.dev/ai-index.json
+- Sitemap: https://www.rubenmarcus.dev/sitemap.xml
 ```
 
 `ai-index.json` parece a mesma ideia em JSON. Não é. É um retrieval index pré-dividido em chunks. O gerador (`src/core/ai-index.ts`) divide cada página em chunks de `maxChunkLength` caracteres (2.000 por padrão), extrai keywords por frequência de termos, e hasheia cada chunk em um ID estável de 16 caracteres. Um pipeline de RAG consegue embedar seu site sem nunca crawlear:
@@ -84,12 +84,12 @@ Dois arquivos, dois trabalhos diferentes. As pessoas os confundem, e o segundo n
   "generated": "2026-08-12T09:00:00.000Z",
   "site": {
     "title": "Ruben Marcus",
-    "url": "https://rubenmarcus.dev"
+    "url": "https://www.rubenmarcus.dev"
   },
   "entries": [
     {
       "id": "9f2c1ab4e07d55aa",
-      "url": "https://rubenmarcus.dev/blog/shipping-a-browser-fps",
+      "url": "https://www.rubenmarcus.dev/blog/shipping-a-browser-fps",
       "title": "Shipping a browser FPS with no server",
       "content": "...chunk of up to 2,000 characters...",
       "keywords": ["webgpu", "wasm", "browser", "fps"],
@@ -129,7 +129,7 @@ import { defineConfig } from "aeo.js";
 
 export default defineConfig({
   title: "Ruben Marcus",
-  url: "https://rubenmarcus.dev",
+  url: "https://www.rubenmarcus.dev",
   description: "Senior AI fullstack engineer.",
 
   generators: {
@@ -159,11 +159,11 @@ import { defineConfig } from "astro/config";
 import { aeoAstroIntegration } from "aeo.js/astro";
 
 export default defineConfig({
-  site: "https://rubenmarcus.dev",
+  site: "https://www.rubenmarcus.dev",
   integrations: [
     aeoAstroIntegration({
       title: "Ruben Marcus",
-      url: "https://rubenmarcus.dev",
+      url: "https://www.rubenmarcus.dev",
       description: "Senior AI fullstack engineer.",
     }),
   ],

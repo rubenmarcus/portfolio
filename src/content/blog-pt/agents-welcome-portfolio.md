@@ -16,7 +16,7 @@ A maioria dos portfólios é construída para humanos e acidentalmente legível 
 O site fala MCP. Um endpoint, quatro tools:
 
 ```ts
-// POST https://rubenmarcus.dev/api/mcp  (JSON-RPC 2.0)
+// POST https://www.rubenmarcus.dev/api/mcp  (JSON-RPC 2.0)
 const tools = [
   "get_resume",          // quem eu sou, proof points, links
   "get_services",        // as seis ofertas de escopo fixo
@@ -60,7 +60,7 @@ O middleware checa o UA e reescreve para `/api/resume.txt`. Browsers pegam o sit
 Nem todo agent quer configurar um connector. Então há um endpoint plain também:
 
 ```bash
-curl -X POST https://rubenmarcus.dev/api/hire \
+curl -X POST https://www.rubenmarcus.dev/api/hire \
   -H 'content-type: application/json' \
   -d '{"name":"Ada","contact":"ada@corp.com","brief":"AEO sprint for our docs site","agent":"chatgpt"}'
 ```

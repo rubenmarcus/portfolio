@@ -81,7 +81,7 @@ const isAttribution = (value: unknown): value is FirstTouchAttribution => {
 };
 
 export const getFirstTouchAttribution = (): FirstTouchAttribution => {
-  const fallback = buildFirstTouchAttribution(new URL("https://rubenmarcus.dev/"));
+  const fallback = buildFirstTouchAttribution(new URL("https://www.rubenmarcus.dev/"));
   if (typeof window === "undefined") return fallback;
 
   try {

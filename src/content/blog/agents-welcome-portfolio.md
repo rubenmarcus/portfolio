@@ -16,7 +16,7 @@ Point your agent at it. Claude, ChatGPT, Kimi, Cursor, your own harness. It can 
 The site speaks MCP. One endpoint, four tools:
 
 ```ts
-// POST https://rubenmarcus.dev/api/mcp  (JSON-RPC 2.0)
+// POST https://www.rubenmarcus.dev/api/mcp  (JSON-RPC 2.0)
 const tools = [
   "get_resume",          // who I am, proof points, links
   "get_services",        // the six fixed-scope offers
@@ -34,7 +34,7 @@ The server is a hand-rolled JSON-RPC handler. No SDK, no framework, about 150 li
 Not everyone wants to configure a connector. So there is a plain endpoint too:
 
 ```bash
-curl -X POST https://rubenmarcus.dev/api/hire \
+curl -X POST https://www.rubenmarcus.dev/api/hire \
   -H 'content-type: application/json' \
   -d '{"name":"Ada","contact":"ada@corp.com","brief":"AEO sprint for our docs site","agent":"chatgpt"}'
 ```

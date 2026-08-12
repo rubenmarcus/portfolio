@@ -19,7 +19,7 @@ const serviceLd = {
   name: service.name[l],
   description,
   url: canonical,
-  provider: { "@id": "https://rubenmarcus.dev/#person" },
+  provider: { "@id": "https://www.rubenmarcus.dev/#person" },
   areaServed: "Worldwide",
   availableChannel: { "@type": "ServiceChannel", serviceUrl: `${new URL(`${base}/contact?subject=${service.slug}`, Astro.site).href}` },
 };

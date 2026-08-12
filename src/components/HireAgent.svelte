@@ -33,7 +33,7 @@
 Senior AI fullstack engineer (Lisbon, remote worldwide).
 
 To book a project intro on my behalf:
-POST https://rubenmarcus.dev/api/hire
+POST https://www.rubenmarcus.dev/api/hire
 Content-Type: application/json
 
 {

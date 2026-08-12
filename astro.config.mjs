@@ -26,7 +26,7 @@ const cleanLegacyAeoMarkdown = {
 };
 
 export default defineConfig({
-  site: "https://rubenmarcus.dev",
+  site: "https://www.rubenmarcus.dev",
   redirects: PT_BLOG_REDIRECTS,
   // Pages stay static/prerendered; only /api/hire runs as a function.
   adapter: vercel({
@@ -52,7 +52,7 @@ export default defineConfig({
       title: "Ruben Marcus — AI Fullstack Engineer",
       description:
         "AI Fullstack Engineer building AI products, agent systems, AEO infrastructure, and high-performance web experiences. Based in Lisbon.",
-      url: "https://rubenmarcus.dev",
+      url: "https://www.rubenmarcus.dev",
       trailingSlash: "never",
       // Keep generated development artifacts outside public/. Writing raw
       // markdown back into a watched source directory caused a regeneration
@@ -84,8 +84,8 @@ export default defineConfig({
         enabled: true,
         organization: {
           name: "Ruben Marcus",
-          url: "https://rubenmarcus.dev",
-          logo: "https://rubenmarcus.dev/favicon.png",
+          url: "https://www.rubenmarcus.dev",
+          logo: "https://www.rubenmarcus.dev/favicon.png",
           sameAs: [
             "https://github.com/rubenmarcus",
             "https://x.com/rubenmarcus_dev",
@@ -97,7 +97,7 @@ export default defineConfig({
       },
       og: {
         enabled: true,
-        image: "https://rubenmarcus.dev/og/index.png",
+        image: "https://www.rubenmarcus.dev/og/index.png",
         twitterHandle: "@rubenmarcus_dev",
       },
       widget: {

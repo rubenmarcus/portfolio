@@ -3,7 +3,7 @@ import type { APIRoute } from "astro";
 import { getBlogPaths } from "../lib/blog-routes";
 
 export const prerender = true;
-const ORIGIN = "https://rubenmarcus.dev";
+const ORIGIN = "https://www.rubenmarcus.dev";
 
 export const GET: APIRoute = async () => {
   const [english, portuguese] = await Promise.all([
@@ -29,8 +29,8 @@ export const GET: APIRoute = async () => {
     "# Ruben Marcus — full article corpus",
     "",
     "> Canonical bilingual technical writing by Ruben Marcus, AI Fullstack Engineer.",
-    "> Site index: https://rubenmarcus.dev/llms.txt",
-    "> Structured index: https://rubenmarcus.dev/ai-index.json",
+    "> Site index: https://www.rubenmarcus.dev/llms.txt",
+    "> Structured index: https://www.rubenmarcus.dev/ai-index.json",
     "",
     articles,
     "",

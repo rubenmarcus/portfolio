@@ -13,4 +13,4 @@ Allow: /
 # Search and answer-engine use is welcome; model training is not licensed.
 Content-Signal: ai-train=no, search=yes, ai-input=yes
 
-Sitemap: https://rubenmarcus.dev/sitemap-index.xml
+Sitemap: https://www.rubenmarcus.dev/sitemap-index.xml

@@ -28,8 +28,8 @@ export const GET: APIRoute = () =>
         contact: {
           github: RESUME.links.github,
           linkedin: RESUME.links.linkedin,
-          hire_api: "https://rubenmarcus.dev/api/hire",
-          mcp: "https://rubenmarcus.dev/api/mcp",
+          hire_api: "https://www.rubenmarcus.dev/api/hire",
+          mcp: "https://www.rubenmarcus.dev/api/mcp",
         },
       },
       null,

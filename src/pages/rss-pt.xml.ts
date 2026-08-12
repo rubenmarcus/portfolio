@@ -12,7 +12,7 @@ export async function GET(context: APIContext) {
     title: "Ruben Marcus — Blog (PT-BR)",
     description:
       "Artigos técnicos sobre agentes de IA, benchmarks, WebGL e a stack por trás de rubenmarcus.dev.",
-    site: context.site ?? "https://rubenmarcus.dev",
+    site: context.site ?? "https://www.rubenmarcus.dev",
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,

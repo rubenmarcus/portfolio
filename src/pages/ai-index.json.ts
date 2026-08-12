@@ -4,7 +4,7 @@ import { getBlogPaths } from "../lib/blog-routes";
 
 export const prerender = true;
 
-const ORIGIN = "https://rubenmarcus.dev";
+const ORIGIN = "https://www.rubenmarcus.dev";
 
 export const GET: APIRoute = async () => {
   const [english, portuguese] = await Promise.all([

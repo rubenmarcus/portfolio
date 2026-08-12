@@ -15,7 +15,7 @@ const aiIndex = read("ai-index.json");
 const docs = read("docs.json");
 const llmsFull = read("llms-full.txt");
 
-assert(robots.includes("Sitemap: https://rubenmarcus.dev/sitemap-index.xml"), "robots.txt must point to sitemap-index.xml");
+assert(robots.includes("Sitemap: https://www.rubenmarcus.dev/sitemap-index.xml"), "robots.txt must point to sitemap-index.xml");
 assert(!sitemap.includes("-preview"), "preview routes leaked into the sitemap");
 assert(!sitemap.includes("/blog-pt/"), "internal blog-pt paths leaked into the sitemap");
 assert(!aiIndex.includes("/blog-pt/"), "internal blog-pt paths leaked into ai-index.json");
@@ -31,11 +31,11 @@ for (const path of [
   "/pt/services/aeo/",
   "/work/aeo-platform/",
   "/pt/work/aeo-platform/",
-]) assert(sitemap.includes(`https://rubenmarcus.dev${path}`), `missing canonical route in sitemap: ${path}`);
+]) assert(sitemap.includes(`https://www.rubenmarcus.dev${path}`), `missing canonical route in sitemap: ${path}`);
 
 const ptArticle = read("pt/blog/do-prompt-ao-produto-cinco-formas-de-desenvolver-com-ia/index.html");
-assert(ptArticle.includes('hreflang="en" href="https://rubenmarcus.dev/blog/from-prompt-to-product-five-ways-to-build-with-ai/"'), "localized article is missing its canonical English hreflang");
-assert(ptArticle.includes('rel="canonical" href="https://rubenmarcus.dev/pt/blog/do-prompt-ao-produto-cinco-formas-de-desenvolver-com-ia/"'), "localized article canonical is wrong");
+assert(ptArticle.includes('hreflang="en" href="https://www.rubenmarcus.dev/blog/from-prompt-to-product-five-ways-to-build-with-ai/"'), "localized article is missing its canonical English hreflang");
+assert(ptArticle.includes('rel="canonical" href="https://www.rubenmarcus.dev/pt/blog/do-prompt-ao-produto-cinco-formas-de-desenvolver-com-ia/"'), "localized article canonical is wrong");
 
 for (const [, href] of sitemap.matchAll(/<loc>(.*?)<\/loc>/g)) {
   const pathname = new URL(href).pathname;

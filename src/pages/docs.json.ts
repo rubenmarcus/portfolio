@@ -6,7 +6,7 @@ import { outcomeCaseStudies } from "../lib/data/case-studies";
 import { agentSkills } from "../lib/data/agent-skills";
 
 export const prerender = true;
-const ORIGIN = "https://rubenmarcus.dev";
+const ORIGIN = "https://www.rubenmarcus.dev";
 const absolute = (path: string) => new URL(path, ORIGIN).href;
 
 export const GET: APIRoute = async () => {

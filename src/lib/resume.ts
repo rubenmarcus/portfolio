@@ -113,15 +113,15 @@ export const RESUME = {
     "cs-brasil": "https://csbrasil.online",
   },
   links: {
-    site: "https://rubenmarcus.dev",
-    cv: "https://rubenmarcus.dev/cv.pdf",
+    site: "https://www.rubenmarcus.dev",
+    cv: "https://www.rubenmarcus.dev/cv.pdf",
     github: "https://github.com/rubenmarcus",
     linkedin: "https://linkedin.com/in/rubenmarcus",
   },
 };
 
 export const SERVICES = serviceOffers.map(
-  (service) => `${service.name.en} — ${service.summary.en} (${service.duration.en}) · https://rubenmarcus.dev/services/${service.slug}`,
+  (service) => `${service.name.en} — ${service.summary.en} (${service.duration.en}) · https://www.rubenmarcus.dev/services/${service.slug}`,
 );
 
 export const AVAILABILITY =

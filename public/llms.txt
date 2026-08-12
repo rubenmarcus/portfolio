@@ -9,35 +9,35 @@
 
 ## Main sections
 
-- [Index](https://rubenmarcus.dev/): Hero, services (hire me for), proof-in-numbers stats, open-source tools, selected work.
-- [Portfolio](https://rubenmarcus.dev/portfolio): Filterable 14-year project archive. Filter by era/company and technology.
-- [AI](https://rubenmarcus.dev/ai): AI expertise (agent orchestration, evaluation design, AEO, production LLM features) and the open-source tools that prove it.
-- [Agent Skills](https://rubenmarcus.dev/skills): Versioned operating methods created for verifiable frontend, writing, debugging, games, and agent systems.
-- [Agents](https://rubenmarcus.dev/agents): The autonomous agent fleet behind this site and client work — roles, orchestration model, and what each agent ships.
-- [MCP / Connect](https://rubenmarcus.dev/connect): Connect this portfolio to an AI client so an agent can inspect evidence, check availability, and book an intro.
-- [Blog](https://rubenmarcus.dev/blog): Technical articles on agents, benchmarks, WebGL, and the stack.
-- [About](https://rubenmarcus.dev/about): Bio, timeline, contact details.
-- [Contact](https://rubenmarcus.dev/contact): Project inquiries for AI products, agent systems, AI-native frontend, and AEO.
+- [Index](https://www.rubenmarcus.dev/): Hero, services (hire me for), proof-in-numbers stats, open-source tools, selected work.
+- [Portfolio](https://www.rubenmarcus.dev/portfolio): Filterable 14-year project archive. Filter by era/company and technology.
+- [AI](https://www.rubenmarcus.dev/ai): AI expertise (agent orchestration, evaluation design, AEO, production LLM features) and the open-source tools that prove it.
+- [Agent Skills](https://www.rubenmarcus.dev/skills): Versioned operating methods created for verifiable frontend, writing, debugging, games, and agent systems.
+- [Agents](https://www.rubenmarcus.dev/agents): The autonomous agent fleet behind this site and client work — roles, orchestration model, and what each agent ships.
+- [MCP / Connect](https://www.rubenmarcus.dev/connect): Connect this portfolio to an AI client so an agent can inspect evidence, check availability, and book an intro.
+- [Blog](https://www.rubenmarcus.dev/blog): Technical articles on agents, benchmarks, WebGL, and the stack.
+- [About](https://www.rubenmarcus.dev/about): Bio, timeline, contact details.
+- [Contact](https://www.rubenmarcus.dev/contact): Project inquiries for AI products, agent systems, AI-native frontend, and AEO.
 
 ## Services
 
-- [AI products & agent systems](https://rubenmarcus.dev/services/ai-product-systems): Architecture, working product slices, model routing, evals, observability, and cost controls.
-- [AI-native frontend & design engineering](https://rubenmarcus.dev/services/ai-native-frontend): Responsive production interfaces, interactive experiences, performance, and visual regression.
-- [AEO audit & implementation](https://rubenmarcus.dev/services/aeo): Technical SEO/AEO, entities, canonical discovery, structured data, content, and citation surfaces.
+- [AI products & agent systems](https://www.rubenmarcus.dev/services/ai-product-systems): Architecture, working product slices, model routing, evals, observability, and cost controls.
+- [AI-native frontend & design engineering](https://www.rubenmarcus.dev/services/ai-native-frontend): Responsive production interfaces, interactive experiences, performance, and visual regression.
+- [AEO audit & implementation](https://www.rubenmarcus.dev/services/aeo): Technical SEO/AEO, entities, canonical discovery, structured data, content, and citation surfaces.
 
 ## Latest writing
 
-- [This portfolio is agents-welcome. Probably the first.](https://rubenmarcus.dev/blog/agents-welcome-portfolio)
-- [The AI harness behind CS Brasil is a folder of markdown](https://rubenmarcus.dev/blog/cs-brasil-ai-harness)
-- [How AEO can help your business grow](https://rubenmarcus.dev/blog/aeo-what-it-moves)
-- [My agent swarm is a for loop](https://rubenmarcus.dev/blog/dag-agent-orchestration)
-- [Cross-pollinating LLMs: peer review for machines](https://rubenmarcus.dev/blog/llm-cross-pollination)
-- [A command center for agent swarms, in markdown](https://rubenmarcus.dev/blog/agent-command-center)
+- [This portfolio is agents-welcome. Probably the first.](https://www.rubenmarcus.dev/blog/agents-welcome-portfolio)
+- [The AI harness behind CS Brasil is a folder of markdown](https://www.rubenmarcus.dev/blog/cs-brasil-ai-harness)
+- [How AEO can help your business grow](https://www.rubenmarcus.dev/blog/aeo-what-it-moves)
+- [My agent swarm is a for loop](https://www.rubenmarcus.dev/blog/dag-agent-orchestration)
+- [Cross-pollinating LLMs: peer review for machines](https://www.rubenmarcus.dev/blog/llm-cross-pollination)
+- [A command center for agent swarms, in markdown](https://www.rubenmarcus.dev/blog/agent-command-center)
 
 ## RSS feeds
 
-- [English feed](https://rubenmarcus.dev/rss.xml): All English blog posts.
-- [Feed em português](https://rubenmarcus.dev/rss-pt.xml): Posts do blog em PT-BR.
+- [English feed](https://www.rubenmarcus.dev/rss.xml): All English blog posts.
+- [Feed em português](https://www.rubenmarcus.dev/rss-pt.xml): Posts do blog em PT-BR.
 
 ## Products and tools
 
@@ -50,9 +50,9 @@
 
 ## Selected technical case studies
 
-- [Ralph Starter](https://rubenmarcus.dev/work/ralph-starter): Multi-agent delivery harness using isolated worktrees, race, consensus, and pipeline modes.
-- [AEO.js + AEO Checker](https://rubenmarcus.dev/work/aeo-platform): Diagnosis and implementation treated as one verifiable AEO system.
-- [CS Brasil](https://rubenmarcus.dev/work/cs-brasil): Three.js browser FPS built with repository skills, visual QA, regression gates, and product telemetry.
+- [Ralph Starter](https://www.rubenmarcus.dev/work/ralph-starter): Multi-agent delivery harness using isolated worktrees, race, consensus, and pipeline modes.
+- [AEO.js + AEO Checker](https://www.rubenmarcus.dev/work/aeo-platform): Diagnosis and implementation treated as one verifiable AEO system.
+- [CS Brasil](https://www.rubenmarcus.dev/work/cs-brasil): Three.js browser FPS built with repository skills, visual QA, regression gates, and product telemetry.
 
 ## Proof points
 

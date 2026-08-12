@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": "Public machine-readable access to Ruben Marcus's portfolio and MCP server."
   },
-  "servers": [{ "url": "https://rubenmarcus.dev" }],
+  "servers": [{ "url": "https://www.rubenmarcus.dev" }],
   "paths": {
     "/api/mcp": {
       "get": {

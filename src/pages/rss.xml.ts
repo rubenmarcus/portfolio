@@ -11,7 +11,7 @@ export async function GET(context: APIContext) {
     title: "Ruben Marcus — Blog",
     description:
       "Technical articles on AI agents, benchmarks, WebGL, and the stack behind rubenmarcus.dev.",
-    site: context.site ?? "https://rubenmarcus.dev",
+    site: context.site ?? "https://www.rubenmarcus.dev",
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,
