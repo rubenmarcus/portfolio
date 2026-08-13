@@ -11,6 +11,11 @@ import { join } from "node:path";
 // aeo.js versions before this config emitted raw source Markdown into the
 // build directory. Astro's server output can preserve those files between
 // builds, so remove only that obsolete generated extension before discovery.
+//
+// NOTE: /blog/<slug>.md is now a real route (src/pages/blog/[slug].md.ts). This
+// runs at build:start, before those files are written, so it only ever clears
+// the previous build's copies — which the current build then regenerates.
+// Do not move it to build:done, and do not widen it past these directories.
 const cleanLegacyAeoMarkdown = {
   name: "clean-legacy-aeo-markdown",
   hooks: {

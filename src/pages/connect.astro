@@ -5,72 +5,18 @@ import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import HireAgent from "../components/HireAgent.svelte";
 import SvgIcon from "../lib/assets/SvgIcon.svelte";
-import type { SvgIconName } from "../lib/assets";
+import { CONNECT_EN, MCP_URL } from "../lib/data/connect";
 
-const MCP_URL = "https://www.rubenmarcus.dev/api/mcp";
-
-// A step is prose, optionally followed by the endpoint rendered as a copyable
-// code block. Interpolating the URL into the sentence made it one long
-// unbreakable token that overflowed the card on narrow columns.
-type Step = { text: string; url?: boolean };
-
-const clients: { name: string; icon: SvgIconName; steps: Step[] }[] = [
-  {
-    name: "Claude",
-    icon: "claude",
-    steps: [
-      { text: "Open Claude settings → Connectors → Add custom connector." },
-      { text: "Name it rubenmarcus and paste the URL:", url: true },
-      { text: "Connect. Then ask: what has Ruben shipped?" },
-    ],
-  },
-  {
-    name: "ChatGPT",
-    icon: "openai",
-    steps: [
-      { text: "Settings → Apps & Connectors → developer mode → Create." },
-      { text: "Paste the URL and save:", url: true },
-      { text: "Ask ChatGPT to call get_resume or book_intro." },
-    ],
-  },
-  {
-    name: "Kimi",
-    icon: "kimi",
-    steps: [
-      { text: "Add a streamable-HTTP MCP server, or paste the URL in Kimi's MCP settings:", url: true },
-      { text: "Run tools/list to see the four tools." },
-    ],
-  },
-  {
-    name: "Cursor / any MCP client",
-    icon: "cursor",
-    steps: [
-      { text: "Add a streamable-HTTP MCP server:", url: true },
-      { text: "Run tools/list to see the four tools." },
-    ],
-  },
-];
-
-const tools = [
-  { name: "get_resume", desc: "full resume: experience, skills, proof points, links" },
-  { name: "get_services", desc: "the three flagship fixed-scope offers" },
-  { name: "check_availability", desc: "current engagement status" },
-  { name: "book_intro", desc: "posts a project brief to my inbox" },
-];
-
-const prompts = [
-  "What has Ruben shipped?",
-  "Summarize Ruben's experience with AI agents.",
-  "Is Ruben available for freelance work right now?",
-  "What services does Ruben offer?",
-  "Book an intro with Ruben — I want to build a trading bot.",
-];
+// Content lives in src/lib/data/connect.ts so /connect and /connect.md stay
+// in sync — an agent reading the Markdown twin sees the same steps.
+const { clients, tools, prompts = [] } = CONNECT_EN;
 ---
 
 <BaseLayout
-  title="Connect — Ruben Marcus"
-  description="Agent-ready, humans welcome. Add rubenmarcus.dev as an MCP connector in Claude, ChatGPT, Cursor or Kimi so an agent can evaluate experience, check availability, and book an intro."
+  title={CONNECT_EN.title}
+  description={CONNECT_EN.description}
   image="/og/connect.png"
+  markdownPath="/connect.md"
 >
   <DitherBg client:load opacity={0.55} />
 
@@ -78,13 +24,13 @@ const prompts = [
     <SectionHeader
       level={1}
       index="08"
-      overline="Agent-ready · MCP"
-      title="This site speaks MCP."
-      description="Agent-ready, humans welcome. Add this portfolio as a connector and your agent can evaluate my work, check availability, and book a project intro. No account, auth, or signup."
+      overline={CONNECT_EN.overline}
+      title={CONNECT_EN.headline}
+      description={CONNECT_EN.intro}
     />
 
     <div class="url-bar" data-reveal>
-      <span class="url-bar__label">MCP endpoint</span>
+      <span class="url-bar__label">{CONNECT_EN.endpointLabel}</span>
       <code class="url-bar__url" id="mcp-url">{MCP_URL}</code>
       <button class="url-bar__copy" data-copy={MCP_URL}>copy</button>
     </div>
@@ -115,7 +61,7 @@ const prompts = [
     </div>
 
     <div class="tools-block" data-reveal>
-      <span class="bracket" data-reveal-item>The four tools</span>
+      <span class="bracket" data-reveal-item>{CONNECT_EN.toolsHeading}</span>
       <ul class="tools-list">
         {tools.map((t) => (
           <li class="tools-list__row" data-reveal-item>

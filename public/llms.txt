@@ -72,6 +72,15 @@
 - Plain-text resume over curl: https://www.rubenmarcus.dev/api/resume.txt
 - Structured index: https://www.rubenmarcus.dev/ai-index.json
 
+## Markdown source of any page
+
+Append `.md` to fetch the plain Markdown behind a page instead of parsing HTML.
+
+- Every blog post: https://www.rubenmarcus.dev/blog/agents-welcome-portfolio.md (same for every URL under /blog and /pt/blog)
+- MCP setup guide: https://www.rubenmarcus.dev/connect.md
+- Guia MCP em português: https://www.rubenmarcus.dev/pt/connect.md
+- Full corpus in one request: https://www.rubenmarcus.dev/llms-full.txt
+
 ## Contact
 
 - GitHub: https://github.com/rubenmarcus

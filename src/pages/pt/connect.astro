@@ -5,65 +5,19 @@ import Section from "../../components/Section.astro";
 import SectionHeader from "../../components/SectionHeader.astro";
 import HireAgent from "../../components/HireAgent.svelte";
 import SvgIcon from "../../lib/assets/SvgIcon.svelte";
-import type { SvgIconName } from "../../lib/assets";
+import { CONNECT_PT, MCP_URL } from "../../lib/data/connect";
 
-const MCP_URL = "https://www.rubenmarcus.dev/api/mcp";
-
-// Uma etapa é texto, opcionalmente seguido do endpoint como bloco copiável.
-// Interpolar a URL na frase criava um token longo e inquebrável que estourava
-// a lateral do card em colunas estreitas.
-type Step = { text: string; url?: boolean };
-
-const clients: { name: string; icon: SvgIconName; steps: Step[] }[] = [
-  {
-    name: "Claude",
-    icon: "claude",
-    steps: [
-      { text: "Abra as configurações do Claude → Connectors → Add custom connector." },
-      { text: "Dê o nome rubenmarcus e cole a URL:", url: true },
-      { text: "Conecte. Depois pergunte: o que o Ruben já publicou?" },
-    ],
-  },
-  {
-    name: "ChatGPT",
-    icon: "openai",
-    steps: [
-      { text: "Settings → Apps & Connectors → developer mode → Create." },
-      { text: "Cole a URL e salve:", url: true },
-      { text: "Peça ao ChatGPT pra chamar get_resume ou book_intro." },
-    ],
-  },
-  {
-    name: "Kimi",
-    icon: "kimi",
-    steps: [
-      { text: "Adicione um servidor MCP streamable-HTTP, ou cole a URL nas configurações de MCP do Kimi:", url: true },
-      { text: "Rode tools/list pra ver as quatro tools." },
-    ],
-  },
-  {
-    name: "Cursor / qualquer client MCP",
-    icon: "cursor",
-    steps: [
-      { text: "Adicione um servidor MCP streamable-HTTP:", url: true },
-      { text: "Rode tools/list pra ver as quatro tools." },
-    ],
-  },
-];
-
-const tools = [
-  { name: "get_resume", desc: "quem eu sou, pontos de prova, links" },
-  { name: "get_services", desc: "as seis ofertas de escopo fixo" },
-  { name: "check_availability", desc: "status atual de engajamento" },
-  { name: "book_intro", desc: "envia um brief de projeto pro meu inbox" },
-];
+// O conteúdo mora em src/lib/data/connect.ts pra /pt/connect e /pt/connect.md
+// não divergirem — o agent que lê o Markdown vê exatamente os mesmos passos.
+const { clients, tools } = CONNECT_PT;
 ---
 
 <BaseLayout
   lang="pt-br"
-  title="Conectar — Ruben Marcus"
-  description="Agent-ready, humans welcome. Adicione rubenmarcus.dev como conector MCP no Claude, ChatGPT, Cursor ou Kimi para seu agent avaliar experiência, checar disponibilidade e agendar uma conversa."
+  title={CONNECT_PT.title}
+  description={CONNECT_PT.description}
   image="/og/pt-connect.png"
+  markdownPath="/pt/connect.md"
 >
   <DitherBg client:load opacity={0.55} />
 
@@ -71,13 +25,13 @@ const tools = [
     <SectionHeader
       level={1}
       index="08"
-      overline="Agent-ready · MCP"
-      title="Este site fala MCP."
-      description="Agent-ready, humans welcome. Adicione este portfólio como conector e seu agent consegue avaliar meu trabalho, checar disponibilidade e agendar uma conversa. Sem conta, auth ou signup."
+      overline={CONNECT_PT.overline}
+      title={CONNECT_PT.headline}
+      description={CONNECT_PT.intro}
     />
 
     <div class="url-bar" data-reveal>
-      <span class="url-bar__label">Endpoint MCP</span>
+      <span class="url-bar__label">{CONNECT_PT.endpointLabel}</span>
       <code class="url-bar__url" id="mcp-url">{MCP_URL}</code>
       <button class="url-bar__copy" data-copy={MCP_URL}>copiar</button>
     </div>
@@ -108,7 +62,7 @@ const tools = [
     </div>
 
     <div class="tools-block" data-reveal>
-      <span class="bracket" data-reveal-item>As quatro tools</span>
+      <span class="bracket" data-reveal-item>{CONNECT_PT.toolsHeading}</span>
       <ul class="tools-list">
         {tools.map((t) => (
           <li class="tools-list__row" data-reveal-item>

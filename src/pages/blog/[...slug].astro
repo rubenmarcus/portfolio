@@ -88,6 +88,7 @@ const blogPostingLd = {
   modifiedTime={post.data.updated}
   canonicalUrl={post.data.canonical}
   alternatePaths={alternatePaths}
+  markdownPath={`${alternatePaths.en}.md`}
 >
   <script type="application/ld+json" set:html={JSON.stringify(blogPostingLd)} slot="head" />
   <article class="post">

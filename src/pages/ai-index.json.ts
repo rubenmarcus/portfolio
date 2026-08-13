@@ -23,6 +23,7 @@ export const GET: APIRoute = async () => {
       dateModified: (post.data.updated ?? post.data.date).toISOString(),
       keywords: post.data.tags,
       type: "Article",
+      markdown: `${new URL(getBlogPaths(post.id).en, ORIGIN).href}.md`,
     })),
     ...portuguese.map((post) => ({
       id: `pt-BR:${post.id}`,
@@ -34,6 +35,7 @@ export const GET: APIRoute = async () => {
       dateModified: (post.data.updated ?? post.data.date).toISOString(),
       keywords: post.data.tags,
       type: "Article",
+      markdown: `${new URL(getBlogPaths(post.id).pt, ORIGIN).href}.md`,
     })),
   ].sort((a, b) => b.dateModified.localeCompare(a.dateModified));
 
@@ -45,6 +47,12 @@ export const GET: APIRoute = async () => {
       url: ORIGIN,
       description: "AI Fullstack Engineer building web products, agent systems, developer tooling, and AEO infrastructure.",
       languages: ["en", "pt-BR"],
+    },
+    // Every URL below with a `markdown` field also answers at `<url>.md` with
+    // the plain source — no HTML parsing needed.
+    markdown: {
+      convention: "Append .md to a listed URL to fetch its Markdown source.",
+      pages: [`${ORIGIN}/connect.md`, `${ORIGIN}/pt/connect.md`],
     },
     entries,
   }, null, 2), {

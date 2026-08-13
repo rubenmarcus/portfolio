@@ -26,6 +26,8 @@ interface Props {
   canonicalUrl?: string;
   /** Explicit locale pair for routes whose translated slugs differ. */
   alternatePaths?: { en: string; pt: string };
+  /** Path of this page's Markdown twin, when it has one (e.g. /connect.md). */
+  markdownPath?: string;
   /** Visible FAQ entries rendered by the page; used for matching FAQPage JSON-LD. */
   faq?: Array<{ question: string; answer: string }>;
 }
@@ -40,6 +42,7 @@ const {
   modifiedTime,
   canonicalUrl,
   alternatePaths,
+  markdownPath,
   faq = [],
 } = Astro.props;
 
@@ -85,6 +88,9 @@ const ptPath = pagePath(alternatePaths?.pt ?? (isPt ? pathname : `/pt${pathname 
     <link rel="alternate" hreflang="en" href={new URL(enPath, Astro.site)} />
     <link rel="alternate" hreflang="pt-br" href={new URL(ptPath, Astro.site)} />
     <link rel="alternate" hreflang="x-default" href={new URL(enPath, Astro.site)} />
+    {markdownPath && (
+      <link rel="alternate" type="text/markdown" title={`${title} (Markdown)`} href={new URL(markdownPath, Astro.site)} />
+    )}
     <link rel="alternate" type="application/rss+xml" title="Ruben Marcus — Blog" href="/rss.xml" />
     <link rel="alternate" type="application/rss+xml" title="Ruben Marcus — Blog (PT-BR)" href="/rss-pt.xml" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
