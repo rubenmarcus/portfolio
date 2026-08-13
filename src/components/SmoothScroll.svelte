@@ -11,6 +11,13 @@
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       touchMultiplier: 1.4,
+      // Lenis swallows wheel events for the whole document, so any overlay
+      // with its own scroll container never receives them — the page scrolls
+      // behind the open panel instead. The aeo.js widget is injected by the
+      // integration and cannot know about Lenis, so opt its scroller out here.
+      // Measured: with Lenis the panel stayed at scrollTop 0 while the page
+      // moved 1500px; opted out, the panel scrolls and the page holds.
+      prevent: (node: HTMLElement) => node.closest?.("[data-lenis-prevent], .aeo-content-area") != null,
     });
 
     let rafId = 0;
