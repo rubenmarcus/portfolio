@@ -131,6 +131,14 @@ const COVERS = {
     "a particle detective with a magnifier comparing two glowing frames side by side, one dimmed corner circled in light",
   "agent-bug-hunter":
     "a particle hunter measuring a glowing insect-like glitch with a ruler of light, a discarded false-lead sign cracked on the ground nearby",
+  "agent-asset-review":
+    "a newly forged particle helmet prop rotating on a turntable under a hard inspection beam, a stern drone circling it, faint measurement ticks radiating from the surface",
+  "agent-regua":
+    "a long particle measuring rod laid across a dark gap, its graduation marks flaring bright where a small mutant spark strikes it",
+  "agent-content-pipeline":
+    "a particle conveyor carrying a helmet, a city block and a weapon crate, each assembling from loose sparks as it advances along the line",
+  "agent-faction-pipeline":
+    "a particle crest igniting at the center of a ring, small emblem tiles, a banner and a sound waveform sliding into their slots around it",
   "evals-are-the-product":
     "a glowing particle bullseye being measured by two calipers of light, small mutant sparks breaking off a ruler and getting caught by a grid",
   "inside-the-gauntlet-loop":
