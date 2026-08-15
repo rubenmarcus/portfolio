@@ -16,6 +16,19 @@ describe("first-touch attribution", () => {
     expect(normalizeSource("https://www.awwwards.com/sites/rubenmarcus-dev")).toBe("awwwards");
     expect(normalizeSource("https://t.co/example")).toBe("x");
     expect(normalizeSource("https://claude.ai/new")).toBe("claude");
+    expect(normalizeSource("https://www.reddit.com/r/SideProject")).toBe("reddit");
+    expect(normalizeSource("https://br.pinterest.com/pin/123")).toBe("pinterest");
+    expect(normalizeSource("https://land-book.com/websites/123")).toBe("landbook");
+    expect(normalizeSource("https://www.behance.net/gallery/123")).toBe("behance");
+    expect(normalizeSource("https://www.indiehackers.com/post/example")).toBe("indie_hackers");
+  });
+
+  it("uses showcase-directory ref parameters when UTMs are absent", () => {
+    const attribution = buildFirstTouchAttribution(
+      new URL("https://www.rubenmarcus.dev/?ref=land-book.com"),
+    );
+    expect(attribution.source).toBe("landbook");
+    expect(attribution.utm_source).toBe("");
   });
 
   it("prefers an explicit UTM source and preserves the landing campaign", () => {

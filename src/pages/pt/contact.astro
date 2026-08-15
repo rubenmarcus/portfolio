@@ -9,6 +9,7 @@ import SvgIcon from "../../lib/assets/SvgIcon.svelte";
 import HireAgent from "../../components/HireAgent.svelte";
 import type { SvgIconName } from "../../lib/assets";
 import { socialLinks } from "../../lib/navigation";
+import { CALENDLY_URL } from "../../lib/site-facts";
 
 const iconMap: Record<string, SvgIconName> = {
   GitHub: "github",
@@ -93,6 +94,7 @@ const iconMap: Record<string, SvgIconName> = {
 
         <div class="cform__actions">
           <button type="submit" class="btn btn-primary" data-magnetic>Enviar mensagem →</button>
+          <a href={CALENDLY_URL} class="btn btn-secondary" target="_blank" rel="noopener" data-magnetic data-track="calendar_open" data-track-location="contact_form">Agendar 15 min ↗</a>
         </div>
       </form>
 
@@ -100,7 +102,7 @@ const iconMap: Record<string, SvgIconName> = {
         <span class="bracket">Mensagem enviada</span>
         <p class="cform-success__title">Valeu. Respondo em um ou dois dias.</p>
         <p class="cform-success__desc">
-          Prefere outro canal? Fale comigo pelo <a class="link-inline" href="https://linkedin.com/in/rubenmarcus" target="_blank" rel="noopener">LinkedIn</a>.
+          Quer acelerar? <a class="link-inline" href={CALENDLY_URL} target="_blank" rel="noopener" data-track="calendar_open" data-track-location="contact_success">Agende uma conversa de 15 minutos</a>.
         </p>
       </div>
     </div>
@@ -490,12 +492,6 @@ const iconMap: Record<string, SvgIconName> = {
 
     const errorEl = form.querySelector<HTMLElement>(".cform__error");
     const successEl = document.querySelector(".cform-success");
-    let started = false;
-    form.addEventListener("focusin", () => {
-      if (started) return;
-      started = true;
-      track("contact_start", { language: "pt", offer: subject ?? "unspecified" });
-    });
 
     // Pre-select interest from the query string (e.g. /pt/contact?subject=aeo)
     const subject = new URLSearchParams(window.location.search).get("subject");

@@ -6,6 +6,7 @@ import HeroScene from "../components/HeroScene.svelte";
 import HeroStack from "../components/HeroStack.astro";
 import HireMeFor from "../components/HireMeFor.svelte";
 import StatsGrid from "../components/StatsGrid.svelte";
+import ClientProof from "../components/ClientProof.astro";
 import AsciiField from "../components/AsciiField.svelte";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
@@ -15,6 +16,7 @@ import HireAgent from "../components/HireAgent.svelte";
 import Faq from "../components/Faq.astro";
 import { fetchGithubStars, fetchNpmDownloads } from "../lib/stats-live";
 import { NPM_PACKAGES } from "../lib/data/stats";
+import { CALENDLY_URL } from "../lib/site-facts";
 
 // Live stats resolved at build time — visitors get exact numbers without
 // hitting the GitHub/npm rate limits. Null on failure → client-side fetch.
@@ -38,7 +40,7 @@ const faqItems = [
   },
   {
     question: "Is Ruben available for new projects?",
-    answer: "Availability changes over time. Use the availability tool on the public MCP endpoint or contact Ruben directly for the current schedule.",
+    answer: "Ruben is based in Lisbon and works remotely worldwide, with working-hour overlap for EU, UK, and US teams. He is open to full-time roles, contracts, and fixed-scope engagements; contact him to confirm the current schedule.",
   },
   {
     question: "How should a team start a conversation?",
@@ -49,7 +51,7 @@ const faqItems = [
 
 <BaseLayout
   title="Ruben Marcus — AI Fullstack Engineer"
-  description="AI Fullstack Engineer building AI products, agent systems, AEO infrastructure, and high-performance web experiences. Based in Lisbon."
+  description="AI Fullstack Engineer building AI products, agent systems, AEO infrastructure, and high-performance web experiences. Lisbon-based, remote worldwide with EU, UK, and US overlap."
   image="/og/index.png"
   faq={faqItems}
 >
@@ -63,6 +65,8 @@ const faqItems = [
 
   <!-- Stats — proof in numbers -->
   <StatsGrid client:visible {initialStars} {initialNpm} />
+
+  <ClientProof />
 
   <!-- Tech stack pills widget -->
   <HeroStack />
@@ -134,7 +138,7 @@ const faqItems = [
         </p>
         <div class="cta-actions" data-reveal-item>
           <a href="/contact" class="btn btn-primary" data-magnetic data-track="contact_view" data-track-location="home_bottom">Start a conversation</a>
-          <a href="https://linkedin.com/in/rubenmarcus" class="btn btn-secondary" target="_blank" rel="noopener" data-magnetic data-track="social_contact" data-track-location="home_bottom">LinkedIn ↗</a>
+          <a href={CALENDLY_URL} class="btn btn-secondary" target="_blank" rel="noopener" data-magnetic data-track="calendar_open" data-track-location="home_bottom">Book a 15-min intro ↗</a>
         </div>
       </div>
     </div>

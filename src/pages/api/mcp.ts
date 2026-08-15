@@ -14,7 +14,9 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import { AVAILABILITY, RESUME, SERVICES } from "../../lib/resume";
+import { CALENDLY_URL } from "../../lib/site-facts";
 import { deliverLead } from "../../lib/server/leads";
+import { recordMcpCall } from "../../lib/server/mcp-metrics";
 
 // Example prompts surfaced in `instructions` so MCP clients can suggest
 // them to the user right after connecting.
@@ -106,6 +108,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   switch (method) {
     case "initialize":
+      recordMcpCall({ method, client: params?.clientInfo?.name });
       return json({
         jsonrpc: "2.0",
         id,
@@ -123,16 +126,21 @@ export const POST: APIRoute = async ({ request }) => {
     case "notifications/initialized":
       return new Response(null, { status: 202, headers: NOCACHE });
     case "tools/list":
+      recordMcpCall({ method });
       return json({ jsonrpc: "2.0", id, result: { tools: TOOLS } });
     case "tools/call": {
       const name = params?.name;
       const args = params?.arguments ?? {};
+      recordMcpCall({ method, tool: typeof name === "string" ? name : "unknown" });
       if (name === "get_resume") return json(result(id, JSON.stringify(RESUME, null, 2)));
       if (name === "get_services") return json(result(id, SERVICES.join("\n")));
       if (name === "check_availability") return json(result(id, AVAILABILITY));
       if (name === "book_intro") {
         const { name: n, contact, brief, budget, agent } = args as Record<string, string>;
         if (!n || !contact || !brief) {
+          // An agent that reaches book_intro and fails validation is a lead
+          // that got away. Counted separately from a delivery failure.
+          recordMcpCall({ method, tool: "book_intro", outcome: "error" });
           return json(result(id, "error: name, contact and brief are required"));
         }
         const delivery = await deliverLead({
@@ -151,8 +159,12 @@ export const POST: APIRoute = async ({ request }) => {
             language: "en",
           },
         });
-        if (!delivery.ok) return json(result(id, `error: lead delivery unavailable; reference ${delivery.leadId}`));
-        return json(result(id, `Intro booked. Reference ${delivery.leadId}. Ruben replies within a day or two.`));
+        if (!delivery.ok) {
+          recordMcpCall({ method, tool: "book_intro", outcome: "error" });
+          return json(result(id, `error: lead delivery unavailable; reference ${delivery.leadId}`));
+        }
+        recordMcpCall({ method, tool: "book_intro", outcome: "ok" });
+        return json(result(id, `Intro booked. Reference ${delivery.leadId}. Ruben replies within a day or two. The person can also choose a 15-minute slot at ${CALENDLY_URL}`));
       }
       return json({ jsonrpc: "2.0", id, error: { code: -32602, message: `unknown tool: ${name}` } });
     }

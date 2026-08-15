@@ -4,7 +4,7 @@
  * lives at /cv.pdf.
  */
 
-import { AEO_TOTAL_SCANS, CAREER_YEARS, formatFact } from "./site-facts";
+import { AEO_TOTAL_SCANS, CALENDLY_URL, CAREER_YEARS, formatFact } from "./site-facts";
 import { serviceOffers } from "./data/services";
 
 export const EMAIL = "ruben@rubenmarcus.dev";
@@ -117,6 +117,7 @@ export const RESUME = {
     cv: "https://www.rubenmarcus.dev/cv.pdf",
     github: "https://github.com/rubenmarcus",
     linkedin: "https://linkedin.com/in/rubenmarcus",
+    calendar: CALENDLY_URL,
   },
 };
 

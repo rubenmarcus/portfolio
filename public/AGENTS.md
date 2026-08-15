@@ -43,6 +43,10 @@ modernization in Next.js, Svelte and TypeScript.
 
 ## For humans
 
-https://www.rubenmarcus.dev · https://linkedin.com/in/rubenmarcus
+Portfolio: https://www.rubenmarcus.dev
+
+Book a 15-minute intro: https://calendly.com/rubenmarcus-dev/project-intro
+
+LinkedIn: https://linkedin.com/in/rubenmarcus
 
 Replies within a day or two.

@@ -39,6 +39,7 @@
           bracket: "01 / Contrate",
           title: "Me contrate para",
           sub: "Projetos de escopo fechado, execução sênior, sem babysitting. Cada oferta abaixo é algo que já entreguei em produção.",
+          availability: ["Lisboa · remoto global", "Sobreposição EU · UK · USA", "Full-time · contrato · escopo fechado"],
           book: "Agendar um projeto →",
           cta: "ver escopo",
         }
@@ -46,6 +47,7 @@
           bracket: "01 / Hire me",
           title: "Hire me for",
           sub: "Fixed-scope engagements, senior execution, no hand-holding. Every offer below is something I've shipped in production.",
+          availability: ["Lisbon · remote worldwide", "EU · UK · US overlap", "Full-time · contract · fixed-scope"],
           book: "Book a project →",
           cta: "view scope",
         },
@@ -92,6 +94,11 @@
           <p class="hire__sub">
             {copy.sub}
           </p>
+          <ul class="hire__availability" aria-label={pt ? "Disponibilidade e formatos" : "Availability and engagement formats"}>
+            {#each copy.availability as item}
+              <li>{item}</li>
+            {/each}
+          </ul>
           <a class="btn btn-primary" href="{base}/contact" data-magnetic data-track="contact_view" data-track-location="home_services">{copy.book}</a>
         </div>
       </div>
@@ -192,6 +199,27 @@
     font-size: 0.95rem;
     line-height: 1.55;
     margin: 0;
+  }
+
+  .hire__availability {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .hire__availability li {
+    padding: 0.38rem 0.62rem;
+    border: 1px solid rgba(134, 239, 172, 0.2);
+    border-radius: var(--radius-pill);
+    background: rgba(134, 239, 172, 0.055);
+    color: var(--accent-soft);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1.2;
+    white-space: nowrap;
   }
 
   .hire__grid {
