@@ -1,0 +1,124 @@
+---
+interface Props {
+  lang?: "en" | "pt";
+}
+
+const { lang = "en" } = Astro.props;
+const pt = lang === "pt";
+const clients = [
+  { name: "Bitte Protocol", logo: "/art/logos/bitte.png" },
+  { name: "Grover", logo: "/art/logos/grover.png" },
+  { name: "Itaú", logo: "/art/logos/itau.png" },
+  { name: "Santander", logo: "/art/logos/santander.png" },
+  { name: "Under Armour", logo: "/art/logos/under-armour.png" },
+  { name: "Samsung", logo: "/art/logos/samsung.png" },
+];
+---
+
+<section class="client-proof" aria-labelledby="client-proof-title" data-reveal>
+  <h2 id="client-proof-title">
+    {pt ? "Produtos e equipes para os quais já entreguei." : "Selected products and teams I've shipped for."}
+  </h2>
+
+  <ul class="client-proof__list">
+    {clients.map((client) => (
+      <li class="client-proof__item" title={client.name}>
+        <img src={client.logo} alt={client.name} width="150" height="150" loading="lazy" decoding="async" />
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .client-proof {
+    width: min(1180px, calc(100% - 2rem));
+    margin: 1rem auto 4rem;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: rgba(3, 6, 5, 0.5);
+  }
+
+  h2 {
+    max-width: 34ch;
+    margin: 0 0 1.25rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 2.3vw, 1.6rem);
+    line-height: 1.2;
+    font-weight: 500;
+  }
+
+  .client-proof__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+
+  .client-proof__item {
+    min-height: 156px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    padding: 0.5rem;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    transition: background-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+  }
+
+  .client-proof__item img {
+    width: clamp(112px, 28vw, 150px);
+    height: clamp(112px, 28vw, 150px);
+    object-fit: contain;
+    opacity: 0.96;
+    filter: saturate(1.08) contrast(1.06);
+    transition: filter 220ms ease, opacity 220ms ease, transform 220ms ease;
+  }
+
+  .client-proof__item:hover {
+    z-index: 1;
+    background: rgba(108, 255, 167, 0.055);
+    box-shadow: inset 0 0 0 1px rgba(108, 255, 167, 0.34), 0 0 28px rgba(108, 255, 167, 0.1);
+    transform: translateY(-3px);
+  }
+
+  .client-proof__item:hover img {
+    opacity: 1;
+    filter: saturate(1.22) contrast(1.12) drop-shadow(0 0 12px rgba(108, 255, 167, 0.28));
+    transform: scale(1.065);
+  }
+
+  @media (min-width: 720px) {
+    .client-proof {
+      padding: 1.25rem;
+    }
+
+    .client-proof__list {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .client-proof__item {
+      min-height: 180px;
+    }
+
+    .client-proof__item img {
+      width: min(9.5vw, 150px);
+      height: min(9.5vw, 150px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .client-proof__item,
+    .client-proof__item img {
+      transition: none;
+    }
+
+    .client-proof__item:hover,
+    .client-proof__item:hover img {
+      transform: none;
+    }
+  }
+</style>

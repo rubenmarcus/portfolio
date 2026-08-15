@@ -12,6 +12,7 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import { deliverLead } from "../../lib/server/leads";
+import { CALENDLY_URL } from "../../lib/site-facts";
 
 const MAX = { name: 120, contact: 160, brief: 4000, budget: 120, agent: 80 };
 const ATTRIBUTION_KEYS = ["source", "utm_source", "utm_medium", "utm_campaign", "utm_content", "referrer", "landing", "conversion_path", "offer", "language"] as const;
@@ -71,6 +72,7 @@ export const GET: APIRoute = () =>
       mcp: "https://www.rubenmarcus.dev/api/mcp",
       serverCard: "https://www.rubenmarcus.dev/.well-known/mcp/server.json",
       humanPage: "https://www.rubenmarcus.dev/contact",
+      calendar: CALENDLY_URL,
     },
   });
 
@@ -124,5 +126,6 @@ export const POST: APIRoute = async ({ request }) => {
     ok: true,
     leadId: delivery.leadId,
     message: "Brief received. Ruben replies within a day or two.",
+    calendar: CALENDLY_URL,
   });
 };

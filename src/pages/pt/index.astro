@@ -6,6 +6,7 @@ import HeroScene from "../../components/HeroScene.svelte";
 import HeroStack from "../../components/HeroStack.astro";
 import HireMeFor from "../../components/HireMeFor.svelte";
 import StatsGrid from "../../components/StatsGrid.svelte";
+import ClientProof from "../../components/ClientProof.astro";
 import AsciiField from "../../components/AsciiField.svelte";
 import Section from "../../components/Section.astro";
 import SectionHeader from "../../components/SectionHeader.astro";
@@ -16,6 +17,7 @@ import Faq from "../../components/Faq.astro";
 import { fetchGithubStars, fetchNpmDownloads } from "../../lib/stats-live";
 import { NPM_PACKAGES } from "../../lib/data/stats";
 import { getBlogSlug } from "../../lib/blog-routes";
+import { CALENDLY_URL } from "../../lib/site-facts";
 
 // Live stats resolved at build time — visitors get exact numbers without
 // hitting the GitHub/npm rate limits. Null on failure → client-side fetch.
@@ -65,6 +67,8 @@ const faqItems = [
 
   <!-- Stats — proof in numbers -->
   <StatsGrid client:visible {initialStars} {initialNpm} lang="pt" />
+
+  <ClientProof lang="pt" />
 
   <!-- Tech stack pills widget -->
   <HeroStack lang="pt" />
@@ -136,7 +140,7 @@ const faqItems = [
         </p>
         <div class="cta-actions" data-reveal-item>
           <a href="/pt/contact" class="btn btn-primary" data-magnetic data-track="contact_view" data-track-location="home_bottom">Iniciar conversa</a>
-          <a href="https://linkedin.com/in/rubenmarcus" class="btn btn-secondary" target="_blank" rel="noopener" data-magnetic data-track="social_contact" data-track-location="home_bottom">LinkedIn ↗</a>
+          <a href={CALENDLY_URL} class="btn btn-secondary" target="_blank" rel="noopener" data-magnetic data-track="calendar_open" data-track-location="home_bottom">Agendar 15 min ↗</a>
         </div>
       </div>
     </div>

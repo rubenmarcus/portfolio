@@ -1,0 +1,23 @@
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+
+# Generated output and local caches
+.astro/
+dist/
+node_modules/
+.pnpm-store/
+
+# Internal working material and QA artifacts
+.claude/
+docs/
+launch/
+qa/
+ref/
+skills/
+tmp/
+
+# Local/editor artifacts
+.DS_Store
+*.tsbuildinfo

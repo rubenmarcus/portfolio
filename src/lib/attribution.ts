@@ -41,7 +41,18 @@ export const normalizeSource = (hostname: string) => {
   if (!host) return "direct";
   if (host === "lnkd.in" || host === "linkedin.com" || host.endsWith(".linkedin.com") || host === "com.linkedin.android") return "linkedin";
   if (host === "t.co" || host === "x.com" || host.endsWith(".twitter.com")) return "x";
+  if (host === "reddit.com" || host.endsWith(".reddit.com")) return "reddit";
+  if (host === "pinterest.com" || host.endsWith(".pinterest.com") || host === "pin.it") return "pinterest";
+  if (host === "facebook.com" || host.endsWith(".facebook.com") || host === "fb.com") return "facebook";
+  if (host === "instagram.com" || host.endsWith(".instagram.com")) return "instagram";
   if (host === "awwwards.com" || host.endsWith(".awwwards.com")) return "awwwards";
+  if (host === "land-book.com" || host.endsWith(".land-book.com")) return "landbook";
+  if (host === "dribbble.com" || host.endsWith(".dribbble.com")) return "dribbble";
+  if (host === "behance.net" || host.endsWith(".behance.net")) return "behance";
+  if (host === "lapa.ninja" || host.endsWith(".lapa.ninja")) return "lapa_ninja";
+  if (host === "siteinspire.com" || host.endsWith(".siteinspire.com")) return "siteinspire";
+  if (host === "minimal.gallery" || host.endsWith(".minimal.gallery")) return "minimal_gallery";
+  if (host === "indiehackers.com" || host.endsWith(".indiehackers.com")) return "indie_hackers";
   if (host === "google.com" || host.endsWith(".google.com")) return "google";
   if (host === "claude.ai" || host.endsWith(".claude.ai")) return "claude";
   if (host === "chatgpt.com" || host.endsWith(".chatgpt.com")) return "chatgpt";
@@ -57,13 +68,16 @@ export const buildFirstTouchAttribution = (
 ): FirstTouchAttribution => {
   const params = locationUrl.searchParams;
   const utmSource = clean(params.get("utm_source"));
+  // Showcase directories often append `?ref=<domain>` instead of UTMs.
+  // Treat it as an explicit source only when no UTM source was supplied.
+  const referralSource = clean(params.get("ref"));
   const referrer = hostnameFrom(documentReferrer);
   const currentHost = hostnameFrom(siteHostname);
   const internalReferrer = referrer === currentHost || referrer.endsWith(`.${currentHost}`);
   const externalReferrer = internalReferrer ? "" : referrer;
 
   return {
-    source: normalizeSource(utmSource || externalReferrer),
+    source: normalizeSource(utmSource || referralSource || externalReferrer),
     referrer: externalReferrer || "direct",
     landing: clean(locationUrl.pathname || "/"),
     utm_source: utmSource,
