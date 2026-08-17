@@ -4,6 +4,7 @@ import DitherBg from "../../components/DitherBg.svelte";
 import Section from "../../components/Section.astro";
 import SectionHeader from "../../components/SectionHeader.astro";
 import HireAgent from "../../components/HireAgent.svelte";
+import ConnectStats from "../../components/ConnectStats.svelte";
 import SvgIcon from "../../lib/assets/SvgIcon.svelte";
 import { CONNECT_PT, MCP_URL } from "../../lib/data/connect";
 
@@ -76,6 +77,16 @@ const { clients, tools } = CONNECT_PT;
         <code>POST /api/hire</code> recebe um brief. Pessoas de terminal: <code>curl rubenmarcus.dev</code>.
       </p>
     </div>
+  </Section>
+
+  <Section id="telemetry" tight>
+    <SectionHeader
+      index="09"
+      overline="Telemetria ao vivo"
+      title="Agents já estão chamando este site."
+      description="Contadores direto do banco de observabilidade: chamadas MCP, agents conectados e as superfícies de máquina que eles consomem."
+    />
+    <ConnectStats client:visible lang="pt" />
   </Section>
 
   <Section id="agents-md" tight>

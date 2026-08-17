@@ -72,6 +72,16 @@ export function initScrollFx(root: ParentNode = document): () => void {
   );
 
   containers.forEach((container) => {
+    // Never pre-hide something the visitor can already see: on F5 the
+    // browser restores the scroll position before this code runs, and
+    // hiding an on-screen section just to animate it back reads as a
+    // layout jump (reported by an actual visitor, 2026-08-17).
+    const rect = container.getBoundingClientRect();
+    const alreadyVisible = rect.top < window.innerHeight * 0.88 && rect.bottom > 0;
+    if (alreadyVisible) {
+      setFinalState(revealTargets(container));
+      return;
+    }
     gsap.set(revealTargets(container), {
       opacity: 0,
       y: 22,

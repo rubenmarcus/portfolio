@@ -4,6 +4,7 @@ import DitherBg from "../components/DitherBg.svelte";
 import Section from "../components/Section.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import HireAgent from "../components/HireAgent.svelte";
+import ConnectStats from "../components/ConnectStats.svelte";
 import SvgIcon from "../lib/assets/SvgIcon.svelte";
 import { CONNECT_EN, MCP_URL } from "../lib/data/connect";
 
@@ -86,6 +87,16 @@ const { clients, tools, prompts = [] } = CONNECT_EN;
         ))}
       </ul>
     </div>
+  </Section>
+
+  <Section id="telemetry" tight>
+    <SectionHeader
+      index="09"
+      overline="Live telemetry"
+      title="Agents are already calling this site."
+      description="Counters straight from the observability store: MCP calls, connected agents, and the machine surfaces they consume."
+    />
+    <ConnectStats client:visible />
   </Section>
 
   <Section id="agents-md" tight>
