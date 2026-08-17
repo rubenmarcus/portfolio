@@ -51,6 +51,7 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
                   <span>{post.data.readTime}</span>
                   <span class="sep">·</span>
                   <span>{post.data.tags.map((t: string) => `#${t}`).join(" ")}</span>
+                  <span class="article-stats" data-post-stats={post.id} hidden></span>
                   {post.data.reactions ? (
                     <>
                       <span class="sep">·</span>
@@ -75,6 +76,10 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
     </div>
   </Section>
 </BaseLayout>
+
+<script>
+  import "../lib/client/post-stats";
+</script>
 
 <style>
   .article-list {

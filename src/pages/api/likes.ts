@@ -2,6 +2,7 @@
  * Blog likes, server-side (same access model as /api/views).
  *
  *   GET  /api/likes?slug=<post>          → { slug, likes }
+ *   GET  /api/likes                      → { counters: { slug: likes } }  (all, cached)
  *   POST /api/likes { slug, delta: ±1 }  → { slug, likes }
  *
  * One like per browser is enforced client-side (localStorage) — good enough
@@ -13,7 +14,7 @@ import type { APIRoute } from "astro";
 import { sbRpc, sbSelect, supabaseEnabled } from "../../lib/server/supabase";
 import { isValidBlogSlug } from "../../lib/server/blog-slugs";
 
-const json = (body: unknown, status = 200) =>
+const json = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
   new Response(JSON.stringify(body), {
     status,
     headers: {
@@ -22,6 +23,7 @@ const json = (body: unknown, status = 200) =>
       "access-control-allow-origin": "*",
       "access-control-allow-methods": "GET, POST, OPTIONS",
       "access-control-allow-headers": "content-type",
+      ...headers,
     },
   });
 
@@ -29,7 +31,12 @@ export const OPTIONS: APIRoute = () => json({}, 200);
 
 export const GET: APIRoute = async ({ url }) => {
   if (!supabaseEnabled()) return json({ error: "likes disabled" }, 503);
-  const slug = url.searchParams.get("slug") ?? "";
+  const slug = url.searchParams.get("slug");
+  if (slug === null) {
+    const rows = await sbSelect<{ slug: string; likes: number }>("post_likes", "select=slug,likes");
+    const counters = Object.fromEntries(rows.map((row) => [row.slug, row.likes]));
+    return json({ counters }, 200, { "cache-control": "public, max-age=30, s-maxage=60" });
+  }
   if (!(await isValidBlogSlug(slug))) return json({ error: "unknown slug" }, 400);
   const rows = await sbSelect<{ likes: number }>("post_likes", `slug=eq.${encodeURIComponent(slug)}&select=likes`);
   return json({ slug, likes: rows[0]?.likes ?? 0 });

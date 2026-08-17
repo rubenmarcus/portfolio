@@ -25,6 +25,11 @@ const loadKnownSlugs = async (): Promise<Set<string> | null> => {
 
 export const isValidBlogSlug = async (value: string): Promise<boolean> => {
   if (!SLUG_SHAPE.test(value)) return false;
+  // Lab demos also carry like counters, keyed `lab-<slug>`. Their slugs are
+  // page-local data (src/pages/lab.astro), so membership is shape-only —
+  // importing the lab registry here would drag every demo component into
+  // the server bundle.
+  if (value.startsWith("lab-")) return /^lab-[a-z0-9][a-z0-9-]*$/.test(value);
   const known = await loadKnownSlugs();
   return known ? known.has(value) : true;
 };

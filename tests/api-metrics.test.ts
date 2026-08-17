@@ -48,8 +48,24 @@ describe("with Supabase configured", () => {
     vi.stubGlobal("fetch", fetchSpy);
     expect((await post(viewsPost, { slug: "NOT a slug!!" })).status).toBe(400);
     expect((await post(viewsPost, {})).status).toBe(400);
-    expect((await get(viewsGet, "")).status).toBe(400);
+    expect((await get(viewsGet, "?slug=NOT%20a%20slug")).status).toBe(400);
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("accepts lab counter keys (shape-only membership)", async () => {
+    const fetchSpy = vi.fn(async () => new Response("3", { status: 200 }));
+    vi.stubGlobal("fetch", fetchSpy);
+    expect((await post(likesPost, { slug: "lab-flow-field" })).status).toBe(200);
+    expect((await post(likesPost, { slug: "lab-" })).status).toBe(400);
+  });
+
+  it("answers the batch shape without a slug param, briefly cacheable", async () => {
+    const rows = JSON.stringify([{ slug: "evals-are-the-product", views: 7 }]);
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(rows, { status: 200 })));
+    const res = await get(viewsGet, "");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("cache-control")).toContain("s-maxage=60");
+    expect(await res.json()).toEqual({ counters: { "evals-are-the-product": 7 } });
   });
 
   it("increments views through the RPC and returns the count", async () => {

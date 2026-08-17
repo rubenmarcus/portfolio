@@ -105,14 +105,7 @@ const blogPostingLd = {
           <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
           <span class="post-meta__sep">·</span>
           <span>{post.data.readTime}</span>
-          {viewsEnabled && (
-            <>
-              <span class="post-meta__sep">·</span>
-              <ViewCounter client:load slug={post.id} />
-              <span class="post-meta__sep">·</span>
-              <LikeButton client:load slug={post.id} />
-            </>
-          )}
+
           {post.data.reactions ? (
             <>
               <span class="post-meta__sep">·</span>
@@ -130,6 +123,13 @@ const blogPostingLd = {
         </div>
 
         <ShareLinks client:load url={postUrl} title={post.data.title} />
+
+        {viewsEnabled && (
+          <div class="post-engagement">
+            <ViewCounter client:load slug={post.id} />
+            <LikeButton client:load slug={post.id} />
+          </div>
+        )}
 
         {post.data.canonical && (
           <p class="post-canonical">
@@ -263,6 +263,20 @@ const blogPostingLd = {
     color: var(--muted);
   }
   .post-meta__sep { color: var(--muted-soft); opacity: 0.6; }
+
+  /* Views + likes under the share row. min-height reserves the line so the
+     counters arriving never shift the content below (the layout-jump class
+     of bug reported on 2026-08-17). */
+  .post-engagement {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    min-height: 1.5rem;
+    margin-top: 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
 
   .post-title {
     font-family: var(--font-display);

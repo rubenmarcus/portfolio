@@ -5,6 +5,7 @@ import SectionHeader from "../components/SectionHeader.astro";
 import LabDemo from "../components/lab/LabDemo.svelte";
 import LabSource from "../components/lab/LabSource.svelte";
 import LabPrompt from "../components/lab/LabPrompt.svelte";
+import LikeButton from "../components/blog/LikeButton.svelte";
 
 /**
  * Demo drops — weekly visual experiments. Adding a new demo is (nearly)
@@ -144,6 +145,7 @@ const demos = [
             <div class="drop-card__foot">
               <LabSource client:visible slug={d.slug} />
               <LabPrompt client:visible slug={d.slug} />
+              <LikeButton client:visible slug={`lab-${d.slug}`} />
             </div>
           </div>
         </li>
