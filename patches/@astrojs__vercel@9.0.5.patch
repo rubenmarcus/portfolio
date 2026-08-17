@@ -1,8 +1,8 @@
 diff --git a/dist/serverless/middleware.js b/dist/serverless/middleware.js
-index 217ac823c66ad22c1ca1ed9bd0cc27bf7f6c5e22..d499b22938a762225729156b49375f2fc4a4a92c 100644
+index 217ac823c66ad22c1ca1ed9bd0cc27bf7f6c5e22..bef6c1bc4a3afb61f3c3c2c0296c1f840dc0e5da 100644
 --- a/dist/serverless/middleware.js
 +++ b/dist/serverless/middleware.js
-@@ -93,13 +93,23 @@ export default async function middleware(request, context) {
+@@ -93,13 +93,27 @@ export default async function middleware(request, context) {
  	const { origin } = new URL(request.url);
  	const next = async () => {
  		const { vercel, ...locals } = ctx.locals;
@@ -17,6 +17,10 @@ index 217ac823c66ad22c1ca1ed9bd0cc27bf7f6c5e22..d499b22938a762225729156b49375f2f
 +		const response = await fetch(renderUrl, {
 +			method: request.method,
 +			cache: 'no-store',
++			// Surface redirects from routes (e.g. /oauth/authorize) as-is:
++			// following them here would return the *target's* body and status
++			// to the client instead of the 3xx.
++			redirect: 'manual',
  			headers: {
  				...Object.fromEntries(request.headers.entries()),
  				'${ASTRO_MIDDLEWARE_SECRET_HEADER}': '${middlewareSecret}',

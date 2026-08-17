@@ -33,6 +33,12 @@ const POLICY_ROUTES = [
     dest: "/api/resume.txt",
     check: true,
   },
+  // src/middleware.ts answers every /.well-known/* discovery document
+  // (api-catalog, MCP server card, OAuth metadata), but the adapter only
+  // fronts *enumerated Astro routes* with the middleware function — these
+  // paths matched nothing and 404'd in production. Unknown /.well-known/*
+  // paths fall through the middleware to the renderer's regular 404.
+  { src: "^/\\.well-known/.*$", dest: "_middleware" },
 ];
 
 let config;
