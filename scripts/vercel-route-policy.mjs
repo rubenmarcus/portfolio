@@ -21,7 +21,9 @@ const CONFIG_PATH = new URL("../.vercel/output/config.json", import.meta.url);
 
 // Mirrors PAGE in src/middleware.ts — keep the two in sync.
 const PAGE_SRC = "^/(|pt)(/(portfolio|ai|skills|lab|blog|about|contact|connect|agents)?)?/?$";
-const TERMINAL_UA = "(?i).*(curl|wget|httpie|libcurl).*";
+// `has.value` is evaluated as a JavaScript RegExp with no flags: inline
+// modifiers like (?i) are invalid there, so case variants are spelled out.
+const TERMINAL_UA = ".*(curl|Curl|CURL|wget|Wget|WGET|httpie|HTTPie|libcurl).*";
 
 const POLICY_ROUTES = [
   { src: "^/(.+?)/+$", headers: { Location: "/$1" }, status: 308 },
