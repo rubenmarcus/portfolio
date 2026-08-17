@@ -93,12 +93,15 @@ describe("agent discovery", () => {
 });
 
 describe("curl easter egg", () => {
-  it("rewrites terminal clients on page routes to the text resume", async () => {
+  it("answers terminal clients on page routes with the text resume directly", async () => {
+    // Direct response, not ctx.rewrite: the Vercel edge bundle cannot render
+    // another route from a rewrite — it resolves to a 200 with an empty body.
     const res = requireResponse(await onRequest(
       ctxFor("/", "curl/8.0") as never,
       next as never,
     ));
-    expect(await res.text()).toBe("rewritten:/api/resume.txt");
+    expect(res.headers.get("content-type")).toContain("text/plain");
+    expect(await res.text()).toContain("terminal resume");
   });
 
   it("leaves API routes alone for terminal clients", async () => {

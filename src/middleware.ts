@@ -13,6 +13,7 @@
  */
 import { defineMiddleware } from "astro:middleware";
 import { discoverableSkills } from "./lib/data/agent-skills";
+import { terminalResumeResponse } from "./lib/terminal-resume";
 
 const PAGE = /^\/(|pt)(\/(portfolio|ai|skills|lab|blog|about|contact|connect|agents)?)?\/?$/;
 const TERMINAL = /curl|wget|httpie|libcurl/i;
@@ -184,7 +185,9 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
   const requestHeaders = ctx.isPrerendered ? null : ctx.request.headers;
   const ua = requestHeaders?.get("user-agent") ?? "";
   if (TERMINAL.test(ua) && PAGE.test(ctx.url.pathname)) {
-    return ctx.rewrite("/api/resume.txt");
+    // Answer directly: ctx.rewrite cannot render another route from the
+    // Vercel edge bundle — it resolves to a 200 with an empty body there.
+    return terminalResumeResponse();
   }
 
   const response = await next();
