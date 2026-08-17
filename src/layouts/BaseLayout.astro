@@ -11,6 +11,7 @@ import IceFlowBg from "../components/IceFlowBg.svelte";
 import Analytics from "@vercel/analytics/astro";
 import SpeedInsights from "@vercel/speed-insights/astro";
 import FunnelAnalytics from "../components/FunnelAnalytics.astro";
+import { canonicalPath } from "../lib/url-policy";
 
 interface Props {
   title?: string;
@@ -46,7 +47,7 @@ const {
   faq = [],
 } = Astro.props;
 
-const canonicalURL = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
+const canonicalURL = canonicalUrl ?? new URL(canonicalPath(Astro.url.pathname), Astro.site).href;
 
 // The positioning belongs on every page, not just the home page, and applying it
 // here means a new page cannot forget it or word it differently. Pages that
@@ -61,11 +62,12 @@ const ogLocaleAlternate = lang.startsWith("pt") ? "en_US" : "pt_BR";
 const toIso = (d: Date | string) => (d instanceof Date ? d.toISOString() : d);
 
 // hreflang pairs — /x ↔ /pt/x (home / ↔ /pt), x-default points at EN.
-const pathname = Astro.url.pathname;
+// Both sides follow the no-trailing-slash policy so hreflang targets are
+// always 200s, never redirects.
+const pathname = canonicalPath(Astro.url.pathname);
 const isPt = pathname === "/pt" || pathname.startsWith("/pt/");
-const pagePath = (value: string) => value === "/" || value.endsWith("/") ? value : `${value}/`;
-const enPath = pagePath(alternatePaths?.en ?? (isPt ? pathname.replace(/^\/pt/, "") || "/" : pathname));
-const ptPath = pagePath(alternatePaths?.pt ?? (isPt ? pathname : `/pt${pathname === "/" ? "" : pathname}`));
+const enPath = canonicalPath(alternatePaths?.en ?? (isPt ? pathname.replace(/^\/pt/, "") || "/" : pathname));
+const ptPath = canonicalPath(alternatePaths?.pt ?? (isPt ? pathname : `/pt${pathname === "/" ? "" : pathname}`));
 
 /* No custom view-transition animation: the cross-fade snapshots misbehave
    across browsers (stuck overlays, old page bleeding into the new one).

@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   '@astrojs/vercel@9.0.5':
-    hash: 5dc518eb319f9f0f5b1f60415dc5dfe51f709e13613a1556ab424db1483fccea
+    hash: 428b1091167a2e649036f328b831f8276478495ec324afa0603d9c417f4f41b3
     path: patches/@astrojs__vercel@9.0.5.patch
   es-module-lexer@1.7.0:
     hash: bb3ec36c2e7d8915416831df19106af153311888440839f01350638ca189190a
@@ -33,7 +33,7 @@ importers:
         version: 6.0.2(astro@5.18.1(@types/node@24.12.4)(@vercel/functions@3.8.0)(jiti@1.21.7)(rollup@4.60.4)(typescript@5.9.3)(yaml@2.9.0))(tailwindcss@3.4.19(yaml@2.9.0))
       '@astrojs/vercel':
         specifier: ^9.0.5
-        version: 9.0.5(patch_hash=5dc518eb319f9f0f5b1f60415dc5dfe51f709e13613a1556ab424db1483fccea)(astro@5.18.1(@types/node@24.12.4)(@vercel/functions@3.8.0)(jiti@1.21.7)(rollup@4.60.4)(typescript@5.9.3)(yaml@2.9.0))(rollup@4.60.4)(svelte@5.55.7)
+        version: 9.0.5(patch_hash=428b1091167a2e649036f328b831f8276478495ec324afa0603d9c417f4f41b3)(astro@5.18.1(@types/node@24.12.4)(@vercel/functions@3.8.0)(jiti@1.21.7)(rollup@4.60.4)(typescript@5.9.3)(yaml@2.9.0))(rollup@4.60.4)(svelte@5.55.7)
       '@vercel/analytics':
         specifier: ^1.6.1
         version: 1.6.1(svelte@5.55.7)
@@ -3314,7 +3314,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/vercel@9.0.5(patch_hash=5dc518eb319f9f0f5b1f60415dc5dfe51f709e13613a1556ab424db1483fccea)(astro@5.18.1(@types/node@24.12.4)(@vercel/functions@3.8.0)(jiti@1.21.7)(rollup@4.60.4)(typescript@5.9.3)(yaml@2.9.0))(rollup@4.60.4)(svelte@5.55.7)':
+  '@astrojs/vercel@9.0.5(patch_hash=428b1091167a2e649036f328b831f8276478495ec324afa0603d9c417f4f41b3)(astro@5.18.1(@types/node@24.12.4)(@vercel/functions@3.8.0)(jiti@1.21.7)(rollup@4.60.4)(typescript@5.9.3)(yaml@2.9.0))(rollup@4.60.4)(svelte@5.55.7)':
     dependencies:
       '@astrojs/internal-helpers': 0.7.6
       '@vercel/analytics': 1.6.1(svelte@5.55.7)

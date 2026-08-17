@@ -6,12 +6,23 @@
   "packageManager": "pnpm@10.15.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/vercel-route-policy.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run",
+    "smoke:prod": "node scripts/smoke-prod.mjs",
     "text:gate": "node scripts/text-gate.mjs",
-    "aeo:gate": "node scripts/discovery-gate.mjs"
+    "aeo:gate": "node scripts/discovery-gate.mjs",
+    "x:init": "node --disable-warning=ExperimentalWarning scripts/x-watch/cli.mjs init",
+    "x:doctor": "node --disable-warning=ExperimentalWarning scripts/x-watch/cli.mjs doctor",
+    "x:validate": "node --disable-warning=ExperimentalWarning scripts/x-watch/cli.mjs validate-accounts",
+    "x:sync": "node --disable-warning=ExperimentalWarning scripts/x-watch/cli.mjs sync-rules",
+    "x:watch": "node --disable-warning=ExperimentalWarning scripts/x-watch/cli.mjs watch",
+    "x:queue": "node --disable-warning=ExperimentalWarning scripts/x-watch/cli.mjs queue",
+    "x:show": "node --disable-warning=ExperimentalWarning scripts/x-watch/cli.mjs show",
+    "x:prepare": "node --disable-warning=ExperimentalWarning scripts/x-watch/cli.mjs prepare",
+    "x:install-service": "node --disable-warning=ExperimentalWarning scripts/x-watch/cli.mjs install-service",
+    "x:replay": "node --disable-warning=ExperimentalWarning scripts/x-watch/cli.mjs replay --file scripts/x-watch/fixtures/sample-stream.jsonl --mock-drafts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",

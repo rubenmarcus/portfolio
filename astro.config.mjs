@@ -1,10 +1,11 @@
-import { defineConfig } from "astro/config";
+import { defineConfig, passthroughImageService } from "astro/config";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import vercel from "@astrojs/vercel";
 import { aeoAstroIntegration } from "aeo.js/astro";
 import { getBlogPathsFromPathname, PT_BLOG_REDIRECTS } from "./src/lib/blog-routes.ts";
+import { canonicalPath } from "./src/lib/url-policy.ts";
 import { existsSync, readdirSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 
@@ -40,6 +41,12 @@ export default defineConfig({
   }),
   // Dev-only: keep the toolbar pill out of visual-gauntlet screenshots.
   devToolbar: { enabled: false },
+  // Nothing imports astro:assets — every image is a plain <img> from public/
+  // (covers come from scripts/gen-*.mjs, which import sharp directly). The
+  // default sharp image service only bloated the serverless function and its
+  // platform-specific optional deps broke the adapter's dependency trace on
+  // machines without the linux binaries.
+  image: { service: passthroughImageService() },
   build: {
     // Inline all CSS into each page's HTML. The ClientRouter swap otherwise
     // paints the new page while its stylesheet chunk is still fetching —
@@ -132,15 +139,27 @@ export default defineConfig({
         },
       },
       serialize(item) {
+        // Every sitemap URL follows the no-trailing-slash policy. Google was
+        // crawling /x and /x/ as separate documents (GSC: "alternate page
+        // with proper canonical tag", 97 pages on 2026-08-14) because the
+        // sitemap advertised the slash form while canonicals used the bare one.
+        const normalize = (href) => {
+          const url = new URL(href);
+          url.pathname = canonicalPath(url.pathname);
+          return url.href;
+        };
         const url = new URL(item.url);
         const paths = getBlogPathsFromPathname(url.pathname);
-        if (!paths) return item;
+        const links = paths
+          ? [
+              { lang: "en-US", hreflang: "en", url: new URL(paths.en, url.origin).href },
+              { lang: "pt-BR", hreflang: "pt-BR", url: new URL(paths.pt, url.origin).href },
+            ]
+          : item.links?.map((link) => ({ ...link, url: normalize(link.url) }));
         return {
           ...item,
-          links: [
-            { lang: "en-US", hreflang: "en", url: new URL(paths.en, url.origin).href },
-            { lang: "pt-BR", hreflang: "pt-BR", url: new URL(paths.pt, url.origin).href },
-          ],
+          url: normalize(item.url),
+          ...(links ? { links } : {}),
         };
       },
     }),
