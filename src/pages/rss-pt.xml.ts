@@ -9,6 +9,9 @@ export async function GET(context: APIContext) {
   );
 
   return rss({
+    // @astrojs/rss defaults its own trailingSlash option to true, ignoring
+    // the Astro config — without this, every item link gains a 308 hop.
+    trailingSlash: false,
     title: "Ruben Marcus — Blog (PT-BR)",
     description:
       "Artigos técnicos sobre agentes de IA, benchmarks, WebGL e a stack por trás de rubenmarcus.dev.",

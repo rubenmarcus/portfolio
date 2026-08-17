@@ -33,6 +33,10 @@ const cleanLegacyAeoMarkdown = {
 
 export default defineConfig({
   site: "https://www.rubenmarcus.dev",
+  // Site-wide URL policy (src/lib/url-policy.ts): one canonical form, no
+  // trailing slash. Keeps the dev server honest about the production 308.
+  // (@astrojs/rss does NOT read this — it has its own trailingSlash flag.)
+  trailingSlash: "never",
   redirects: PT_BLOG_REDIRECTS,
   // Pages stay static/prerendered; only /api/hire runs as a function.
   adapter: vercel({
