@@ -14,6 +14,20 @@
 import { defineMiddleware } from "astro:middleware";
 import { discoverableSkills } from "./lib/data/agent-skills";
 import { terminalResumeResponse } from "./lib/terminal-resume";
+import { sbInsert } from "./lib/server/supabase";
+
+/**
+ * Agent-surface observability: which machine-facing surfaces actually get
+ * consumed. Only SSR paths pass through here at runtime — llms.txt and the
+ * .md twins are static files and cannot log. /api/mcp keeps its own richer
+ * table (mcp_events).
+ */
+const agentSurface = (pathname: string): string | null => {
+  if (pathname.startsWith("/.well-known/")) return "well-known";
+  if (pathname === "/api/resume.json") return "resume-json";
+  if (pathname === "/api/resume.txt") return "resume-txt";
+  return null;
+};
 
 const PAGE = /^\/(|pt)(\/(portfolio|ai|skills|lab|blog|about|contact|connect|agents)?)?\/?$/;
 const TERMINAL = /curl|wget|httpie|libcurl/i;
@@ -177,18 +191,41 @@ const htmlToMarkdown = (html: string, source: URL) => {
 };
 
 export const onRequest = defineMiddleware(async (ctx, next) => {
-  const discovery = wellKnown(ctx.url.pathname, ctx.url.origin);
-  if (discovery) return discovery;
-
   // Astro executes middleware while prerendering, where request headers do
   // not exist. Header-driven negotiation only applies to live requests.
   const requestHeaders = ctx.isPrerendered ? null : ctx.request.headers;
   const ua = requestHeaders?.get("user-agent") ?? "";
+
+  // Fire-and-forget hit log; handed to the edge runtime's waitUntil when
+  // available so the insert survives the response. Never at build time.
+  const recordHit = (surface: string) => {
+    if (!requestHeaders) return;
+    const hit = sbInsert("agent_hits", {
+      surface,
+      path: ctx.url.pathname,
+      user_agent: ua.slice(0, 200) || null,
+    });
+    const edge = (ctx.locals as { vercel?: { edge?: { waitUntil?: (p: Promise<unknown>) => void } } } | undefined)
+      ?.vercel?.edge;
+    if (edge?.waitUntil) edge.waitUntil(hit);
+    else void hit;
+  };
+
+  const discovery = wellKnown(ctx.url.pathname, ctx.url.origin);
+  if (discovery) {
+    recordHit("well-known");
+    return discovery;
+  }
+
   if (TERMINAL.test(ua) && PAGE.test(ctx.url.pathname)) {
+    recordHit("terminal-resume");
     // Answer directly: ctx.rewrite cannot render another route from the
     // Vercel edge bundle — it resolves to a 200 with an empty body there.
     return terminalResumeResponse();
   }
+
+  const surface = agentSurface(ctx.url.pathname);
+  if (surface) recordHit(surface);
 
   const response = await next();
   const headers = new Headers(response.headers);

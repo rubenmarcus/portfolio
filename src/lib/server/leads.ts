@@ -1,4 +1,5 @@
 import { EMAIL } from "../resume";
+import { sbInsert } from "./supabase";
 
 export interface Lead {
   id: string;
@@ -54,5 +55,22 @@ export const deliverLead = async (lead: Lead): Promise<DeliveryResult> => {
     : Promise.resolve();
 
   await Promise.all([mail, webhook]);
+
+  // Durable mirror: every lead also lands in Supabase (public.leads), so a
+  // formsubmit hiccup can no longer lose one. Counts as a delivery — the
+  // lead is captured and queryable even if the email bounced.
+  const stored = await sbInsert("leads", {
+    id: lead.id,
+    created_at: lead.createdAt,
+    name: lead.name,
+    contact: lead.contact,
+    brief: lead.brief,
+    budget: lead.budget || null,
+    agent: lead.agent,
+    attribution: lead.attribution ?? {},
+    delivered_to: deliveredTo,
+  });
+  if (stored) deliveredTo.push("supabase");
+
   return { ok: deliveredTo.length > 0, leadId: lead.id, deliveredTo };
 };

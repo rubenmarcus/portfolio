@@ -5,6 +5,7 @@ import Section from "../../components/Section.astro";
 import DitherBg from "../../components/DitherBg.svelte";
 import ShareLinks from "../../components/blog/ShareLinks.svelte";
 import ViewCounter from "../../components/blog/ViewCounter.svelte";
+import LikeButton from "../../components/blog/LikeButton.svelte";
 import { getBlogPaths } from "../../lib/blog-routes";
 
 export async function getStaticPaths() {
@@ -50,10 +51,11 @@ const commercialSubject = post.data.tags.includes("aeo")
     ? "ai-native-frontend"
     : "ai-product-systems";
 
-// View counter only mounts when the Supabase public env vars are configured;
-// the component also self-guards and renders nothing without them.
+// Views/likes only mount when the server-side Supabase env vars exist at
+// build time; the components also self-guard and render nothing when the
+// API answers 503.
 const viewsEnabled = Boolean(
-  import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  import.meta.env.SUPABASE_URL && import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
 // "Originally published on …" label derived from the canonical host.
@@ -107,6 +109,8 @@ const blogPostingLd = {
             <>
               <span class="post-meta__sep">·</span>
               <ViewCounter client:load slug={post.id} />
+              <span class="post-meta__sep">·</span>
+              <LikeButton client:load slug={post.id} />
             </>
           )}
           {post.data.reactions ? (

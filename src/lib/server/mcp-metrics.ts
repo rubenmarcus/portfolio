@@ -1,4 +1,5 @@
 import { track } from "@vercel/analytics/server";
+import { sbInsert } from "./supabase";
 
 /**
  * Usage counters for the MCP endpoint.
@@ -36,6 +37,16 @@ export const recordMcpCall = (event: McpEvent): void => {
 
     // Not awaited: the response should not wait on the analytics round trip.
     void track("mcp_call", props).catch(() => {});
+
+    // Durable copy in Supabase (mcp_events) — Vercel Analytics custom events
+    // are plan-limited and unqueryable; this is the record that answers
+    // "which agents actually connected, and what did they call".
+    void sbInsert("mcp_events", {
+      method: event.method,
+      tool: event.tool ?? null,
+      client: event.client?.slice(0, 80) ?? null,
+      outcome: event.outcome ?? null,
+    });
   } catch {
     // Metrics are best effort. A failure here is never worth a 500.
   }

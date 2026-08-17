@@ -216,6 +216,20 @@ check("/pt serves 200 at the canonical form", async () => {
   if (res.status !== 200) fail(`got ${res.status}`);
 });
 
+// ------------------------------------------------------- observability
+
+check("GET /api/views reads a real post counter (no write)", async () => {
+  const { res, body } = await getJson("/api/views?slug=evals-are-the-product");
+  if (res.status !== 200 || typeof body.views !== "number") fail(`${res.status} ${preview(body)}`);
+});
+
+check("GET /api/stats aggregates the observability tables", async () => {
+  const { res, body } = await getJson("/api/stats");
+  if (res.status !== 200 || typeof body.views_total !== "number" || typeof body.mcp_events_total !== "number") {
+    fail(`${res.status} ${preview(body)}`);
+  }
+});
+
 // ------------------------------------------------------------------- run
 
 let failed = 0;
