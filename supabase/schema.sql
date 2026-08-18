@@ -85,6 +85,12 @@ end $$;
 
 create or replace function public.get_stats()
 returns jsonb language sql stable as $$
+  with recent_agents as (
+    select distinct on (client) client, coalesce(tool, method) as last_call, at
+    from public.mcp_events
+    where client is not null
+    order by client, at desc
+  )
   select jsonb_build_object(
     'views_total',   coalesce((select sum(views) from public.page_views), 0),
     'likes_total',   coalesce((select sum(likes) from public.post_likes), 0),
@@ -99,7 +105,9 @@ returns jsonb language sql stable as $$
       from (select surface, count(*) n from public.agent_hits group by surface) s), '{}'::jsonb),
     'leads_total', (select count(*) from public.leads),
     'top_posts', coalesce((select jsonb_agg(jsonb_build_object('slug', slug, 'views', views))
-      from (select slug, views from public.page_views order by views desc limit 10) p), '[]'::jsonb)
+      from (select slug, views from public.page_views order by views desc limit 10) p), '[]'::jsonb),
+    'recent_agents', coalesce((select jsonb_agg(jsonb_build_object('client', a.client, 'call', a.last_call, 'at', a.at))
+      from (select * from recent_agents order by at desc limit 5) a), '[]'::jsonb)
   )
 $$;
 
