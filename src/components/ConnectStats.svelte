@@ -17,12 +17,14 @@
   let { lang = "en" }: Props = $props();
   const pt = lang.startsWith("pt");
 
+  type RecentAgent = { client: string; call: string; at: string };
   type Stats = {
     mcp_events_total?: number;
     mcp_events_7d?: number;
     mcp_clients?: Record<string, number>;
     mcp_tool_calls?: Record<string, number>;
     agent_hits_by_surface?: Record<string, number>;
+    recent_agents?: RecentAgent[];
     views_total?: number;
     likes_total?: number;
   };
@@ -39,6 +41,7 @@
         views: "views no blog",
         likes: "likes no blog",
         tools: "tools mais chamadas",
+        log: "últimos agents a chamar",
         live: "ao vivo — direto do banco",
       }
     : {
@@ -49,16 +52,46 @@
         views: "blog views",
         likes: "blog likes",
         tools: "most-called tools",
+        log: "last agents to call",
         live: "live — straight from the store",
       };
 
   const fmt = (n: number | undefined) => (typeof n === "number" ? n.toLocaleString("en-US") : "—");
+
+  const ago = (iso: string) => {
+    const seconds = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+    if (seconds < 60) return pt ? "agora" : "now";
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h`;
+    return `${Math.floor(hours / 24)}d`;
+  };
+
+  // curl resumes arrive under two surfaces: "terminal-resume" (middleware on
+  // SSR pages) and "resume-txt" (Vercel route rewrite on static pages, plus
+  // direct /api/resume.txt hits). Both are resumes served to curl.
+  const curlResumes = $derived(
+    stats
+      ? (stats.agent_hits_by_surface?.["terminal-resume"] ?? 0) +
+        (stats.agent_hits_by_surface?.["resume-txt"] ?? 0)
+      : undefined,
+  );
 
   const topTools = $derived(
     Object.entries(stats?.mcp_tool_calls ?? {})
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3),
   );
+
+  // Always five rows — padded with blanks — so the box never jumps when the
+  // log arrives (same invariant as the fixed-height skeleton).
+  const LOG_ROWS = 5;
+  const logRows = $derived.by(() => {
+    if (!stats) return Array.from({ length: LOG_ROWS }, () => null);
+    const rows = (stats.recent_agents ?? []).slice(0, LOG_ROWS);
+    return [...rows, ...Array.from({ length: LOG_ROWS - rows.length }, () => null)];
+  });
 
   const load = async () => {
     try {
@@ -107,7 +140,7 @@
       </div>
       <div class="stats__cell">
         <dt>{labels.curl}</dt>
-        <dd>{fmt(stats?.agent_hits_by_surface?.["terminal-resume"] ?? (stats ? 0 : undefined))}</dd>
+        <dd>{fmt(curlResumes)}</dd>
       </div>
       <div class="stats__cell">
         <dt>{labels.views}</dt>
@@ -118,6 +151,20 @@
         <dd>{fmt(stats?.likes_total)}</dd>
       </div>
     </dl>
+    <div class="stats__log" aria-label={labels.log}>
+      <p class="stats__log-title">{labels.log}</p>
+      {#each logRows as row, i (i)}
+        {#if row}
+          <p class="stats__log-row">
+            <span class="stats__log-at">{ago(row.at)}</span>
+            <span class="stats__log-agent">{row.client}</span>
+            <span class="stats__log-call">{row.call}</span>
+          </p>
+        {:else}
+          <p class="stats__log-row stats__log-row--empty" aria-hidden="true"></p>
+        {/if}
+      {/each}
+    </div>
     <p class="stats__tools">
       <span class="stats__tools-label">{labels.tools}:</span>
       {#if topTools.length > 0}
@@ -138,10 +185,13 @@
     background: #06080c;
     padding: 1.1rem 1.2rem;
     font-family: var(--font-mono);
-    min-height: 172px;
+    /* Grid (2 rows) + tools line + 5-row agent log: reserve the full final
+       height so the skeleton never jumps when data lands. */
+    min-height: 296px;
   }
   .stats--loading dd,
-  .stats--loading .stats__count {
+  .stats--loading .stats__count,
+  .stats--loading .stats__log-row {
     animation: stats-pulse 1.2s ease-in-out infinite;
   }
   @keyframes stats-pulse {
@@ -204,4 +254,40 @@
   }
   .stats__tools code { color: var(--accent-soft, #4ade80); }
   .stats__count { color: var(--muted); }
+
+  .stats__log {
+    margin-top: 1.1rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed var(--line);
+  }
+  .stats__log-title {
+    margin: 0 0 0.5rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+  }
+  .stats__log-row {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr) auto;
+    gap: 0.7rem;
+    align-items: baseline;
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .stats__log-at { color: var(--muted-soft); }
+  .stats__log-agent {
+    color: var(--accent-soft, #4ade80);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .stats__log-call {
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 45%;
+  }
+  .stats__log-row--empty { min-height: 1.125rem; }
 </style>
