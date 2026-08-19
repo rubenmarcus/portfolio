@@ -1,15 +1,13 @@
 /**
  * GET /api/stats — public, read-only aggregates: blog views/likes, MCP
  * traffic by tool and client, agent-surface hits, lead count. One RPC
- * (public.get_stats) for the aggregates plus one direct read for the
- * recent-agents log (distinct-on is not expressible in PostgREST).
+ * (public.get_stats) plus one direct read for the tool-call log (every
+ * tools/call with its caller — handshakes stay out of the feed).
  */
 export const prerender = false;
 
 import type { APIRoute } from "astro";
 import { sbRpc, sbSelect, supabaseEnabled } from "../../lib/server/supabase";
-
-const LOG_ROWS = 5;
 
 export const GET: APIRoute = async () => {
   if (!supabaseEnabled()) {
@@ -18,13 +16,11 @@ export const GET: APIRoute = async () => {
       headers: { "content-type": "application/json", "cache-control": "no-store" },
     });
   }
-  const [stats, events] = await Promise.all([
+  const [stats, toolCalls] = await Promise.all([
     sbRpc<Record<string, unknown>>("get_stats"),
-    // Generous window: crawlers interleave, but a single poller can dominate
-    // recent events — 200 rows reliably contains 5 distinct clients.
-    sbSelect<{ client: string; tool: string | null; method: string; at: string }>(
+    sbSelect<{ client: string; tool: string; at: string }>(
       "mcp_events",
-      "select=client,tool,method,at&client=not.is.null&order=at.desc&limit=200",
+      "select=client,tool,at&client=not.is.null&tool=not.is.null&order=at.desc&limit=100",
     ),
   ]);
   if (!stats) {
@@ -34,17 +30,14 @@ export const GET: APIRoute = async () => {
     });
   }
 
-  const seen = new Set<string>();
-  const recent_agents: { client: string; call: string; at: string }[] = [];
-  for (const event of events) {
-    if (seen.has(event.client)) continue;
-    seen.add(event.client);
-    recent_agents.push({ client: event.client, call: event.tool ?? event.method, at: event.at });
-    if (recent_agents.length >= LOG_ROWS) break;
-  }
-
   return new Response(
-    JSON.stringify({ ...stats, recent_agents, generatedAt: new Date().toISOString() }),
+    JSON.stringify({
+      ...stats,
+      // Defensive filter: PostgREST already excludes null tools, but the
+      // log must never show handshake rows even if the read changes shape.
+      recent_tool_calls: toolCalls.filter((call) => call.client && call.tool).slice(0, 50),
+      generatedAt: new Date().toISOString(),
+    }),
     {
       status: 200,
       headers: {
