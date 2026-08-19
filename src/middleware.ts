@@ -25,7 +25,8 @@ import { sbInsert } from "./lib/server/supabase";
 const agentSurface = (pathname: string): string | null => {
   if (pathname.startsWith("/.well-known/")) return "well-known";
   if (pathname === "/api/resume.json") return "resume-json";
-  if (pathname === "/api/resume.txt") return "resume-txt";
+  // /api/resume.txt logs in its own handler: the Vercel routing-layer
+  // rewrite serves terminal UAs there without ever passing this middleware.
   return null;
 };
 
