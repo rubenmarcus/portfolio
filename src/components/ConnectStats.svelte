@@ -17,7 +17,7 @@
   let { lang = "en" }: Props = $props();
   const pt = lang.startsWith("pt");
 
-  type ToolCall = { client: string; tool: string; at: string };
+  type ToolCall = { client: string | null; tool: string; at: string };
   type Stats = {
     mcp_events_total?: number;
     mcp_events_7d?: number;
@@ -161,7 +161,7 @@
         {#if row}
           <p class="stats__log-row">
             <span class="stats__log-at">{ago(row.at)}</span>
-            <span class="stats__log-agent">{row.client}</span>
+            <span class="stats__log-agent" class:stats__log-agent--unknown={!row.client}>{row.client ?? (pt ? "desconhecido" : "unknown")}</span>
             <span class="stats__log-call">{row.tool}</span>
           </p>
         {:else}
@@ -314,6 +314,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .stats__log-agent--unknown { color: var(--muted); font-style: italic; }
   .stats__log-call {
     color: var(--muted);
     overflow: hidden;
