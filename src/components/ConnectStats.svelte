@@ -17,20 +17,22 @@
   let { lang = "en" }: Props = $props();
   const pt = lang.startsWith("pt");
 
-  type RecentAgent = { client: string; call: string; at: string };
+  type ToolCall = { client: string; tool: string; at: string };
   type Stats = {
     mcp_events_total?: number;
     mcp_events_7d?: number;
     mcp_clients?: Record<string, number>;
     mcp_tool_calls?: Record<string, number>;
     agent_hits_by_surface?: Record<string, number>;
-    recent_agents?: RecentAgent[];
+    recent_tool_calls?: ToolCall[];
     views_total?: number;
     likes_total?: number;
   };
 
   let stats = $state<Stats | null>(null);
   let failed = $state(false);
+  // Tool filter for the log — null shows every tool's calls.
+  let selectedTool = $state<string | null>(null);
 
   const labels = pt
     ? {
@@ -40,8 +42,8 @@
         curl: "resumes via curl",
         views: "views no blog",
         likes: "likes no blog",
-        tools: "tools mais chamadas",
-        log: "últimos agents a chamar",
+        tools: "tools mais chamadas (clique pra filtrar)",
+        log: "últimas tool calls",
         live: "ao vivo — direto do banco",
       }
     : {
@@ -51,8 +53,8 @@
         curl: "resumes served to curl",
         views: "blog views",
         likes: "blog likes",
-        tools: "most-called tools",
-        log: "last agents to call",
+        tools: "most-called tools (click to filter)",
+        log: "last tool calls",
         live: "live — straight from the store",
       };
 
@@ -89,7 +91,9 @@
   const LOG_ROWS = 5;
   const logRows = $derived.by(() => {
     if (!stats) return Array.from({ length: LOG_ROWS }, () => null);
-    const rows = (stats.recent_agents ?? []).slice(0, LOG_ROWS);
+    const rows = (stats.recent_tool_calls ?? [])
+      .filter((call) => !selectedTool || call.tool === selectedTool)
+      .slice(0, LOG_ROWS);
     return [...rows, ...Array.from({ length: LOG_ROWS - rows.length }, () => null)];
   });
 
@@ -152,13 +156,13 @@
       </div>
     </dl>
     <div class="stats__log" aria-label={labels.log}>
-      <p class="stats__log-title">{labels.log}</p>
+      <p class="stats__log-title">{labels.log}{selectedTool ? ` — ${selectedTool}` : ""}</p>
       {#each logRows as row, i (i)}
         {#if row}
           <p class="stats__log-row">
             <span class="stats__log-at">{ago(row.at)}</span>
             <span class="stats__log-agent">{row.client}</span>
-            <span class="stats__log-call">{row.call}</span>
+            <span class="stats__log-call">{row.tool}</span>
           </p>
         {:else}
           <p class="stats__log-row stats__log-row--empty" aria-hidden="true"></p>
@@ -169,7 +173,14 @@
       <span class="stats__tools-label">{labels.tools}:</span>
       {#if topTools.length > 0}
         {#each topTools as [tool, count], i}
-          <code>{tool}</code><span class="stats__count">×{count}</span>{i < topTools.length - 1 ? " · " : ""}
+          <button
+            class="stats__chip"
+            class:stats__chip--active={selectedTool === tool}
+            aria-pressed={selectedTool === tool}
+            onclick={() => (selectedTool = selectedTool === tool ? null : tool)}
+          >
+            <code>{tool}</code><span class="stats__count">×{count}</span>
+          </button>{i < topTools.length - 1 ? " · " : ""}
         {/each}
       {:else}
         <span class="stats__count">—</span>
@@ -254,6 +265,26 @@
   }
   .stats__tools code { color: var(--accent-soft, #4ade80); }
   .stats__count { color: var(--muted); }
+
+  .stats__chip {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+  .stats__chip code { text-decoration: underline dotted; text-decoration-color: transparent; }
+  .stats__chip:hover code { text-decoration-color: var(--muted-soft); }
+  .stats__chip:focus-visible {
+    outline: 1px dashed var(--accent, #00ff41);
+    outline-offset: 3px;
+  }
+  .stats__chip--active code {
+    color: var(--accent, #00ff41);
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.4);
+    text-decoration-color: var(--accent, #00ff41);
+  }
 
   .stats__log {
     margin-top: 1.1rem;

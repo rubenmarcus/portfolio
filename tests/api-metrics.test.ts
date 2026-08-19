@@ -95,45 +95,38 @@ describe("with Supabase configured", () => {
     expect((await post(viewsPost, { slug: "evals-are-the-product" })).status).toBe(503);
   });
 
-  it("composes recent_agents: last event per client, tool over method, max 5, no-store on RPC failure", async () => {
+  it("composes recent_tool_calls: tool events only, no-store on RPC failure", async () => {
     const aggregates = JSON.stringify({ mcp_events_total: 9, mcp_clients: {} });
     const events = JSON.stringify([
-      { client: "claude-code", tool: "get_resume", method: "tools/call", at: "2026-08-19T01:00:00Z" },
-      { client: "glama", tool: null, method: "tools/list", at: "2026-08-19T00:59:00Z" },
-      { client: "claude-code", tool: "get_services", method: "tools/call", at: "2026-08-19T00:58:00Z" },
-      ...Array.from({ length: 6 }, (_, i) => ({
-        client: `bot-${i}`,
-        tool: null,
-        method: "initialize",
-        at: `2026-08-19T00:5${i}:00Z`,
-      })),
+      { client: "claude-code", tool: "get_resume", at: "2026-08-19T01:00:00Z" },
+      { client: "glama", tool: null, at: "2026-08-19T00:59:00Z" },
+      { client: "claude-code", tool: "get_services", at: "2026-08-19T00:58:00Z" },
+      { client: "bot-1", tool: null, at: "2026-08-19T00:57:00Z" },
     ]);
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async (input: unknown) => {
-        const url = String(input);
-        if (url.includes("/rpc/get_stats")) return new Response(aggregates, { status: 200 });
-        if (url.includes("/rest/v1/mcp_events")) return new Response(events, { status: 200 });
-        return new Response("{}", { status: 404 });
-      }),
-    );
+    const fetchSpy = vi.fn(async (input: unknown) => {
+      const url = String(input);
+      if (url.includes("/rpc/get_stats")) return new Response(aggregates, { status: 200 });
+      if (url.includes("/rest/v1/mcp_events")) return new Response(events, { status: 200 });
+      return new Response("{}", { status: 404 });
+    });
+    vi.stubGlobal("fetch", fetchSpy);
     const res = await statsGet({} as never);
     const body = (await res.json()) as {
       mcp_events_total: number;
-      recent_agents: { client: string; call: string; at: string }[];
+      recent_tool_calls: { client: string; tool: string; at: string }[];
     };
     expect(res.status).toBe(200);
     expect(body.mcp_events_total).toBe(9);
-    // claude-code appears once (latest event), tool preferred over method,
-    // exactly 5 rows even with 7 distinct clients in the window.
-    expect(body.recent_agents).toHaveLength(5);
-    expect(body.recent_agents[0]).toEqual({
-      client: "claude-code",
-      call: "get_resume",
-      at: "2026-08-19T01:00:00Z",
-    });
-    expect(body.recent_agents[1]).toEqual({ client: "glama", call: "tools/list", at: "2026-08-19T00:59:00Z" });
-    expect(body.recent_agents.filter((a) => a.client === "claude-code")).toHaveLength(1);
+    // Only tool events pass through, newest first, caller preserved.
+    expect(body.recent_tool_calls).toEqual([
+      { client: "claude-code", tool: "get_resume", at: "2026-08-19T01:00:00Z" },
+      { client: "claude-code", tool: "get_services", at: "2026-08-19T00:58:00Z" },
+    ]);
+    // The mcp_events read asks PostgREST to exclude null tools.
+    const readUrl = (fetchSpy.mock.calls as unknown as string[][])
+      .map(([u]) => String(u))
+      .find((u) => u.includes("mcp_events"));
+    expect(readUrl).toContain("tool=not.is.null");
 
     // RPC failure must not be CDN-cached as a 503.
     vi.stubGlobal(
