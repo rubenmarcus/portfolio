@@ -18,9 +18,11 @@ export const GET: APIRoute = async () => {
   }
   const [stats, toolCalls] = await Promise.all([
     sbRpc<Record<string, unknown>>("get_stats"),
-    sbSelect<{ client: string; tool: string; at: string }>(
+    // client may be null on rows logged before identity capture existed —
+    // the log renders those as "unknown" rather than hiding real calls.
+    sbSelect<{ client: string | null; tool: string; at: string }>(
       "mcp_events",
-      "select=client,tool,at&client=not.is.null&tool=not.is.null&order=at.desc&limit=100",
+      "select=client,tool,at&tool=not.is.null&order=at.desc&limit=100",
     ),
   ]);
   if (!stats) {
@@ -35,7 +37,7 @@ export const GET: APIRoute = async () => {
       ...stats,
       // Defensive filter: PostgREST already excludes null tools, but the
       // log must never show handshake rows even if the read changes shape.
-      recent_tool_calls: toolCalls.filter((call) => call.client && call.tool).slice(0, 50),
+      recent_tool_calls: toolCalls.filter((call) => call.tool).slice(0, 50),
       generatedAt: new Date().toISOString(),
     }),
     {

@@ -106,9 +106,13 @@ export const POST: APIRoute = async ({ request }) => {
   }
   const { id, method, params } = msg;
 
+  // Streamable-HTTP is stateless per POST: only `initialize` carries
+  // clientInfo, so on later calls the User-Agent is the identity fallback.
+  const caller = () => (params?.clientInfo?.name || request.headers.get("user-agent") || "").slice(0, 80) || undefined;
+
   switch (method) {
     case "initialize":
-      recordMcpCall({ method, client: params?.clientInfo?.name });
+      recordMcpCall({ method, client: caller() });
       return json({
         jsonrpc: "2.0",
         id,
@@ -126,12 +130,12 @@ export const POST: APIRoute = async ({ request }) => {
     case "notifications/initialized":
       return new Response(null, { status: 202, headers: NOCACHE });
     case "tools/list":
-      recordMcpCall({ method });
+      recordMcpCall({ method, client: caller() });
       return json({ jsonrpc: "2.0", id, result: { tools: TOOLS } });
     case "tools/call": {
       const name = params?.name;
       const args = params?.arguments ?? {};
-      recordMcpCall({ method, tool: typeof name === "string" ? name : "unknown" });
+      recordMcpCall({ method, tool: typeof name === "string" ? name : "unknown", client: caller() });
       if (name === "get_resume") return json(result(id, JSON.stringify(RESUME, null, 2)));
       if (name === "get_services") return json(result(id, SERVICES.join("\n")));
       if (name === "check_availability") return json(result(id, AVAILABILITY));
@@ -140,7 +144,7 @@ export const POST: APIRoute = async ({ request }) => {
         if (!n || !contact || !brief) {
           // An agent that reaches book_intro and fails validation is a lead
           // that got away. Counted separately from a delivery failure.
-          recordMcpCall({ method, tool: "book_intro", outcome: "error" });
+          recordMcpCall({ method, tool: "book_intro", outcome: "error", client: caller() });
           return json(result(id, "error: name, contact and brief are required"));
         }
         const delivery = await deliverLead({
@@ -160,10 +164,10 @@ export const POST: APIRoute = async ({ request }) => {
           },
         });
         if (!delivery.ok) {
-          recordMcpCall({ method, tool: "book_intro", outcome: "error" });
+          recordMcpCall({ method, tool: "book_intro", outcome: "error", client: caller() });
           return json(result(id, `error: lead delivery unavailable; reference ${delivery.leadId}`));
         }
-        recordMcpCall({ method, tool: "book_intro", outcome: "ok" });
+        recordMcpCall({ method, tool: "book_intro", outcome: "ok", client: caller() });
         return json(result(id, `Intro booked. Reference ${delivery.leadId}. Ruben replies within a day or two. The person can also choose a 15-minute slot at ${CALENDLY_URL}`));
       }
       return json({ jsonrpc: "2.0", id, error: { code: -32602, message: `unknown tool: ${name}` } });

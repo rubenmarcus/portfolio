@@ -99,7 +99,7 @@ describe("with Supabase configured", () => {
     const aggregates = JSON.stringify({ mcp_events_total: 9, mcp_clients: {} });
     const events = JSON.stringify([
       { client: "claude-code", tool: "get_resume", at: "2026-08-19T01:00:00Z" },
-      { client: "glama", tool: null, at: "2026-08-19T00:59:00Z" },
+      { client: null, tool: "book_intro", at: "2026-08-19T00:59:00Z" },
       { client: "claude-code", tool: "get_services", at: "2026-08-19T00:58:00Z" },
       { client: "bot-1", tool: null, at: "2026-08-19T00:57:00Z" },
     ]);
@@ -117,9 +117,10 @@ describe("with Supabase configured", () => {
     };
     expect(res.status).toBe(200);
     expect(body.mcp_events_total).toBe(9);
-    // Only tool events pass through, newest first, caller preserved.
+    // Tool events pass through — client may be null (pre-identity rows), handshakes don't.
     expect(body.recent_tool_calls).toEqual([
       { client: "claude-code", tool: "get_resume", at: "2026-08-19T01:00:00Z" },
+      { client: null, tool: "book_intro", at: "2026-08-19T00:59:00Z" },
       { client: "claude-code", tool: "get_services", at: "2026-08-19T00:58:00Z" },
     ]);
     // The mcp_events read asks PostgREST to exclude null tools.
