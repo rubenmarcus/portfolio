@@ -42,7 +42,7 @@
         curl: "resumes via curl",
         views: "views no blog",
         likes: "likes no blog",
-        tools: "tools mais chamadas (clique pra filtrar)",
+        filter: "filtrar por tool",
         log: "últimas tool calls",
         live: "ao vivo — direto do banco",
       }
@@ -53,7 +53,7 @@
         curl: "resumes served to curl",
         views: "blog views",
         likes: "blog likes",
-        tools: "most-called tools (click to filter)",
+        filter: "filter by tool",
         log: "last tool calls",
         live: "live — straight from the store",
       };
@@ -155,13 +155,36 @@
         <dd>{fmt(stats?.likes_total)}</dd>
       </div>
     </dl>
-    <div class="stats__log" aria-label={labels.log}>
-      <p class="stats__log-title">{labels.log}{selectedTool ? ` — ${selectedTool}` : ""}</p>
+    <div class="stats__log">
+      <div class="stats__log-head">
+        <p class="stats__log-title">{labels.log}</p>
+        <div class="stats__log-filters" role="group" aria-label={labels.filter}>
+          <button
+            class="stats__chip"
+            class:stats__chip--active={selectedTool === null}
+            aria-pressed={selectedTool === null}
+            onclick={() => (selectedTool = null)}
+          >
+            <code>{pt ? "todas" : "all"}</code>
+          </button>
+          {#each topTools as [tool, count]}
+            <button
+              class="stats__chip"
+              class:stats__chip--active={selectedTool === tool}
+              aria-pressed={selectedTool === tool}
+              onclick={() => (selectedTool = selectedTool === tool ? null : tool)}
+            >
+              <code>{tool}</code><span class="stats__count">×{count}</span>
+            </button>
+          {/each}
+        </div>
+      </div>
       {#each logRows as row, i (i)}
         {#if row}
           <p class="stats__log-row">
             <span class="stats__log-at">{ago(row.at)}</span>
             <span class="stats__log-agent" class:stats__log-agent--unknown={!row.client}>{row.client ?? (pt ? "desconhecido" : "unknown")}</span>
+            <span class="stats__log-sep" aria-hidden="true">→</span>
             <span class="stats__log-call">{row.tool}</span>
           </p>
         {:else}
@@ -169,23 +192,6 @@
         {/if}
       {/each}
     </div>
-    <p class="stats__tools">
-      <span class="stats__tools-label">{labels.tools}:</span>
-      {#if topTools.length > 0}
-        {#each topTools as [tool, count], i}
-          <button
-            class="stats__chip"
-            class:stats__chip--active={selectedTool === tool}
-            aria-pressed={selectedTool === tool}
-            onclick={() => (selectedTool = selectedTool === tool ? null : tool)}
-          >
-            <code>{tool}</code><span class="stats__count">×{count}</span>
-          </button>{i < topTools.length - 1 ? " · " : ""}
-        {/each}
-      {:else}
-        <span class="stats__count">—</span>
-      {/if}
-    </p>
   </div>
 {/if}
 
@@ -252,18 +258,6 @@
     text-shadow: 0 0 14px rgba(0, 255, 65, 0.25);
   }
 
-  .stats__tools {
-    margin: 1rem 0 0;
-    font-size: 0.75rem;
-    color: var(--muted);
-  }
-  .stats__tools-label {
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted-soft);
-    margin-right: 0.4rem;
-  }
-  .stats__tools code { color: var(--accent-soft, #4ade80); }
   .stats__count { color: var(--muted); }
 
   .stats__chip {
@@ -271,8 +265,10 @@
     border: 0;
     padding: 0;
     font: inherit;
+    font-size: 0.75rem;
     color: inherit;
     cursor: pointer;
+    white-space: nowrap;
   }
   .stats__chip code { text-decoration: underline dotted; text-decoration-color: transparent; }
   .stats__chip:hover code { text-decoration-color: var(--muted-soft); }
@@ -291,35 +287,52 @@
     padding-top: 0.9rem;
     border-top: 1px dashed var(--line);
   }
+  .stats__log-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-bottom: 0.6rem;
+  }
   .stats__log-title {
-    margin: 0 0 0.5rem;
+    margin: 0;
     font-size: 0.68rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted-soft);
+    white-space: nowrap;
+  }
+  .stats__log-filters {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    min-width: 0;
   }
   .stats__log-row {
     display: grid;
-    grid-template-columns: 3rem minmax(0, 1fr) auto;
-    gap: 0.7rem;
+    grid-template-columns: 3rem minmax(0, 1fr) auto minmax(0, auto);
+    gap: 0.6rem;
     align-items: baseline;
     margin: 0;
     font-size: 0.75rem;
     line-height: 1.5;
+  }
+  .stats__log-at {
+    color: var(--muted-soft);
     white-space: nowrap;
   }
-  .stats__log-at { color: var(--muted-soft); }
   .stats__log-agent {
     color: var(--accent-soft, #4ade80);
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
   }
   .stats__log-agent--unknown { color: var(--muted); font-style: italic; }
+  .stats__log-sep { color: var(--muted-soft); }
   .stats__log-call {
     color: var(--muted);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 45%;
+    overflow-wrap: anywhere;
+    text-align: right;
   }
   .stats__log-row--empty { min-height: 1.125rem; }
 </style>
