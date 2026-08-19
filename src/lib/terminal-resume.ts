@@ -41,5 +41,7 @@ ${D}agents welcome — this server speaks MCP.${R}
 
 export const terminalResumeResponse = () =>
   new Response(TERMINAL_RESUME, {
-    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" },
+    // no-store: every curl must invoke the handler, or the "resumes served
+    // to curl" counter undercounts CDN-cached serves. The payload is tiny.
+    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
   });
