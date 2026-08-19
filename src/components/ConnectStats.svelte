@@ -183,7 +183,7 @@
         {#if row}
           <p class="stats__log-row">
             <span class="stats__log-at">{ago(row.at)}</span>
-            <span class="stats__log-agent" class:stats__log-agent--unknown={!row.client}>{row.client ?? (pt ? "desconhecido" : "unknown")}</span>
+            <span class="stats__log-agent" class:stats__log-agent--unknown={!row.client}>{row.client ?? "anon"}</span>
             <span class="stats__log-sep" aria-hidden="true">→</span>
             <span class="stats__log-call">{row.tool}</span>
           </p>
@@ -327,7 +327,7 @@
     color: var(--accent-soft, #4ade80);
     overflow-wrap: anywhere;
   }
-  .stats__log-agent--unknown { color: var(--muted); font-style: italic; }
+  .stats__log-agent--unknown { color: var(--muted-soft); font-style: italic; letter-spacing: 0.04em; }
   .stats__log-sep { color: var(--muted-soft); }
   .stats__log-call {
     color: var(--muted);
